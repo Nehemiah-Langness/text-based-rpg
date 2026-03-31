@@ -1,0 +1,52 @@
+html,
+body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.game {
+    --bg-color: rgba(150, 0, 112, 0.75);
+
+    background-color: black;
+    background-image: radial-gradient(var(--bg-color), black 120%);
+    height: 100dvh;
+    overflow: hidden;
+    color: white;
+    font:
+        1.3rem Inconsolata,
+        monospace;
+    text-shadow: 0 0 5px #c8c8c8;
+    position: relative;
+
+    &::after {
+        content: '';
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: repeating-linear-gradient(0deg, rgba(black, 0.15), rgba(black, 0.15) 1px, transparent 1px, transparent 2px);
+    }
+    ::selection {
+        background: #0080ff;
+        text-shadow: none;
+    }
+
+    display: flex;
+    flex-direction: column;
+
+    & > div {
+        flex-grow: 1;
+        overflow-y: scroll;
+        padding: 0.5rem;
+    }
+
+    .input-option {
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+}

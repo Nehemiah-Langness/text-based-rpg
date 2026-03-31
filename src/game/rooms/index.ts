@@ -1,0 +1,56 @@
+/* MAP
+      N
+    W * E
+      S
+| A1 -------| A2 -------| A3 -------| A4 -------| A5 -------| A6 -------|
+|           |           |           |           |           |           |
+|           |           |           |    Inn       Village     Shops    |
+|           |           |           |           |    Road   |           |
+|-----------|-----------|-----------|-----------|-----  ----|-----  ----|
+| B1 -------| B2 -------| B3 -------| B4 -------| B5 -  ----| B6 -  ----| B7 -------|
+|           |           |           |           |           |           |           |
+|           |           |           |  Guild       Village     Houses   |  Wizards  |
+|           |           |           |           |   Square  |           |   House   |
+|-----------|-----------|-----------|-----------|-----  ----|-----------|-----------|
+| C1 -------| C2 -------| C3 -------| C4 -------| C5 -  ----| C6 -------|
+|           |           |           |           |           |           |
+|           |           |           |           |   Main    |   Lake    |
+|           |           |           |           |   Gate    |           |
+|-----------|-----------|-----------|-----------|-----  ----|-----  ----|
+| D1 -------| D2 -------| D3 -------| D4 -------| D5 -  ----| D6 -  ----|
+|           |           |           |           |           |           |
+|    Old    | Wasteland     Pond        Thick       Open        Farms   |
+|  Castle   |           |           |   Forest  |   Hill    |           |
+|-----------|-----------|-----------|-----  ----|-----  ----|-----  ----|
+| E1 -------| E2 -------| E3 -------| E4 -  ----| E5 -  ----| E6 -  ----|
+|           |           |           |           |           |           |
+|           |           |           | Clearing  |   Dark    | Woodlands |
+|           |           |           |  (Start)  |  Forest   |           |
+|-----------|-----------|-----------|-----------|-----  ----|-----------|
+| F1 -------| F2 -------| F3 -------| F4 -------| F5 -  ----| F6 -------|
+|           |           |           |           |           |           |
+|           |           |           |           |   Cave    |           |
+|           |           |           |           |           |           |
+|-----------|-----------|-----------|-----------|-----------|-----------|
+*/
+
+import './abandoned-fortification';
+import './cave';
+import { Clearing } from './clearing';
+import './dark-forest';
+import './farmland';
+import './guild-hall';
+import './lake';
+import './main-gate';
+import './open-hill';
+import './pond';
+import './thick-forest';
+import './village-houses';
+import './village-inn';
+import './village-road';
+import './village-shops';
+import './village-square';
+import './wasteland';
+import './woodlands';
+
+export const Start = Clearing;

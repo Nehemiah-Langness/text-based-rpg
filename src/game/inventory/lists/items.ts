@@ -1,0 +1,57 @@
+export const Items = [
+    'Large Stick',
+    'Copper Sword',
+    'Iron Sword',
+    'Steel Sword',
+    'Sword of the Ancient Warrior',
+    'Rock',
+    'Spear',
+    'Wooden Bow',
+    'Long Bow',
+    'Bow of the Ancient Warrior',
+    'Arrow',
+    'Gold Coin',
+    'Straw Hat',
+    'Leather Hat',
+    'Iron Helmet',
+    'Steel Helmet',
+    'Helm of the Ancient Warrior',
+    'Cloth Shirt',
+    'Leather Tunic',
+    'Iron Breastplate',
+    'Steel Breastplate',
+    'Breastplate of the Ancient Warrior',
+    'Cloth Pants',
+    'Leather Pants',
+    'Iron Legs',
+    'Steel Plate Legs',
+    'Legs of the Ancient Warrior',
+    'Loot (4-7g)',
+    'Loot (21-43g)',
+    'Loot (201-404g)',
+    'Bandage',
+    'Splint',
+    'Herbal Medicine',
+    'Antibacterial Paste',
+    'Pickled Vegetables Jar', //15
+    'Dried Fruit Mix', //25
+    'Honeyed Biscuit', //30
+    'Dried Meat Jerky', //40
+    'Fried Fish', //50
+    'Small Meat Pie', //55
+    'Smoked Sausage', //60
+    'Trail Cheese & Meat Pack', //75
+    'Proof of Enemy Kill (Weak)',
+    'Proof of Enemy Kill (Strong)',
+    'Proof of Enemy Kill (Dangerous)',
+    'Proof of Enemy Kill (Legendary)',
+    'Fishing Pole',
+    'Raw Fish',
+    'Medicinal Herbs',
+    'Fishing Tackle',
+    'Mortar and Pestle',
+    'Bedroll',
+    'Luck Aura',
+    'Healing Aura',
+    'Energizing Aura',
+] as const;
