@@ -1,7 +1,7 @@
-import { Knowledge } from '../knowledge';
-import { progressQuest } from '../quests';
-import { Npc } from '../engine/npc';
-import { Names, NpcNames } from './npc-names';
+import { Knowledge } from '../../knowledge';
+import { progressQuest } from '../../quests';
+import { Npc } from '../../engine/npc';
+import { Names, NpcNames } from '../npc-names';
 
 export const FarmerNpc = new Npc(
     'Farmer',

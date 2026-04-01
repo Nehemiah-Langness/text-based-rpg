@@ -5,38 +5,84 @@ import { getPlayerDefense } from '../inventory/get-player-defense';
 import { isCategory } from '../inventory/is-category';
 import { criticalChance, Player } from '../player';
 import { getActiveQuests } from '../quests';
-import { east, Map, north, south, west } from './map';
+import { Map } from './map';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
+import { isTravelOption, type TravelOption, type TravelOptions } from './travel-options';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class Room<T = any> {
-    investigated = false;
-    visited = false;
+    name: string | undefined;
     changeIndicator = 0;
     inventoryAccess = false;
-
     coordinates: { y: string; x: number } | undefined;
+    map: Map | undefined;
+    roomColor:
+        | string
+        | {
+              primary: string;
+              secondary: string;
+          }
+        | undefined;
 
+    investigated = false;
+    visited = false;
     state: T;
+
     private getTextLogic: (room: Room<T>) => string | (string | null)[];
     private getOptionsLogic: (room: Room<T>) => {
         options: InputOption[];
         select: (code: string) => Room;
     };
+    private getTravelOptions: (room: Room<T>) => { text: string; code: (typeof TravelOptions)[number] }[];
 
     constructor(
         state: T,
-        getTextLogic: (room: Room<T>) => string | (string | null)[],
-        getOptionsLogic: (room: Room<T>) => {
+        getTextLogic?: (room: Room<T>) => string | (string | null)[],
+        getOptionsLogic?: (room: Room<T>) => {
             options: InputOption[];
             select: (code: string) => Room;
-        }
+        },
+        getTravelOptions?: (room: Room<T>) => { text: string; code: (typeof TravelOptions)[number] }[],
+        color?:
+            | string
+            | {
+                  primary: string;
+                  secondary: string;
+              }
     ) {
         this.state = state;
-        this.getTextLogic = getTextLogic;
-        this.getOptionsLogic = getOptionsLogic;
+        this.getTextLogic = getTextLogic ?? (() => []);
+        this.getOptionsLogic =
+            getOptionsLogic ??
+            ((rm) => {
+                return {
+                    options: [],
+                    select: () => {
+                        return rm;
+                    },
+                };
+            });
+        this.getTravelOptions = getTravelOptions ?? (() => []);
+
+        this.roomColor = color;
+    }
+
+    save() {
+        return {
+            investigated: this.investigated,
+            visited: this.visited,
+            state: this.state,
+        };
+    }
+
+    load(data: ReturnType<Room['save']> | null) {
+        if (data) {
+            this.investigated = data.investigated ?? this.investigated;
+            this.visited = data.visited ?? this.visited;
+            if (this.state) Object.assign(this.state, data.state);
+        }
     }
 
     getText() {
@@ -48,7 +94,7 @@ export class Room<T = any> {
     getOptions() {
         const roomOptions = this.getOptionsLogic(this);
         return {
-            options: roomOptions.options.concat(
+            options: roomOptions.options.concat(this.getTravelOptions(this)).concat(
                 this.inventoryAccess
                     ? [
                           {
@@ -80,7 +126,9 @@ export class Room<T = any> {
                         return resultRoom(
                             this,
                             [
-                                `You are ${healthToDescription(Player.health / Player.maxHealth)} and ${staminaToDescription(Player.stamina / Player.maxStamina)}.`,
+                                `You are ${healthToDescription(Player.health / Player.maxHealth)} and ${staminaToDescription(
+                                    Player.stamina / Player.maxStamina
+                                )}.`,
                                 defense ? ` You have a defense of ${defense}.` : null,
                                 criticalPoints > 0 ? `You have +${criticalPoints} luck points.` : null,
                                 farmingBonus ? `You have a farming bonus of +${farmingBonus}.` : null,
@@ -129,6 +177,12 @@ export class Room<T = any> {
                         );
                     }
                 }
+
+                if (isTravelOption(code)) {
+                    const traveled = this.travel(code);
+                    if (traveled) return traveled;
+                }
+
                 return roomOptions.select(code);
             },
         };
@@ -139,9 +193,15 @@ export class Room<T = any> {
         return this;
     }
 
-    atLocation(y: string, x: number) {
+    atLocation(map: Map, y: string, x: number) {
         this.coordinates = { y: y, x: x };
-        Map[y][x] = this;
+        this.map = map;
+        map.setRoom(y, x, this);
+        return this;
+    }
+
+    withName(name: string) {
+        this.name = name;
         return this;
     }
 
@@ -150,16 +210,25 @@ export class Room<T = any> {
         return resultRoom(this, text);
     }
 
-    travel(choice: string) {
-        if (choice === 'travel-north') {
-            return north(this);
-        } else if (choice === 'travel-east') {
-            return east(this);
-        } else if (choice === 'travel-south') {
-            return south(this);
-        } else if (choice === 'travel-west') {
-            return west(this);
+    travel(choice: TravelOption) {
+        if (this.map) {
+            switch (choice) {
+                case 'travel-north':
+                    return this.map.north(this);
+                case 'travel-east':
+                    return this.map.east(this);
+                case 'travel-south':
+                    return this.map.south(this);
+                case 'travel-west':
+                    return this.map.west(this);
+            }
         }
+
         return null;
+    }
+
+    withColor(color: Room['roomColor']) {
+        this.roomColor = color;
+        return this;
     }
 }

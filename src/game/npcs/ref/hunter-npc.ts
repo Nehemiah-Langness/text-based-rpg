@@ -1,8 +1,8 @@
-import { Inventory } from '../inventory/inventory';
-import { Knowledge } from '../knowledge';
-import { progressQuest, Quests, startQuest } from '../quests';
-import { Npc } from '../engine/npc';
-import { Names, NpcNames } from './npc-names';
+import { Inventory } from '../../inventory/inventory';
+import { Knowledge } from '../../knowledge';
+import { progressQuest, Quests, startQuest } from '../../quests';
+import { Npc } from '../../engine/npc';
+import { Names, NpcNames } from '../npc-names';
 
 export const HunterNpc = new Npc(
     'Hunter',

@@ -1,30 +1,24 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-export function Text({ content, onComplete }: { content: string; onComplete: () => void }) {
-    const reset = useRef(false);
-    const progression = useRef<NodeJS.Timeout>(null);
+function useInterval(callback: () => void, ms: number) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const interval = useMemo(() => setInterval(callback, ms), []);
+
+    return {
+        clearInterval: () => clearInterval(interval)
+    }
+}
+
+export function Text({ content, onComplete, readyForInput }: { content: string; onComplete: () => void; readyForInput: boolean }) {
     const [currentCharacter, setCurrentCharacter] = useState(0);
-    useEffect(() => {
-        setCurrentCharacter(0);
-        const nextChar = () => {
+    const progression = useInterval(() => {
             setCurrentCharacter((x) => x + 1);
-            reset.current = false;
-        };
-        progression.current = setInterval(nextChar, 50);
-        reset.current = true;
-    }, [content]);
+        }, 50)
 
-    useEffect(() => {
-        if (reset.current) {
-            return;
-        }
-        if (currentCharacter >= content.length && progression.current) {
-            clearInterval(progression.current);
-            progression.current = null;
-            onComplete();
-        }
-    }, [content.length, currentCharacter, onComplete]);
+    if (!readyForInput && currentCharacter >= content.length) {
+        onComplete();
+        progression.clearInterval()
+    }
 
     useEffect(() => {
         const handler = (ev: KeyboardEvent | MouseEvent) => {

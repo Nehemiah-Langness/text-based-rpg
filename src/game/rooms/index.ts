@@ -34,23 +34,4 @@
 |-----------|-----------|-----------|-----------|-----------|-----------|
 */
 
-import './abandoned-fortification';
-import './cave';
-import { Clearing } from './clearing';
-import './dark-forest';
-import './farmland';
-import './guild-hall';
-import './lake';
-import './main-gate';
-import './open-hill';
-import './pond';
-import './thick-forest';
-import './village-houses';
-import './village-inn';
-import './village-road';
-import './village-shops';
-import './village-square';
-import './wasteland';
-import './woodlands';
-
-export const Start = Clearing;
+import './mermaid-city'

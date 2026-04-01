@@ -1,84 +1,107 @@
 import { Room } from './room';
 
-export const Map: Record<string, (Room | null)[]> = {};
-const mapSize = {
-    y: 'F',
-    x: 6,
-};
+export class Map {
+    id: string;
+    cells: Record<string, (Room | null)[]> = {};
+    size: { x: number; y: string };
 
-for (let x = 'A'.charCodeAt(0); x <= mapSize.y.charCodeAt(0); x++) {
-    const letter = String.fromCharCode(x);
-    Map[letter] = [];
-    for (let x = 1; x <= mapSize.x; x++) {
-        Map[letter][x] = null;
-    }
-}
+    constructor(id: string, x: number, y: string) {
+        this.size = { x, y };
+        this.id = id;
 
-export function saveMap() {
-    const saveData: Record<string, ({ investigated: boolean; visited: boolean; state: unknown } | null)[]> = {};
-
-    for (let y = 'A'.charCodeAt(0); y <= mapSize.y.charCodeAt(0); y++) {
-        const letter = String.fromCharCode(y);
-        saveData[letter] = [];
-        for (let x = 1; x <= mapSize.x; x++) {
-            const map = Map[letter][x];
-
-            saveData[letter][x] = map
-                ? {
-                      state: map.state,
-                      investigated: map.investigated,
-                      visited: map.visited,
-                  }
-                : null;
-        }
+        this.traverseMap((cells, y, x) => {
+            cells[y][x] = null;
+        });
     }
 
-    return saveData;
-}
-
-export function loadMap(saveData: Record<string, ({ investigated: boolean; visited: boolean; state: unknown } | null)[]>) {
-    for (let y = 'A'.charCodeAt(0); y <= mapSize.y.charCodeAt(0); y++) {
-        const letter = String.fromCharCode(y);
-        for (let x = 1; x <= mapSize.x; x++) {
-            const map = Map[letter][x];
-            const data = saveData[letter][x];
-            if (map && data) {
-                map.investigated = data.investigated ?? map.investigated;
-                map.visited = data.visited ?? map.visited;
-                if (map.state && data.state) Object.assign(map.state, data.state);
+    private traverseMap(callback: (cells: Record<string, (Room | null)[]>, y: string, x: number) => void) {
+        for (let x = 'A'.charCodeAt(0); x <= this.size.y.charCodeAt(0); x++) {
+            const letter = String.fromCharCode(x);
+            if (!this.cells[letter]) {
+                this.cells[letter] = [];
+            }
+            for (let x = 1; x <= this.size.x; x++) {
+                callback(this.cells, letter, x);
             }
         }
     }
-}
 
-export function north(room: Room) {
-    if (!room.coordinates) {
-        return room;
+    saveMap() {
+        const saveData: Record<string, (ReturnType<Room['save']> | null)[]> = {};
+
+        this.traverseMap((cells, y, x) => {
+            if (!saveData[y]) {
+                saveData[y] = [];
+            }
+
+            const room = cells[y][x];
+            saveData[y][x] = room?.save() ?? null;
+        });
+
+        return {
+            id: this.id,
+            data: saveData
+        };
     }
 
-    return Map[String.fromCharCode(room.coordinates.y.charCodeAt(0) - 1)][room.coordinates.x] ?? room;
-}
-
-export function south(room: Room) {
-    if (!room.coordinates) {
-        return room;
+    loadMap(saveData: Record<string, (ReturnType<Room['save']> | null)[]>) {
+        this.traverseMap((cells, y, x) => {
+            const room = cells[y][x];
+            if (room) {
+                room.load(saveData[y]?.[x]);
+            }
+        });
     }
 
-    return Map[String.fromCharCode(room.coordinates.y.charCodeAt(0) + 1)][room.coordinates.x] ?? room;
-}
+    setRoom(y: string, x: number, room: Room) {
+        let resize = false;
+        if (y > this.size.y) {
+            this.size.y = y;
+            resize = true;
+        }
+        if (x > this.size.x) {
+            this.size.x = x;
+            resize = true;
+        }
+        if (resize) {
+            this.traverseMap((cells, y, x) => {
+                if (typeof cells[y][x] === 'undefined') {
+                    cells[y][x] = null;
+                }
+            });
+        }
 
-export function east(room: Room) {
-    if (!room.coordinates) {
-        return room;
+        this.cells[y][x] = room;
     }
 
-    return Map[room.coordinates.y][room.coordinates.x + 1] ?? room;
-}
+    north(room: Room) {
+        if (!room.coordinates) {
+            return room;
+        }
 
-export function west(room: Room) {
-    if (!room.coordinates) {
-        return room;
+        return this.cells[String.fromCharCode(room.coordinates.y.charCodeAt(0) - 1)][room.coordinates.x] ?? room;
     }
 
-    return Map[room.coordinates.y][room.coordinates.x - 1] ?? room;
+    south(room: Room) {
+        if (!room.coordinates) {
+            return room;
+        }
+
+        return this.cells[String.fromCharCode(room.coordinates.y.charCodeAt(0) + 1)][room.coordinates.x] ?? room;
+    }
+
+    east(room: Room) {
+        if (!room.coordinates) {
+            return room;
+        }
+
+        return this.cells[room.coordinates.y][room.coordinates.x + 1] ?? room;
+    }
+    west(room: Room) {
+        if (!room.coordinates) {
+            return room;
+        }
+
+        return this.cells[room.coordinates.y][room.coordinates.x - 1] ?? room;
+    }
 }

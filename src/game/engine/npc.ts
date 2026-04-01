@@ -1,7 +1,9 @@
 import { Room } from './room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
+import { NpcList } from '../npcs/npc-list';
 
 export class Npc<TSpecialRemarks extends string = string> {
+    coordinates: { y: string; x: number } | undefined;
     protected currentRemark = 0;
     public met = false;
 
@@ -10,12 +12,16 @@ export class Npc<TSpecialRemarks extends string = string> {
             id: this.id,
             met: this.met,
             currentRemark: this.currentRemark,
+            coordinates: this.coordinates,
         };
     }
 
     load(data: Partial<ReturnType<typeof this.save>>) {
-        this.met = data.met ?? false;
-        this.currentRemark = data.currentRemark ?? 0;
+        if (data.id === this.id) {
+            this.met = data.met ?? false;
+            this.currentRemark = data.currentRemark ?? 0;
+            this.coordinates = data.coordinates ?? this.coordinates;
+        }
     }
 
     id: string;
@@ -36,6 +42,7 @@ export class Npc<TSpecialRemarks extends string = string> {
         this.remarks = remarks;
         this.specialRemarks = specialRemarks;
         this.needsSpecialRemark = needsSpecialRemark;
+        NpcList.push(this)
     }
 
     getName(room: Room) {
@@ -77,5 +84,11 @@ export class Npc<TSpecialRemarks extends string = string> {
     getSpecialRemark(remark: TSpecialRemarks, room: Room) {
         const remarks = this.resolveConversation(this.specialRemarks[remark], room);
         return typeof remarks === 'string' ? [remarks] : remarks;
+    }
+
+    move(room: Room) {
+        if (room.coordinates) {
+            this.coordinates = { ...room.coordinates };
+        }
     }
 }

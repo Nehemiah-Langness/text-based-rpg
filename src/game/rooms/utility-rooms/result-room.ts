@@ -1,10 +1,21 @@
 import { Room } from '../../engine/room';
 
-export function resultRoom(backTo: Room | (() => Room), text: string | string[], continueText = 'Continue'): Room {
-    if (typeof text === 'string')
+export function resultRoom(
+    backTo: Room | (() => Room),
+    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
+    continueText = 'Continue'
+): Room {
+    if (!Array.isArray(text)) {
+        const roomText = typeof text === 'string' ? text : text.text;
+        const roomColor = typeof text === 'string' ? undefined : text.color;
+        console.log({
+            text,
+            roomText,
+            roomColor,
+        });
         return new Room(
             null,
-            () => text,
+            () => roomText,
             () => {
                 return {
                     options: [
@@ -15,8 +26,11 @@ export function resultRoom(backTo: Room | (() => Room), text: string | string[],
                     ],
                     select: () => (typeof backTo === 'function' ? backTo() : backTo),
                 };
-            }
+            },
+            undefined,
+            roomColor
         );
+    }
 
     if (!text.length) return typeof backTo === 'function' ? backTo() : backTo;
 

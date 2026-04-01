@@ -1,8 +1,4 @@
-import { CityGuardNpc } from './city-guard-npc';
-import { FarmerNpc } from './farmer-npc';
-import { GuildMasterNpc } from './guild-master-npc';
-import { HunterNpc } from './hunter-npc';
-import { InnKeeperNpc } from './inn-keeper-npc';
-import { WizardNpc } from './wizard-npc';
+import type { Npc } from "../engine/npc";
 
-export const NpcList = [CityGuardNpc, GuildMasterNpc, HunterNpc, InnKeeperNpc, FarmerNpc, WizardNpc];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const NpcList: Npc<any>[] = [];

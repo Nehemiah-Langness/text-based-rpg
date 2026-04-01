@@ -1,6 +1,6 @@
-import { Knowledge } from '../knowledge';
-import { Npc } from '../engine/npc';
-import { Names, NpcNames } from './npc-names';
+import { Knowledge } from '../../knowledge';
+import { Npc } from '../../engine/npc';
+import { Names, NpcNames } from '../npc-names';
 
 export const WizardNpc = new Npc(
     'Wizard',

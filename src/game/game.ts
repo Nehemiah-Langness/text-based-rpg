@@ -1,9 +1,10 @@
 import { Inventory } from './inventory/inventory';
 import { Knowledge } from './knowledge';
 import { NpcList } from './npcs/npc-list';
+import { MapList } from './rooms/map-list';
 import { Player } from './player';
 import { Quests } from './quests';
-import { loadMap, Map, saveMap } from './engine/map';
+import { Map } from './engine/map';
 import { Room } from './engine/room';
 import { Stats } from './stats';
 
@@ -13,8 +14,11 @@ export function saveGame(currentRoom: Room) {
         JSON.stringify({
             player: Player,
             inventory: Inventory,
-            map: saveMap(),
-            location: currentRoom.coordinates,
+            maps: MapList.map((map) => map.saveMap()),
+            location: {
+                map: currentRoom.map?.id,
+                coordinates: currentRoom.coordinates,
+            },
             knowledge: Knowledge,
             quests: Quests,
             npcs: NpcList.map((x) => x.save()),
@@ -28,11 +32,14 @@ export function loadGame() {
         const savedState = localStorage.getItem('saved-game');
         if (!savedState) return false;
 
-        const { inventory, map, player, location, knowledge, quests, npcs, stats } = JSON.parse(savedState) as {
+        const { inventory, maps, player, location, knowledge, quests, npcs, stats } = JSON.parse(savedState) as {
             player?: typeof Player;
             inventory?: typeof Inventory;
-            map?: ReturnType<typeof saveMap>;
-            location?: Room['coordinates'];
+            maps?: ReturnType<Map['saveMap']>[];
+            location?: {
+                id: Map['id'];
+                coordinates: Room['coordinates'];
+            };
             knowledge?: typeof Knowledge;
             quests?: typeof Quests;
             npcs?: { id: string; met: boolean; currentRemark: number }[];
@@ -44,8 +51,12 @@ export function loadGame() {
         Object.assign(Knowledge, knowledge);
         Object.assign(Quests, quests);
         Object.assign(Stats, stats);
-
-        if (map) loadMap(map);
+        maps?.forEach(({ data, id }) => {
+            const map = MapList.find((x) => x.id === id);
+            if (map) {
+                map.loadMap(data);
+            }
+        });
 
         NpcList.forEach((npc) => {
             const saveData = npcs?.find((x) => x.id === npc.id);
@@ -54,7 +65,12 @@ export function loadGame() {
             }
         });
 
-        return location ? Map[location.y][location.x] : null;
+        const savedMap = MapList.find((m) => m.id === location?.id);
+        if (savedMap && location?.coordinates) {
+            return savedMap.cells[location.coordinates.y][location.coordinates.x] ?? null;
+        }
+
+        return null;
     } catch (error) {
         console.error(error);
         return false;

@@ -1,8 +1,8 @@
-import { fullyClothed } from '../inventory/fully-clothed';
-import { Knowledge } from '../knowledge';
-import { startQuest } from '../quests';
-import { Npc } from '../engine/npc';
-import { Names, NpcNames } from './npc-names';
+import { fullyClothed } from '../../inventory/fully-clothed';
+import { Knowledge } from '../../knowledge';
+import { startQuest } from '../../quests';
+import { Npc } from '../../engine/npc';
+import { Names, NpcNames } from '../npc-names';
 
 export const CityGuardNpc = new Npc(
     'CityGuard',

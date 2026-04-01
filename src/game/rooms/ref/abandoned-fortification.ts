@@ -1,18 +1,23 @@
-import { EnemyLevels } from '../enemies/enemy-level';
-import { getEnemy } from '../enemies/get-enemy';
-import type { InputOption } from '../input-option';
-import { Nothing } from '../items/nothing';
-import { Quests } from '../quests';
-import { Room } from '../engine/room';
-import { encounterRoom } from './utility-rooms/encounter-room';
-import { resultRoom } from './utility-rooms/result-room';
+import { EnemyLevels } from '../../enemies/enemy-level';
+import { getEnemy } from '../../enemies/get-enemy';
+import type { InputOption } from '../../input-option';
+import { Nothing } from '../../items/nothing';
+import { Quests } from '../../quests';
+import { Room } from '../../engine/room';
+import { encounterRoom } from '../utility-rooms/encounter-room';
+import { resultRoom } from '../utility-rooms/result-room';
+import { Map } from '../../engine/map';
 
 const RoomDescription =
     () => `You stand at the base of a massive stone fortification, its walls cracked and weathered by time. Broken battlements loom overhead, and the remains of old towers stand like silent sentinels against the sky. The place carries a heavy stillness, the kind that makes every sound feel unwelcome.
 
 The air here feels different - tense and watchful. Dark gaps in the stonework hint at passages within, and the ruined gate stands half open, as though something passed through not long ago. It's the sort of place where danger could be waiting just out of sight.
 
-${Quests.killTierFourEnemy.active || Quests.killTierFourEnemy.completed ? '' : `You should not proceed into the fort without a very good reason. Whatever has claimed these ruins is unlikely to welcome visitors.\n\n`}Behind you to the east stretch the open wastelands you crossed to reach this place, offering the only clear path back.`;
+${
+    Quests.killTierFourEnemy.active || Quests.killTierFourEnemy.completed
+        ? ''
+        : `You should not proceed into the fort without a very good reason. Whatever has claimed these ruins is unlikely to welcome visitors.\n\n`
+}Behind you to the east stretch the open wastelands you crossed to reach this place, offering the only clear path back.`;
 
 export const AbandonedFortification = new Room(
     {
@@ -63,8 +68,6 @@ Something stirs in the gloom. Your hand tightens on your weapon as the shapes sh
                     EnemyLevels.Boss
                 );
             }
-            const traveled = rm.travel(choice);
-            if (traveled) return traveled;
 
             return rm;
         };
@@ -76,4 +79,4 @@ Something stirs in the gloom. Your hand tightens on your weapon as the shapes sh
     }
 )
     .withInventoryAccess()
-    .atLocation('D', 1);
+    .atLocation(new Map('Ref', 1, 'A'), 'D', 1);

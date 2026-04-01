@@ -1,13 +1,13 @@
-import { Start } from '.';
 import { loadGame } from '../game';
 import type { InputOption } from '../input-option';
 import { Room } from '../engine/room';
 import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
+import { OpeningRoom } from './story/opening-room';
 
 export const MainMenu = new Room(
     null,
-    () => 'A game title should go here, but I do not have one yet, so this placeholder text will do.',
+    () => 'Welcome to "Trident of the Deep"',
     (rm) => {
         const options: InputOption[] = [
             {
@@ -20,6 +20,11 @@ export const MainMenu = new Room(
             },
         ];
 
+        const newGame = () => {
+            localStorage.setItem('saved-game', '');
+            return OpeningRoom;
+        };
+
         return {
             options: options,
             select: (choice: string) => {
@@ -28,7 +33,7 @@ export const MainMenu = new Room(
                     if (load === false) {
                         return resultRoom(rm, `You do not have an existing save file.`);
                     }
-                    return load || Start;
+                    return load || OpeningRoom;
                 } else if (choice === 'new-game') {
                     if (localStorage.getItem('saved-game')) {
                         return choiceRoom(
@@ -45,20 +50,25 @@ export const MainMenu = new Room(
                             ],
                             (choice) => {
                                 if (choice === 'new-game') {
-                                    localStorage.setItem('saved-game', '');
-                                    return Start;
+                                    return newGame();
                                 }
                                 return rm;
                             }
                         );
                     }
 
-                    localStorage.setItem('saved-game', '');
-                    return Start;
+                    return newGame();
                 }
 
                 return rm;
             },
         };
+    },
+    undefined,
+    {
+        primary: '#83725a',
+        secondary: '#100b06',
     }
 );
+
+

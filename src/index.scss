@@ -1,18 +1,26 @@
-html,
-body {
-    height: 100%;
-    padding: 0;
-    margin: 0;
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+
+@property --bg-color {
+  syntax: '<color>';
+  initial-value: #1fa5b0;
+  inherits: false;
+}
+
+@property --bg-color-2 {
+  syntax: '<color>';
+  initial-value: #03091a;
+  inherits: false;
 }
 
 .game {
-    --bg-color: rgba(150, 0, 112, 0.75);
 
     background-color: black;
-    background-image: radial-gradient(var(--bg-color), black 120%);
+    background-image: radial-gradient(var(--bg-color), var(--bg-color-2) 120%, black 150%);
     height: 100dvh;
     overflow: hidden;
     color: white;
+    transition: --bg-color .4s ease-in-out, --bg-color-2 .4s ease-in-out;
+    
     font:
         1.3rem Inconsolata,
         monospace;

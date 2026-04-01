@@ -1,7 +1,7 @@
-import { Knowledge } from '../knowledge';
-import { finishQuest, progressQuest, Quests, startQuest } from '../quests';
-import { Npc } from '../engine/npc';
-import { Names, NpcNames } from './npc-names';
+import { Knowledge } from '../../knowledge';
+import { finishQuest, progressQuest, Quests, startQuest } from '../../quests';
+import { Npc } from '../../engine/npc';
+import { Names, NpcNames } from '../npc-names';
 
 export const GuildMasterNpc = new Npc(
     'GuildMaster',
