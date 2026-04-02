@@ -47,7 +47,7 @@ export function InputOptions({ options, onInput }: { options: InputOption[]; onI
 
     return (
         <div className='mt-5'>
-            {options.length > 1 ? <span className='fw-bold'>What would you like to do?</span> : null}
+            {options.length > 1 ? <span className='fw-bold game-text'>What would you like to do?</span> : null}
             <ul style={{ listStyle: 'none' }}>
                 {options.map((o, i) => (
                     <li

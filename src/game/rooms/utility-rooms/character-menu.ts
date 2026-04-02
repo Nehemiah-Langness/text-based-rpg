@@ -1,4 +1,5 @@
-import { healthToDescription, staminaToDescription } from '../../descriptions';
+import { staminaToDescription } from '../../utility-functions/stamina-to-description';
+import { healthToDescription } from "../../utility-functions/health-to-description";
 import { getItemsEquipped } from '../../inventory/get-items-equipped';
 import { getPlayerDefense } from '../../inventory/get-player-defense';
 import { isCategory } from '../../inventory/is-category';
@@ -43,8 +44,8 @@ export function characterMenu(backTo: Room) {
                 return resultRoom(
                     rm,
                     [
-                        `You are ${healthToDescription(Player.health / Player.maxHealth)} and ${staminaToDescription(
-                            Player.stamina / Player.maxStamina
+                        `You are ${healthToDescription(Player.health.current / Player.health.max)} and ${staminaToDescription(
+                            Player.stamina.current / Player.stamina.max
                         )}.`,
                         defense ? ` You have a defense of ${defense}.` : null,
                         criticalPoints > 0 ? `You have +${criticalPoints} luck points.` : null,
@@ -87,7 +88,7 @@ export function characterMenu(backTo: Room) {
                             `${quest.name}${quest.completed ? ' (COMPLETED)' : ''}\n\n${quest.stages
                                 .filter((_stage, index) => index <= quest.progress)
                                 .map(
-                                    (stage, stageIndex) => `${stageIndex + 1}. ${stage} ${stageIndex < quest.progress ? '(COMPLETED)' : ''}`
+                                    (stage, stageIndex) => `${stageIndex + 1}. ${stage.stage} ${stageIndex < quest.progress ? '(COMPLETED)' : ''}`
                                 )
                                 .join('\n')}`
                         ).withColor(Mood.menu);

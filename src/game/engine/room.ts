@@ -6,6 +6,8 @@ import { NpcList } from '../npcs/npc-list';
 import { characterMenu } from '../rooms/utility-rooms/character-menu';
 import { Names } from '../npcs/npc-names';
 
+export type RoomLike = Room | (() => Room);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class Room<T = any> {
     name: string | undefined;
@@ -27,18 +29,20 @@ export class Room<T = any> {
     private getTextLogic: (room: Room<T>) => string | (string | null)[];
     private getOptionsLogic: (room: Room<T>) => {
         options: InputOption[];
-        select: (code: string) => Room;
+        select: (code: string) => RoomLike;
     };
-    private getTravelOptions: (room: Room<T>) => { text: string; code: (typeof TravelOptions)[number] }[];
+    private getTravelOptions: (room: Room<T>) => ({ text: string; code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom` } | null)[];
 
     constructor(
         state: T,
         getTextLogic?: (room: Room<T>) => string | (string | null)[],
         getOptionsLogic?: (room: Room<T>) => {
             options: InputOption[];
-            select: (code: string) => Room;
+            select: (code: string) => RoomLike;
         },
-        getTravelOptions?: (room: Room<T>) => { text: string; code: (typeof TravelOptions)[number] }[],
+        getTravelOptions?: (
+            room: Room<T>
+        ) => ({ text: string; code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom` } | null)[],
         color?:
             | string
             | {
@@ -109,7 +113,7 @@ export class Room<T = any> {
                         };
                     })
                 )
-                .concat(this.getTravelOptions(this))
+                .concat(this.getTravelOptions(this).filter((x) => x !== null))
                 .concat(
                     this.inventoryAccess
                         ? [
@@ -188,7 +192,7 @@ export class Room<T = any> {
         return this;
     }
 
-    static resolve(room: Room | (() => Room)) {
+    static resolve(room: RoomLike) {
         if (typeof room === 'function') return room();
         return room;
     }

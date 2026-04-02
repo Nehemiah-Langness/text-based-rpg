@@ -4,6 +4,10 @@ export const RoomNames = {
         guardHall: 'guard-hall',
         shops: 'shops',
         freds: 'freds-fried-fish',
-        apartment: 'apartment'
+        apartment: 'apartment',
+        cityGates: 'city-gates'
     },
+    openOcean: {
+        cityOutskirts: 'city-outskirts'
+    }
 };

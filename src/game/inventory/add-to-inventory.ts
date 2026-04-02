@@ -1,4 +1,4 @@
-import { Room } from '../engine/room';
+import { Room, type RoomLike } from '../engine/room';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { equipItem } from './equip-item';
@@ -6,7 +6,7 @@ import { Inventory } from './inventory';
 import { shouldEquip } from './should-equip';
 import type { Item } from './types/item';
 
-export function addToInventory(item: Item, backTo: Room | (() => Room), text?: string, count = 1) {
+export function addToInventory(item: Item, backTo: RoomLike, text?: string, count = 1) {
     Inventory[item].count += count;
     if (shouldEquip(item)) {
         return choiceRoom(

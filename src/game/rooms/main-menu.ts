@@ -1,10 +1,20 @@
 import { loadGame } from '../game';
 import type { InputOption } from '../input-option';
-import { Room } from '../engine/room';
+import { Room, type RoomLike } from '../engine/room';
 import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
 import { OpeningRoom } from './story/opening-room';
 import { Mood } from './moods/mood';
+import { Quests } from '../quests';
+import { Skills } from '../knowledge';
+import { Thalor } from '../npcs/thalor';
+import { GuardHall } from './mermaid-city/guard-hall';
+
+const Debug: RoomLike | undefined = () => {
+    Skills.levelSkill('tailKick');
+    Thalor.move(GuardHall);
+    return Room.resolve(Quests.start(() => Room.resolve(Quests.progress(GuardHall, 'mainQuest', 'train-tail-kick')), 'mainQuest'));
+};
 
 export const MainMenu = new Room(
     null,
@@ -15,15 +25,18 @@ export const MainMenu = new Room(
                 code: 'new-game',
                 text: 'Start a new game',
             },
-            {
+        ];
+
+        if (localStorage.getItem('saved-game')) {
+            options.push({
                 code: 'load-game',
                 text: 'Load a game',
-            },
-        ];
+            });
+        }
 
         const newGame = () => {
             localStorage.setItem('saved-game', '');
-            return OpeningRoom;
+            return Debug ?? OpeningRoom;
         };
 
         return {

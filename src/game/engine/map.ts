@@ -1,9 +1,11 @@
+import { MapList } from '../rooms/map-list';
 import { Room } from './room';
 
 export class Map {
     id: string;
     cells: Record<string, (Room | null)[]> = {};
     size: { x: number; y: string };
+    entrance: Room | undefined;
 
     constructor(id: string, x: number, y: string) {
         this.size = { x, y };
@@ -12,6 +14,8 @@ export class Map {
         this.traverseMap((cells, y, x) => {
             cells[y][x] = null;
         });
+
+        MapList.push(this);
     }
 
     private traverseMap(callback: (cells: Record<string, (Room | null)[]>, y: string, x: number) => void) {
@@ -40,7 +44,7 @@ export class Map {
 
         return {
             id: this.id,
-            data: saveData
+            data: saveData,
         };
     }
 

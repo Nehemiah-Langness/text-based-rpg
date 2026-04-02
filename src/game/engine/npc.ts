@@ -1,4 +1,4 @@
-import { Room } from './room';
+import { Room, type RoomLike } from './room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { NpcList } from '../npcs/npc-list';
 
@@ -14,7 +14,7 @@ export class Npc<TSpecialRemarks extends string = string> {
             met: this.met,
             currentRemark: this.currentRemark,
             coordinates: this.coordinates,
-            mapId: this.mapId
+            mapId: this.mapId,
         };
     }
 
@@ -30,14 +30,20 @@ export class Npc<TSpecialRemarks extends string = string> {
     id: string;
     name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]);
     protected remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[];
-    protected specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null)[])>;
+    protected specialRemarks: Record<
+        TSpecialRemarks,
+        string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null | ((rm: RoomLike) => RoomLike))[])
+    >;
     protected needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null;
 
     constructor(
         id: string,
         name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]),
         remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[],
-        specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null)[])>,
+        specialRemarks: Record<
+            TSpecialRemarks,
+            string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null | ((rm: RoomLike) => RoomLike))[])
+        >,
         needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null
     ) {
         this.id = id;
@@ -45,7 +51,7 @@ export class Npc<TSpecialRemarks extends string = string> {
         this.remarks = remarks;
         this.specialRemarks = specialRemarks;
         this.needsSpecialRemark = needsSpecialRemark;
-        NpcList.push(this)
+        NpcList.push(this);
     }
 
     getName(room?: Room) {
@@ -73,11 +79,11 @@ export class Npc<TSpecialRemarks extends string = string> {
         return this.toRoom(attempt, room);
     }
 
-    private toRoom(remarks: false | string | (string | null)[], room: Room) {
+    private toRoom(remarks: false | string | (string | null | ((rm: RoomLike) => RoomLike))[], room: Room) {
         const statements =
             remarks === false ? [`${this.getName(room)[0]} nothing to say right now.`] : typeof remarks === 'string' ? [remarks] : remarks;
 
-        return statements.filter((x) => x !== null && typeof x !== 'undefined').reduceRight((c, n) => resultRoom(c, n), room);
+        return statements.filter((x) => x !== null && typeof x !== 'undefined').reduceRight((c, n) => typeof n === 'string' ? resultRoom(c, n) : Room.resolve(n(c)), room);
     }
 
     private resolveConversation<TReturn>(conversation: string | ((npc: Npc<TSpecialRemarks>, room: Room) => TReturn), room: Room) {
@@ -94,6 +100,7 @@ export class Npc<TSpecialRemarks extends string = string> {
             this.coordinates = { ...room.coordinates };
             this.mapId = room.map.id;
         }
+        return this;
     }
 
     meet() {

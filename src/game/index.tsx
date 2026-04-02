@@ -33,7 +33,7 @@ export function Game() {
 
     const onSelect = useCallback(
         (code: string) => {
-            const room = inputOptions.select(code);
+            const room = Room.resolve(inputOptions.select(code));
             setText(room.getText());
             setInputOptions(room.getOptions());
             setRoomColor(room.roomColor);

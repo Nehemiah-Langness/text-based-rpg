@@ -10,7 +10,7 @@ import { StaminaTable } from '../../inventory/tables/stamina-table';
 import type { Item } from '../../inventory/types/item';
 import { energize, heal } from '../../player';
 import { Stats } from '../../stats';
-import { Room } from '../../engine/room';
+import { Room, type RoomLike } from '../../engine/room';
 import { resultRoom } from './result-room';
 import { Mood } from '../moods/mood';
 
@@ -82,7 +82,7 @@ export function inventoryRoom(
     );
 }
 
-export function openInventoryRoom(backTo: Room | (() => Room), itemLimit: number | null = null): Room {
+export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = null): Room {
     const equip = (code: keyof typeof Inventory) => {
         let success = true;
         if (Inventory[code].equipped) {

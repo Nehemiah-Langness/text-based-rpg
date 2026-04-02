@@ -1,7 +1,7 @@
-import { Room } from '../../engine/room';
+import { Room, type RoomLike } from '../../engine/room';
 
 export function resultRoom(
-    backTo: Room | (() => Room),
+    backTo: RoomLike,
     text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
     continueText = 'Continue',
     color?: Room['roomColor']
