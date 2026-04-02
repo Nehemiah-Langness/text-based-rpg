@@ -1,7 +1,6 @@
 import { healthToDescription, staminaToDescription } from '../../descriptions';
 import { rollDice } from '../../dice';
 import type { Enemy } from '../../enemies/enemy';
-import { EnemyLevels } from '../../enemies/enemy-level';
 import { getEnemy } from '../../enemies/get-enemy';
 import { addToInventory } from '../../inventory/add-to-inventory';
 import { getDamageRating } from '../../inventory/get-damage-rating';
@@ -14,13 +13,11 @@ import type { Item } from '../../inventory/types/item';
 import { getDamage } from '../../items/damage';
 import { lootTable } from '../../items/loot-table';
 import { criticalChance, die, Player } from '../../player';
-import { finishQuest, progressQuest, Quests } from '../../quests';
 import { Stats } from '../../stats';
 import { Room } from '../../engine/room';
 import { choiceRoom } from './choice-room';
 import { openInventoryRoom } from './inventory-room';
 import { resultRoom } from './result-room';
-import { winRoom } from './win-room';
 
 export function encounterRoom(
     backTo: Room,
@@ -40,7 +37,11 @@ export function encounterRoom(
                     text +
                     `\n\nYou are in combat with a${'aeiou'.split('').includes(rm.state.enemy.name) ? 'n' : ''} ${rm.state.enemy.name}.`
                 );
-            return `The ${rm.state.enemy.name} is ${healthToDescription(rm.state.enemy.health / rm.state.enemy.maxHealth)}.  You are ${healthToDescription(Player.health / Player.maxHealth)} and are ${staminaToDescription(Player.stamina / Player.maxStamina)}.`;
+            return `The ${rm.state.enemy.name} is ${healthToDescription(
+                rm.state.enemy.health / rm.state.enemy.maxHealth
+            )}.  You are ${healthToDescription(Player.health / Player.maxHealth)} and are ${staminaToDescription(
+                Player.stamina / Player.maxStamina
+            )}.`;
         },
         (rm) => {
             const weaponOptions = getWeaponOptions();
@@ -146,7 +147,9 @@ export function encounterRoom(
 
                     const messaging = [
                         attackRoll > rm.state.enemy.defense
-                            ? `You attack for ${attackRoll}${critical ? ` (critical)` : ''} damage.  The ${rm.state.enemy.name} defends with ${rm.state.enemy.defense} points.`
+                            ? `You attack for ${attackRoll}${critical ? ` (critical)` : ''} damage.  The ${
+                                  rm.state.enemy.name
+                              } defends with ${rm.state.enemy.defense} points.`
                             : `The ${rm.state.enemy.name} blocks your attack.`,
                     ];
 
@@ -179,24 +182,7 @@ export function encounterRoom(
                             Inventory[a].count += 1;
                         });
 
-                        const currentProgress = Quests['defeatBoss'].completed;
-
-                        const questProgress = [
-                            loot.some((x) => isCategory('loot', x.loot)) ? progressQuest('lootIntroduction', 1) : null,
-                            enemy.level === EnemyLevels.Weak
-                                ? progressQuest('killTierOneEnemy', 1)
-                                : enemy.level === EnemyLevels.Strong
-                                  ? progressQuest('killTierTwoEnemy', 1)
-                                  : enemy.level === EnemyLevels.Dangerous
-                                    ? progressQuest('killTierThreeEnemy', 1)
-                                    : enemy.level === EnemyLevels.Legendary
-                                      ? progressQuest('killTierFourEnemy', 1)
-                                      : enemy.level === EnemyLevels.Boss
-                                        ? finishQuest('defeatBoss')
-                                        : null,
-                        ].filter((x) => x !== null && typeof x !== 'undefined');
-
-                        const showWinScreen = !currentProgress && Quests['defeatBoss'].completed;
+                        const questProgress = [].filter((x) => x !== null && typeof x !== 'undefined');
 
                         const nextRoom = choiceRoom(
                             `You have defeated the ${rm.state.enemy.name} and picked up:\n${(loot as { loot: string; count: number }[])
@@ -242,7 +228,7 @@ export function encounterRoom(
                             }
                         ).withInventoryAccess();
 
-                        return resultRoom(showWinScreen ? winRoom(nextRoom) : nextRoom, [...messaging, ...questProgress]);
+                        return resultRoom(nextRoom, [...messaging, ...questProgress]);
                     }
 
                     const playerDodgesAttack = rollDice(6) <= dodgePercent;

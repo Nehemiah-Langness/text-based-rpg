@@ -42,5 +42,5 @@ export function Text({ content, onComplete, readyForInput }: { content: string; 
         };
     }, [content.length]);
 
-    return <div style={{ whiteSpace: 'pre-line' }}>{content.substring(0, currentCharacter)}</div>;
+    return <div className='game-text' style={{ whiteSpace: 'pre-line' }}>{content.substring(0, currentCharacter)}</div>;
 }

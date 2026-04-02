@@ -1,8 +1,15 @@
+import { Room } from '../../engine/room';
+import { Thalor } from '../../npcs/thalor';
+import { Quests } from '../../quests';
+import { GuardHall } from '../mermaid-city/guard-hall';
 import { MermaidPlaza } from '../mermaid-city/mermaid-plaza';
-import { Mood } from '../mood';
+import { Mood } from '../moods/mood';
 import { resultRoom } from '../utility-rooms/result-room';
 
-export const OpeningRoom = resultRoom(MermaidPlaza, [
+export const OpeningRoom = resultRoom(() => {
+    Thalor.move(GuardHall);
+    return Room.resolve(Quests.start(MermaidPlaza, 'mainQuest'));
+}, [
     `The water is still.
 
 Not calm - never calm - but heavy. As if the ocean itself is holding its breath.`,
@@ -35,12 +42,10 @@ His eyes sweep the gathered crowd again - then stop.
 On you.
 
 "None have returned."`,
-        color: {
-            primary: Mood.ominous,
-            secondary: Mood.ominousBg
-        },
+        color: Mood.ominous,
     },
-    `A ripple of unease spreads through the others. You feel it too - the weight of it pressing against your chest.
+    {
+        text: `A ripple of unease spreads through the others. You feel it too - the weight of it pressing against your chest.
 
 Thalor descends from the dais, each movement controlled, deliberate. He circles you once, silently, as if measuring something no one else can see.
 
@@ -51,7 +56,10 @@ Then he stops in front of you.
 You do.
 
 His eyes are colder up close. Not cruel - but certain.`,
-    `"Strength alone will not keep you alive out there," he says quietly.
+        color: Mood.ominous,
+    },
+    {
+        text: `"Strength alone will not keep you alive out there," he says quietly.
 "The ocean does not care how brave you are."
 
 A pause.
@@ -63,16 +71,18 @@ He straightens, turning back toward the crowd.
 "This one has been chosen."
 
 The words hit harder than any blow.`,
-    `A low murmur rises - shock, pity, perhaps even relief that it was not them.
+        color: Mood.ominous,
+    },
+    {
+        text: `A low murmur rises - shock, pity, perhaps even relief that it was not them.
 
 Thalor raises a hand, and the noise dies instantly.
 
-"From this moment forward, you belong to the tide."
-
-He looks back at you one final time.
-
-"And to me."`,
-    `A flicker of something passes through his expression - approval, perhaps. Or expectation.
+"From this moment forward, you belong to the tide."`,
+        color: Mood.ominous,
+    },
+    {
+        text: `A flicker of something passes through his expression - approval, perhaps. Or expectation.
 
 "If you are to survive even a single day beyond our borders," he continues, louder now,
 "you will train under my command."
@@ -82,7 +92,10 @@ He gestures toward the deeper corridors of the city - toward the guard's domain.
 "Your journey begins with learning how not to die."
 
 The crowd begins to disperse, slowly, quietly, leaving you standing at the center of it all.`,
-    `Chosen.
+        color: Mood.ominous,
+    },
+    {
+        text: `Chosen.
 
 Alone.
 
@@ -92,4 +105,6 @@ Thalor lingers for a moment longer, then speaks again - this time only for you.
 "We start immediately."
 
 He turns and swims toward the shadowed archway without waiting to see if you follow.`,
+        color: Mood.ominous,
+    },
 ]);

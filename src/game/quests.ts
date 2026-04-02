@@ -1,92 +1,116 @@
 import { compare } from '../helpers/compare';
+import type { Room } from './engine/room';
+import { Names } from './npcs/npc-names';
+import { Thalor } from './npcs/thalor';
+import { Mood } from './rooms/moods/mood';
+import { resultRoom } from './rooms/utility-rooms/result-room';
 
-function createQuest(name: string, stages: string[], radiant = false) {
-    return {
-        active: false,
-        completed: false,
-        progress: 0,
-        name,
-        stages,
-        radiant,
-    };
-}
+type QuestType<TStages> = ReturnType<(typeof QuestsLog.createQuest<TStages>)>;
 
-export const Quests = {
-    guildIntroduction: createQuest('Fair Coin for Fair Work', [
-        'Go to the guild hall.',
-        'Talk to the guild master.',
-        'Complete work for gold.',
-    ]),
-    lootIntroduction: createQuest('Gold has More Value Than Teeth', ['Obtain loot.', 'Sell loot to the general store.']),
-    farmingIntroduction: createQuest('Farming for Gold', ['Find the farm.', 'Talk to the farmer.', 'Work in the fields.']),
-    killTierOneEnemy: createQuest('Cleanse the Forest', ['Kill a weak enemy.', 'Turn in proof of your kill.']),
-    killTierTwoEnemy: createQuest('Make the Village a Little Safer', ['Kill a strong enemy.', 'Turn in proof of your kill.']),
-    killTierThreeEnemy: createQuest('Fighting Guys a Lot Bigger than You', ['Kill a dangerous enemy.', 'Turn in proof of your kill.']),
-    killTierFourEnemy: createQuest('Fight the Problem at the Source', ['Kill a legendary enemy.', 'Turn in proof of your kill.']),
-    stayAtInn: createQuest('Get a Restful Night Sleep', ['Find the inn.', 'Rent a room for the night.']),
-    findWayToPond: createQuest('Westward to the Wastelands', [
-        'Find a way through the thick forest southwest of the village.',
-        'Reach the pond.',
-    ]),
-    fish: createQuest('Teach a Man to Fish', [
-        'Obtain a fishing pole.',
-        'Find a good fishing location.',
-        'Catch a fish.',
-        'Cook your fish.',
-    ]),
-    forage: createQuest(`Be Mindful of the Mushrooms`, [
-        'Find the woodlands',
-        'Forage for some medicinal herbs.',
-        'Mix up some herbal medicine.',
-    ]),
-    defeatBoss: createQuest('Defeat the Sorcerer Warlord', ['Defeat the Sorcerer Warlord.']),
-    talkToGuildMaster: createQuest('Talk to the Guild Master', ['Get a quest from the guild master.'], true),
-};
+class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]['stages'][number]['id']> }> {
+    quests: TQuests;
 
-export function progressQuest<T extends keyof typeof Quests>(quest: T, stage: number, requiredStage = 0, shouldStartQuest = false) {
-    if (Quests[quest].completed) return null;
-
-    const questStarted = shouldStartQuest ? startQuest(quest) : null;
-
-    if (typeof requiredStage !== 'undefined') {
-        if (!Quests[quest].active) return questStarted;
+    constructor(quests: TQuests) {
+        this.quests = quests;
     }
 
-    if (Quests[quest].progress < stage && Quests[quest].progress >= requiredStage) {
-        Quests[quest].progress = stage;
-
-        return questStarted ?? (Quests[quest].active ? `You have progressed the quest "${Quests[quest].name}".` : null);
+    static createQuest<T>(name: string, stages: { stage: string; id: T }[], radiant = false) {
+        return {
+            active: false,
+            completed: false,
+            progress: 0,
+            name,
+            stages,
+            radiant,
+        };
     }
-    return questStarted;
-}
 
-export function startQuest<T extends keyof typeof Quests>(quest: T) {
-    if (!Quests[quest].active && !Quests[quest].completed) {
-        Quests[quest].active = true;
-        return `You have started the quest "${Quests[quest].name}".`;
+    private getQuest<T extends keyof TQuests>(quest: T) {
+        return this.quests[quest];
     }
-    return null;
-}
 
-export function finishQuest<T extends keyof typeof Quests>(quest: T) {
-    if (Quests[quest].radiant && !Quests[quest].active) return null;
+    getStage<T extends keyof TQuests>(quest: T) {
+        const questLog = this.getQuest(quest);
+        if (!questLog.active) return null;
 
-    Quests[quest].active = false;
-    if (!Quests[quest].completed) {
-        if (Quests[quest].radiant) {
-            Quests[quest].progress = 0;
-        } else {
-            Quests[quest].completed = true;
-            Quests[quest].progress = Quests[quest].stages.length;
+        return questLog.stages[questLog.progress].id as TQuests[T]['stages'][number]['id']
+    }
+
+    progress<T extends keyof TQuests>(
+        backTo: Room | (() => Room),
+        quest: T,
+        stage: number,
+        { requiredStage = 0, shouldStartQuest = false }: { requiredStage?: number; shouldStartQuest: boolean }
+    ) {
+        const questLog = this.getQuest(quest);
+
+        if (questLog.completed) return backTo;
+
+        const questStarted = shouldStartQuest ? this.start(backTo, quest) : null;
+
+        if (typeof requiredStage !== 'undefined') {
+            if (!questLog.active) return questStarted ?? backTo;
         }
 
-        return `You have completed the quest "${Quests[quest].name}".`;
+        if (questLog.progress < stage && questLog.progress >= requiredStage) {
+            questLog.progress = stage;
+
+            return questStarted ?? (questLog.active ? resultRoom(backTo, `You have progressed the quest "${questLog.name}".`) : backTo);
+        }
+        return questStarted ?? backTo;
     }
-    return null;
+
+    start<T extends keyof TQuests>(backTo: Room | (() => Room), quest: T) {
+        const questLog = this.getQuest(quest);
+
+        if (!questLog.active && !questLog.completed) {
+            questLog.active = true;
+            return resultRoom(backTo, `You have started the quest "${questLog.name}".`);
+        }
+        return backTo;
+    }
+
+    finish<T extends keyof TQuests>(backTo: Room | (() => Room), quest: T) {
+        const questLog = this.getQuest(quest);
+
+        if (questLog.radiant && !questLog.active) return backTo;
+
+        questLog.active = false;
+        if (!questLog.completed) {
+            if (questLog.radiant) {
+                questLog.progress = 0;
+            } else {
+                questLog.completed = true;
+                questLog.progress = questLog.stages.length;
+            }
+
+            return resultRoom(backTo, `You have completed the quest "${questLog.name}".`).withColor(Mood.questComplete);
+        }
+        return backTo;
+    }
+
+    getActiveQuests() {
+        return (Object.values(this.quests) as QuestType<string>[])
+            .filter((x) => x.active || x.completed)
+            .sort(compare<{ completed: boolean; name: string }>((x) => x.completed).thenBy((x) => x.name));
+    }
+
+    save() {
+        return this.quests;
+    }
+
+    load(quests: TQuests) {
+        Object.assign(this.quests, quests);
+    }
 }
 
-export function getActiveQuests() {
-    return Object.values(Quests)
-        .filter((x) => x.active || x.completed)
-        .sort(compare<{ completed: boolean; name: string }>((x) => x.completed).thenBy((x) => x.name));
-}
+export const Quests = new QuestsLog({
+    mainQuest: QuestsLog.createQuest('The Trident of the Deep', [{
+        id: 'go-to-training' as const,
+        stage: `Meet ${Thalor.getName()[Names.FullName]} at the Guild Hall`
+    }]),
+    sideQuest: QuestsLog.createQuest('The Trident of the Deep', [{
+        id: 'go-to-somewhere' as const,
+        stage: `Meet ${Thalor.getName()} at the Guild Hall`
+    }]),
+});

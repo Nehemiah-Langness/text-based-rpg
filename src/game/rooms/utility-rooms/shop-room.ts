@@ -15,7 +15,6 @@ import { removeFromInventory } from '../../inventory/remove-from-inventory';
 import { PriceTable } from '../../inventory/tables/price-table';
 import type { Item } from '../../inventory/types/item';
 import type { VendorItem } from '../../inventory/types/vendor-item';
-import { finishQuest } from '../../quests';
 import { Stats } from '../../stats';
 import { Room } from '../../engine/room';
 import { choiceRoom } from './choice-room';
@@ -94,7 +93,7 @@ export function shopRoom(
 
                         return resultRoom(
                             rm,
-                            [`You have sold all your loot for ${total} gold.`, finishQuest('lootIntroduction')].filter((x) => x !== null && typeof x !== 'undefined')
+                            [`You have sold all your loot for ${total} gold.`].filter((x) => x !== null && typeof x !== 'undefined')
                         );
                     }
 

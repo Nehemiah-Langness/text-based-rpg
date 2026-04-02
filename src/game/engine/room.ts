@@ -1,20 +1,14 @@
-import { healthToDescription, staminaToDescription } from '../descriptions';
 import type { InputOption } from '../input-option';
-import { getItemsEquipped } from '../inventory/get-items-equipped';
-import { getPlayerDefense } from '../inventory/get-player-defense';
-import { isCategory } from '../inventory/is-category';
-import { criticalChance, Player } from '../player';
-import { getActiveQuests } from '../quests';
 import { Map } from './map';
-import { choiceRoom } from '../rooms/utility-rooms/choice-room';
-import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { isTravelOption, type TravelOption, type TravelOptions } from './travel-options';
+import { NpcList } from '../npcs/npc-list';
+import { characterMenu } from '../rooms/utility-rooms/character-menu';
+import { Names } from '../npcs/npc-names';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class Room<T = any> {
     name: string | undefined;
-    changeIndicator = 0;
     inventoryAccess = false;
     coordinates: { y: string; x: number } | undefined;
     map: Map | undefined;
@@ -91,90 +85,52 @@ export class Room<T = any> {
         return text.filter((x) => x).join('\n\n');
     }
 
+    getNpcsInRoom() {
+        return this.map && this.coordinates
+            ? NpcList.filter(
+                  (npc) =>
+                      npc.mapId === this.map?.id && npc.coordinates?.x === this.coordinates?.x && npc.coordinates?.y === this.coordinates?.y
+              )
+            : [];
+    }
+
     getOptions() {
         const roomOptions = this.getOptionsLogic(this);
+
+        const npcsAtLocation = this.getNpcsInRoom();
+
         return {
-            options: roomOptions.options.concat(this.getTravelOptions(this)).concat(
-                this.inventoryAccess
-                    ? [
-                          {
-                              code: 'inventory-def',
-                              text: 'Look in your pack',
-                          },
-                          {
-                              code: 'health-def',
-                              text: 'Check your physical well-being',
-                          },
-                          {
-                              code: 'quests-def',
-                              text: 'Review your current quests',
-                          },
-                      ]
-                    : []
-            ),
+            options: roomOptions.options
+                .concat(
+                    npcsAtLocation.map((npc) => {
+                        return {
+                            code: `talk-to-${npc.id}`,
+                            text: `Talk to ${npc.getName(this)[Names.FullName]}`,
+                        };
+                    })
+                )
+                .concat(this.getTravelOptions(this))
+                .concat(
+                    this.inventoryAccess
+                        ? [
+                              {
+                                  code: 'character-menu',
+                                  text: 'Open Character Menu',
+                              },
+                          ]
+                        : []
+                ),
             select: (code: string) => {
                 this.visited = true;
-                this.changeIndicator += 1;
 
-                if (this.inventoryAccess) {
-                    if (code === 'inventory-def') {
-                        return openInventoryRoom(this);
-                    } else if (code === 'health-def') {
-                        const defense = getPlayerDefense();
-                        const farmingBonus = getItemsEquipped().filter((x) => isCategory('farmingBonus', x)).length;
-                        const criticalPoints = criticalChance() - 5;
-                        return resultRoom(
-                            this,
-                            [
-                                `You are ${healthToDescription(Player.health / Player.maxHealth)} and ${staminaToDescription(
-                                    Player.stamina / Player.maxStamina
-                                )}.`,
-                                defense ? ` You have a defense of ${defense}.` : null,
-                                criticalPoints > 0 ? `You have +${criticalPoints} luck points.` : null,
-                                farmingBonus ? `You have a farming bonus of +${farmingBonus}.` : null,
-                            ].filter((x) => x !== null && typeof x !== 'undefined')
-                        );
-                    } else if (code === 'quests-def') {
-                        const currentQuests = getActiveQuests();
-                        if (!currentQuests.length)
-                            return resultRoom(
-                                this,
-                                "You have not been given any quests yet.  Perhaps if you talk to people, they'll have some quests for you."
-                            );
+                if (this.inventoryAccess && code === 'character-menu') {
+                    return characterMenu(this);
+                }
 
-                        return choiceRoom(
-                            `You have been given the following quests:`,
-                            currentQuests
-                                .map((quest) => ({
-                                    code: quest.name,
-                                    text: `${quest.name}${quest.completed ? ' (COMPLETED)' : ''}`,
-                                }))
-                                .concat({
-                                    code: 'done',
-                                    text: 'Done',
-                                }),
-                            (choice, rm) => {
-                                if (choice === 'done') {
-                                    return this;
-                                }
-
-                                const quest = currentQuests.find((q) => q.name === choice);
-                                if (!quest) {
-                                    return resultRoom(this, `You have not been given the quest "${choice}" yet.`);
-                                }
-
-                                return resultRoom(
-                                    rm,
-                                    `${quest.name}${quest.completed ? ' (COMPLETED)' : ''}\n\n${quest.stages
-                                        .filter((_stage, index) => index <= quest.progress)
-                                        .map(
-                                            (stage, stageIndex) =>
-                                                `${stageIndex + 1}. ${stage} ${stageIndex < quest.progress ? '(COMPLETED)' : ''}`
-                                        )
-                                        .join('\n')}`
-                                );
-                            }
-                        );
+                if (code.startsWith('talk-to-')) {
+                    const npc = npcsAtLocation.find((n) => code === `talk-to-${n.id}`);
+                    if (npc) {
+                        return npc.getConversation(this);
                     }
                 }
 
@@ -230,5 +186,10 @@ export class Room<T = any> {
     withColor(color: Room['roomColor']) {
         this.roomColor = color;
         return this;
+    }
+
+    static resolve(room: Room | (() => Room)) {
+        if (typeof room === 'function') return room();
+        return room;
     }
 }

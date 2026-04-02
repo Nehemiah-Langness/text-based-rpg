@@ -3,16 +3,12 @@ import { Room } from '../../engine/room';
 export function resultRoom(
     backTo: Room | (() => Room),
     text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
-    continueText = 'Continue'
+    continueText = 'Continue',
+    color?: Room['roomColor']
 ): Room {
     if (!Array.isArray(text)) {
         const roomText = typeof text === 'string' ? text : text.text;
         const roomColor = typeof text === 'string' ? undefined : text.color;
-        console.log({
-            text,
-            roomText,
-            roomColor,
-        });
         return new Room(
             null,
             () => roomText,
@@ -24,15 +20,15 @@ export function resultRoom(
                             text: continueText,
                         },
                     ],
-                    select: () => (typeof backTo === 'function' ? backTo() : backTo),
+                    select: () => Room.resolve(backTo),
                 };
             },
             undefined,
-            roomColor
+            color ?? roomColor
         );
     }
 
-    if (!text.length) return typeof backTo === 'function' ? backTo() : backTo;
+    if (!text.length) return Room.resolve(backTo);
 
-    return text.reduceRight((c, n) => resultRoom(c, n, continueText), backTo) as Room;
+    return text.reduceRight((c, n) => resultRoom(c, n, continueText, color), backTo) as Room;
 }

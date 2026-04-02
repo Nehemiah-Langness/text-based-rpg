@@ -4,6 +4,8 @@ import { InputOptions } from './input-options';
 import { MainMenu } from './rooms/main-menu';
 import { Room } from './engine/room';
 import { Text } from './text';
+import './npcs';
+import './rooms';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).generatePrice = (tier: number, base: number) => {

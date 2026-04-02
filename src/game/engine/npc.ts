@@ -4,6 +4,7 @@ import { NpcList } from '../npcs/npc-list';
 
 export class Npc<TSpecialRemarks extends string = string> {
     coordinates: { y: string; x: number } | undefined;
+    mapId: string | undefined;
     protected currentRemark = 0;
     public met = false;
 
@@ -13,6 +14,7 @@ export class Npc<TSpecialRemarks extends string = string> {
             met: this.met,
             currentRemark: this.currentRemark,
             coordinates: this.coordinates,
+            mapId: this.mapId
         };
     }
 
@@ -21,18 +23,19 @@ export class Npc<TSpecialRemarks extends string = string> {
             this.met = data.met ?? false;
             this.currentRemark = data.currentRemark ?? 0;
             this.coordinates = data.coordinates ?? this.coordinates;
+            this.mapId = data.mapId ?? this.mapId;
         }
     }
 
     id: string;
-    name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room: Room) => readonly [string, string, string]);
+    name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]);
     protected remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[];
     protected specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null)[])>;
     protected needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null;
 
     constructor(
         id: string,
-        name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room: Room) => readonly [string, string, string]),
+        name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]),
         remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[],
         specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null)[])>,
         needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null
@@ -45,7 +48,7 @@ export class Npc<TSpecialRemarks extends string = string> {
         NpcList.push(this)
     }
 
-    getName(room: Room) {
+    getName(room?: Room) {
         return typeof this.name === 'function' ? this.name(this, room) : this.name;
     }
 
@@ -87,8 +90,14 @@ export class Npc<TSpecialRemarks extends string = string> {
     }
 
     move(room: Room) {
-        if (room.coordinates) {
+        if (room.coordinates && room.map) {
             this.coordinates = { ...room.coordinates };
+            this.mapId = room.map.id;
         }
+    }
+
+    meet() {
+        this.met = true;
+        return this;
     }
 }

@@ -25,9 +25,17 @@ export function InputOptions({ options, onInput }: { options: InputOption[]; onI
             }
         };
 
+        const clickHandler = () => {
+            if (options.length === 1) {
+                onInput(options[0].code);
+            }
+        };
+
         document.addEventListener('keydown', handler);
+        document.addEventListener('mousedown', clickHandler);
         return () => {
             document.removeEventListener('keydown', handler);
+            document.removeEventListener('mousedown', clickHandler);
         };
     }, [onInput, options, selected]);
 

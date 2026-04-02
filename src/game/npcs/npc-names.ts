@@ -13,8 +13,8 @@ export const NpcNames = {
 
 export const Names = {
     FullName: 0,
-    NickName: 1,
-    FirstName: 2,
+    FirstName: 1,
+    NickName: 2,
 };
 
 export type Name = keyof typeof Names;

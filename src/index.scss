@@ -1,29 +1,26 @@
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 
 @property --bg-color {
-  syntax: '<color>';
-  initial-value: #1fa5b0;
-  inherits: false;
+    syntax: '<color>';
+    initial-value: #1fa5b0;
+    inherits: false;
 }
 
 @property --bg-color-2 {
-  syntax: '<color>';
-  initial-value: #03091a;
-  inherits: false;
+    syntax: '<color>';
+    initial-value: #03091a;
+    inherits: false;
 }
 
 .game {
-
     background-color: black;
     background-image: radial-gradient(var(--bg-color), var(--bg-color-2) 120%, black 150%);
     height: 100dvh;
     overflow: hidden;
     color: white;
-    transition: --bg-color .4s ease-in-out, --bg-color-2 .4s ease-in-out;
-    
-    font:
-        1.3rem Inconsolata,
-        monospace;
+    transition: --bg-color 0.4s ease-in-out, --bg-color-2 0.4s ease-in-out;
+
+    font: 1.3rem Inconsolata, monospace;
     text-shadow: 0 0 5px #c8c8c8;
     position: relative;
 
@@ -56,5 +53,20 @@
             text-decoration: underline;
             cursor: pointer;
         }
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .game-text {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
 }

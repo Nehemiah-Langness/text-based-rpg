@@ -4,6 +4,7 @@ import { Room } from '../engine/room';
 import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
 import { OpeningRoom } from './story/opening-room';
+import { Mood } from './moods/mood';
 
 export const MainMenu = new Room(
     null,
@@ -31,7 +32,7 @@ export const MainMenu = new Room(
                 if (choice === 'load-game') {
                     const load = loadGame();
                     if (load === false) {
-                        return resultRoom(rm, `You do not have an existing save file.`);
+                        return resultRoom(rm, `You do not have an existing save file.`).withColor(Mood.menu);
                     }
                     return load || OpeningRoom;
                 } else if (choice === 'new-game') {
@@ -54,7 +55,7 @@ export const MainMenu = new Room(
                                 }
                                 return rm;
                             }
-                        );
+                        ).withColor(Mood.menu);
                     }
 
                     return newGame();
@@ -65,10 +66,5 @@ export const MainMenu = new Room(
         };
     },
     undefined,
-    {
-        primary: '#83725a',
-        secondary: '#100b06',
-    }
+    Mood.menu
 );
-
-

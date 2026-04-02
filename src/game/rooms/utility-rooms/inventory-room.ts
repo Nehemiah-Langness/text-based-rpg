@@ -1,4 +1,3 @@
-import { addToInventory } from '../../inventory/add-to-inventory';
 import { equipItem } from '../../inventory/equip-item';
 import { getInventory } from '../../inventory/get-inventory';
 import { Inventory } from '../../inventory/inventory';
@@ -10,10 +9,10 @@ import { LuckTable } from '../../inventory/tables/luck-table';
 import { StaminaTable } from '../../inventory/tables/stamina-table';
 import type { Item } from '../../inventory/types/item';
 import { energize, heal } from '../../player';
-import { finishQuest } from '../../quests';
 import { Stats } from '../../stats';
 import { Room } from '../../engine/room';
 import { resultRoom } from './result-room';
+import { Mood } from '../moods/mood';
 
 export function shopInventoryRoom(
     inventory: { item: Item; gold: number; description?: string }[],
@@ -60,8 +59,8 @@ export function inventoryRoom(
             return getItems().length
                 ? `You rummage through your pack and find the following items:`
                 : filter
-                  ? 'Nothing in your pack is useful at this time.'
-                  : 'Your pack is empty';
+                ? 'Nothing in your pack is useful at this time.'
+                : 'Your pack is empty';
         },
         (rm) => {
             return {
@@ -84,10 +83,6 @@ export function inventoryRoom(
 }
 
 export function openInventoryRoom(backTo: Room | (() => Room), itemLimit: number | null = null): Room {
-    const resolveRoom = () => {
-        return typeof backTo === 'function' ? backTo() : backTo;
-    };
-
     const equip = (code: keyof typeof Inventory) => {
         let success = true;
         if (Inventory[code].equipped) {
@@ -100,18 +95,18 @@ export function openInventoryRoom(backTo: Room | (() => Room), itemLimit: number
             return resultRoom(
                 itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
                 `You ${Inventory[code].equipped ? 'equip' : 'unequip'} your ${code}`
-            );
+            ).withColor(Mood.menu);
         }
         return null;
     };
 
     return inventoryRoom((code, rm) => {
         if (code === 'back') {
-            return resolveRoom();
+            return Room.resolve(backTo);
         }
         if (EquippableItems.includes(code)) {
             const success = equip(code);
-            if (success) return success;
+            if (success) return success.withColor(Mood.menu);
         } else if (isCategory('consumables', code)) {
             const healthRecovery = HealthTable[code];
             removeFromInventory(code);
@@ -121,7 +116,7 @@ export function openInventoryRoom(backTo: Room | (() => Room), itemLimit: number
             }
             Stats.consumedItems[code] += 1;
 
-            return heal(itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1), healthRecovery);
+            return heal(itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1), healthRecovery).withColor(Mood.menu);
         } else if (isCategory('food', code)) {
             const staminaRecovery = StaminaTable[code];
             const criticalChanceBonus = LuckTable[code];
@@ -136,23 +131,9 @@ export function openInventoryRoom(backTo: Room | (() => Room), itemLimit: number
                 itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
                 staminaRecovery,
                 criticalChanceBonus
-            );
-        } else if (code === 'Mortar and Pestle') {
-            if (Inventory['Medicinal Herbs'].count < 3) {
-                return resultRoom(rm, 'You need at least 3 Medicinal Herbs to make Herbal Medicine.');
-            } else {
-                removeFromInventory('Medicinal Herbs', 3);
+            ).withColor(Mood.menu);
+        } 
 
-                const nextRoom = itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1);
-                const questProgress = finishQuest('forage');
-                return addToInventory(
-                    'Herbal Medicine',
-                    questProgress ? resultRoom(nextRoom, questProgress) : nextRoom,
-                    `You have made Herbal Medicine.`
-                );
-            }
-        }
-
-        return resultRoom(rm, `You cannot use your ${code} right now.`);
-    }, 'Close pack');
+        return resultRoom(rm, `You cannot use your ${code} right now.`).withColor(Mood.menu);
+    }, 'Close pack').withColor(Mood.menu);
 }

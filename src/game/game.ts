@@ -20,7 +20,7 @@ export function saveGame(currentRoom: Room) {
                 coordinates: currentRoom.coordinates,
             },
             knowledge: Knowledge,
-            quests: Quests,
+            quests: Quests.save(),
             npcs: NpcList.map((x) => x.save()),
             stats: Stats,
         })
@@ -41,7 +41,7 @@ export function loadGame() {
                 coordinates: Room['coordinates'];
             };
             knowledge?: typeof Knowledge;
-            quests?: typeof Quests;
+            quests?: ReturnType<(typeof Quests)['save']>;
             npcs?: { id: string; met: boolean; currentRemark: number }[];
             stats?: typeof Stats;
         };
@@ -49,8 +49,12 @@ export function loadGame() {
         Object.assign(Player, player);
         Object.assign(Inventory, inventory);
         Object.assign(Knowledge, knowledge);
-        Object.assign(Quests, quests);
         Object.assign(Stats, stats);
+
+        if (quests) {
+            Quests.load(quests);
+        }
+
         maps?.forEach(({ data, id }) => {
             const map = MapList.find((x) => x.id === id);
             if (map) {
