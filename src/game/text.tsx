@@ -53,7 +53,7 @@ export function Text({
     }, [content.length]);
 
     return (
-        <div className='game-text' style={{ whiteSpace: 'pre' }}>
+        <div className='game-text' style={{ whiteSpace: 'break-spaces' }}>
             {content.substring(0, currentCharacter)}
         </div>
     );
