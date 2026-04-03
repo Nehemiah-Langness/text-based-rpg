@@ -5,25 +5,14 @@ import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
 import { OpeningRoom } from './story/opening-room';
 import { Mood } from './moods/mood';
-// import { Quests } from '../quests';
-// import { Skills } from '../knowledge';
-// import { Thalor } from '../npcs/thalor';
-// import { GuardHall } from './mermaid-city/guard-hall';
-// import { DialogueTree } from '../engine/dialogue-tree';
-// import { Shipwreck } from './open-ocean/shipwreck';
+import { Skills } from '../knowledge';
+import { MermaidPlaza } from './mermaid-city/mermaid-plaza';
 
-const Debug: RoomLike | undefined = undefined;
-// = () => {
-//     Skills.levelSkill('tailKick');
-//     Thalor.move(GuardHall);
+const Debug: RoomLike | undefined = () => {
+    Skills.levelSkill('tailKick');
 
-//     Shipwreck.visited = true;
-
-//     const dialogue = new DialogueTree([
-//         (backTo) => () => Room.resolve(Quests.progress(backTo, 'fredsSupplyRun', 'travel-shipwreck', { shouldStartQuest: true })),
-//     ]);
-//     return dialogue.getRoom(Shipwreck);
-// };
+    return MermaidPlaza;
+};
 
 export const MainMenu = new Room(
     null,

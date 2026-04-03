@@ -8,7 +8,7 @@ import { combatEncounter } from './combat-encounter';
 export function startCombatEncounter(
     backTo: RoomLike,
     enemies: Enemy[],
-    variants?: { nonLethal?: boolean; completeText?: string; onComplete?: (rm: RoomLike) => RoomLike; }): Room {
+    variants?: { nonLethal?: boolean; completeText?: string; onComplete?: (rm: RoomLike) => RoomLike; onFailure?: (rm: RoomLike) => RoomLike; }): Room {
     const initialPlayerHealth = Player.health.current;
     if (variants?.nonLethal) {
         Player.health.current = Player.health.max;

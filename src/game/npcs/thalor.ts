@@ -1,6 +1,7 @@
 import { Npc } from '../engine/npc';
 import { Factions } from '../factions';
 import { Quests } from '../quests';
+import { GuardHall } from '../rooms/mermaid-city/guard-hall';
 import { Names } from './npc-names';
 import { Velmora } from './velmora';
 
@@ -74,4 +75,6 @@ A final glance.
         if (Quests.getStage('mainQuest') === 'learn-first-clue-location') return 'firstClue';
         return null;
     }
-).meet();
+)
+    .meet()
+    .move(GuardHall);

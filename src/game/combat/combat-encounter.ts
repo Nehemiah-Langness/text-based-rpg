@@ -1,5 +1,5 @@
 import { rollDice } from '../dice';
-import type { RoomLike, Room } from '../engine/room';
+import { type RoomLike, Room } from '../engine/room';
 import { Skills, SkillSet, type SkillModifier, type SkillName } from '../knowledge';
 import { Player } from '../player';
 import { healthToDescription } from '../utility-functions/health-to-description';
@@ -13,10 +13,16 @@ import { resolveAttack } from './resolve-attack';
 export function combatEncounter(
     backTo: RoomLike,
     enemies: Enemy[],
-    variants?: { nonLethal?: boolean; completeText?: string; onComplete?: (rm: RoomLike) => RoomLike }
+    variants?: {
+        nonLethal?: boolean;
+        completeText?: string;
+        onComplete?: (rm: RoomLike) => RoomLike;
+        onFailure?: (rm: RoomLike) => RoomLike;
+    }
 ): Room {
-    const { nonLethal = false, completeText, onComplete } = variants ?? {};
-    if (enemies.length === 0) return resultRoom(onComplete ? onComplete(backTo) : backTo, completeText ?? 'All enemies have been defeated.');
+    const { nonLethal = false, completeText, onComplete, onFailure } = variants ?? {};
+    if (enemies.length === 0)
+        return resultRoom(onComplete ? onComplete(backTo) : backTo, completeText ?? 'All enemies have been defeated.');
 
     const currentEnemy = enemies[0];
     const skillList = Skills.getSkills();
@@ -65,7 +71,7 @@ export function combatEncounter(
         if (currentEnemy.effects.find((e) => e.effect === 'stun')) {
             return resultRoom(
                 () => coolDownPhase(backTo),
-                `${currentEnemy.specificName} is ${modifierToPastTenseVerb('stun')}.`,
+                `${currentEnemy.specificName} is ${modifierToPastTenseVerb('stun')} and unable to make an attack.`,
                 undefined,
                 Mood.battle
             );
@@ -123,7 +129,10 @@ export function combatEncounter(
         Player.health.current = Math.max(0, Player.health.current - damageDone);
 
         return resultRoom(
-            () => coolDownPhase(backTo),
+            () =>
+                Player.health.current < 1
+                    ? Room.resolve(onFailure?.(backTo) ?? resultRoom(Player.die(backTo), 'You have been defeated.', undefined, Mood.battle))
+                    : coolDownPhase(backTo),
             [
                 enemyAttack.critical === 1
                     ? `${currentEnemy.specificName} failed a ${pickedSkill.name}.`
@@ -132,6 +141,8 @@ export function combatEncounter(
                               ? ` and damages you ${damageDone} point${damageDone === 1 ? '' : 's'}${
                                     enemyAttack.critical === 20 ? ' (Critical)' : ''
                                 }`
+                              : enemyAttack.attack > 0
+                              ? '. You block the attack'
                               : ''
                       }.`,
                 ...(pickedSkill.modifiers?.map(
@@ -165,7 +176,7 @@ export function combatEncounter(
     if (modifiers.stun) {
         return resultRoom(
             () => enemyCoolDownPhase(() => combatEncounter(backTo, enemies, variants)),
-            `You are currently stunned.`,
+            `You are currently stunned and unable to attack.`,
             undefined,
             Mood.battle
         );
@@ -237,14 +248,24 @@ export function combatEncounter(
                     const damageDone = playerAttack.attack - playerAttack.defense;
                     currentEnemy.health.current = Math.max(0, currentEnemy.health.current - damageDone);
 
-                    skill.modifiers?.forEach(addEnemyModifier);
+                    skill.modifiers?.forEach((modifier) =>
+                        addEnemyModifier({
+                            ...modifier,
+                            duration: modifier.duration + 1,
+                        })
+                    );
 
                     return resultRoom(
                         currentEnemy.health.current === 0
                             ? () =>
                                   resultRoom(
                                       () => combatEncounter(backTo, enemies.slice(1), variants),
-                                      Skills.coolDown(true).concat(Player.coolDown(true))
+                                      [
+                                          `You have defeated ${currentEnemy.specificName}`,
+                                          ...Skills.coolDown(true).concat(Player.coolDown(true)),
+                                      ],
+                                      undefined,
+                                      Mood.battle
                                   )
                             : () => enemyCoolDownPhase(nextTurn),
                         [
@@ -255,6 +276,8 @@ export function combatEncounter(
                                           ? ` and damage ${currentEnemy.specificName} ${damageDone} point${damageDone === 1 ? '' : 's'}${
                                                 playerAttack.critical === 20 ? ' (Critical)' : ''
                                             }`
+                                          : playerAttack.attack > 0
+                                          ? `. ${currentEnemy.specificName} blocks the attack`
                                           : ''
                                   }.`,
                             ...playerAttack.attackerModifiers.map(
@@ -277,7 +300,12 @@ export function combatEncounter(
                     return enemyCoolDownPhase(() => resultRoom(backTo, 'You flee combat.'));
                 } else if (code === 'dodge') {
                     Player.addModifier({ duration: 1, effect: 'alert' });
-                    return resultRoom(() => enemyCoolDownPhase(nextTurn), `You are ${modifierToPastTenseVerb('alert')}.`, undefined, Mood.battle);
+                    return resultRoom(
+                        () => enemyCoolDownPhase(nextTurn),
+                        `You are ${modifierToPastTenseVerb('alert')}.`,
+                        undefined,
+                        Mood.battle
+                    );
                 }
 
                 return rm;

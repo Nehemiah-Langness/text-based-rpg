@@ -72,7 +72,7 @@ export class SkillSet<TSkills extends { [key in keyof TSkills]: Skill }> {
     }
 
     useSkill<T extends keyof TSkills>(skill: T): Skill {
-        this.skills[skill].inCoolDown = this.skills[skill].coolDown;
+        if (this.skills[skill].coolDown) this.skills[skill].inCoolDown = this.skills[skill].coolDown + 1;
         return this.skills[skill];
     }
 

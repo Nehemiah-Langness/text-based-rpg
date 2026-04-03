@@ -1,13 +1,60 @@
-import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
 import type { InputOption } from '../../input-option';
 import { Quests } from '../../quests';
-import { Mood } from '../moods/mood';
 import { RoomNames } from '../names';
-import { choiceRoom } from '../utility-rooms/choice-room';
 import { resultRoom } from '../utility-rooms/result-room';
 import { OpenOceanMap } from './map';
+import { startSneakRoom } from '../../stealth/start-sneak-room';
+import type { Enemy } from '../../combat/enemy';
+import { startCombatEncounter } from '../../combat/start-combat-encounter';
+
+function createShark(difficulty = 1): Enemy {
+    return {
+        defense: Math.floor(difficulty * 2),
+        dodge: Math.floor(difficulty * 1),
+        effects:
+            difficulty > 1
+                ? [
+                      {
+                          duration: 1,
+                          effect: 'alert',
+                      },
+                  ]
+                : [],
+        genericName: 'a shark',
+        specificName: 'The shark',
+        health: {
+            current: Math.floor(difficulty * 10),
+            max: Math.floor(difficulty * 10),
+        },
+        level: 1,
+        moves: [
+            {
+                name: 'Chomp',
+                attack: 4,
+                coolDown: 0,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level: 1,
+            },
+            {
+                name: 'Ram',
+                attack: 2,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level: 1,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+            },
+        ],
+    };
+}
 
 export const Shipwreck = new Room(
     {},
@@ -24,11 +71,11 @@ export const Shipwreck = new Room(
             options.push(
                 {
                     code: 'sneak-crate',
-                    text: 'Attempt to sneak past the sharks to get the crate.',
+                    text: 'Attempt to sneak past the sharks to get the crate',
                 },
                 {
                     code: 'fight-for-crate',
-                    text: 'Fight the sharks to get the crate',
+                    text: 'Fight the sharks to get the crate (Valor)',
                 }
             );
         }
@@ -36,19 +83,31 @@ export const Shipwreck = new Room(
         return {
             options,
             select: (code) => {
+                const combat = (rm: RoomLike, difficulty?: number) => startCombatEncounter(rm, [createShark(difficulty), createShark(difficulty)], {
+                        onComplete: (rm) =>
+                            resultRoom(
+                                () => Room.resolve(Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak')),
+                                'You have picked up the chest.'
+                            ),
+                    })
+
+
                 if (code === 'sneak-crate') {
                     return startSneakRoom(rm, {
                         enemies: 2,
                         gridSize: 6,
                         enemyName: 'Shark',
                         playerStart: { x: 3, y: 5 },
-                        target: { x: 2, y: 3 },
+                        target: { x: 2, y: 1 },
                         onComplete: (rm) =>
                             resultRoom(
                                 () => Room.resolve(Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak')),
                                 'You have picked up the chest.'
                             ),
+                        onFailure: (rm) => resultRoom(() => Room.resolve(combat(rm, 1.2)), 'You have been spotted.'),
                     });
+                } else if (code === 'fight-for-crate') {
+                    return combat(rm);
                 }
 
                 return rm;
@@ -100,165 +159,3 @@ The wreck sits between them - caught between light and darkness, memory and deca
 const VisitedDescription = [
     'A shattered vessel rests between the Sacred Gardens to the east and the Kelp Forest to the west, its hollow interior dark and full of secrets.',
 ];
-
-function startSneakRoom(
-    backTo: RoomLike,
-    settings: {
-        gridSize: number;
-        enemies: number;
-        enemyName: string;
-        playerStart: { x: number; y: number };
-        target: { x: number; y: number };
-        onFailure?: (rm: RoomLike) => RoomLike;
-        onComplete?: (rm: RoomLike) => RoomLike;
-    }
-) {
-    const getSpawnLocation = () => {
-        const maxTries = settings.gridSize * settings.gridSize;
-        let tries = 0;
-        let x = rollDice(settings.gridSize) - 1;
-        let y = rollDice(settings.gridSize) - 1;
-
-        while (Math.abs(x - settings.playerStart.x) < 2 || (x === settings.target.x && tries < maxTries)) {
-            x = rollDice(settings.gridSize) - 1;
-            tries += 1;
-        }
-        if (tries === maxTries) return null;
-        tries = 0;
-
-        while (Math.abs(y - settings.playerStart.y) < 2 || (y === settings.target.y && tries < maxTries)) {
-            y = rollDice(settings.gridSize) - 1;
-            tries += 1;
-        }
-        if (tries === maxTries) return null;
-
-        return { x, y };
-    };
-
-    const enemies = new Array(settings.enemies)
-        .fill(0)
-        .map(getSpawnLocation)
-        .filter((x) => x !== null);
-
-    return sneakRoom(backTo, {
-        enemies: enemies,
-        gridSize: settings.gridSize,
-        player: settings.playerStart,
-        target: settings.target,
-        enemyName: settings.enemyName,
-        onComplete: settings.onComplete,
-        onFailure: settings.onFailure,
-    });
-}
-
-function sneakRoom(
-    backTo: RoomLike,
-    settings: {
-        gridSize: number;
-        enemies: { x: number; y: number }[];
-        enemyName: string;
-        player: { x: number; y: number };
-        target: { x: number; y: number };
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-    }
-) {
-    const entities = settings.enemies
-        .map((enemy) => ({
-            coordinates: enemy,
-            icon: '!',
-        }))
-        .concat({
-            coordinates: settings.player,
-            icon: '*',
-        })
-        .concat({
-            coordinates: settings.target,
-            icon: 'X',
-        });
-
-    const drawGrid = () => {
-        const lines: string[] = [];
-        for (let y = 0; y < settings.gridSize; y++) {
-            for (let row = 0; row < 3; row++) {
-                let currentLine = '';
-                for (let x = 0; x < settings.gridSize; x++) {
-                    if (row === 0 || (row === 2 && y === settings.gridSize - 1)) {
-                        currentLine += `----${x === settings.gridSize - 1 ? '-' : ''}`;
-                    } else if (row === 1) {
-                        currentLine += `| ${entities.find((e) => e.coordinates.x === x && e.coordinates.y === y)?.icon ?? ' '} ${
-                            x === settings.gridSize - 1 ? '|' : ''
-                        }`;
-                    }
-                }
-                if (currentLine) {
-                    lines.push(currentLine);
-                }
-            }
-        }
-        return lines.join('\n');
-    };
-
-    return choiceRoom(
-        drawGrid() + `\n\n! = ${settings.enemyName}\nX = Target\n* = You`,
-        [
-            settings.player.y > 1
-                ? {
-                      code: 'north',
-                      text: 'Move north',
-                  }
-                : null,
-            settings.player.x < settings.gridSize - 1
-                ? {
-                      code: 'east',
-                      text: 'Move east',
-                  }
-                : null,
-            settings.player.y < settings.gridSize - 1
-                ? {
-                      code: 'south',
-                      text: 'Move south',
-                  }
-                : null,
-            settings.player.y > 1
-                ? {
-                      code: 'west',
-                      text: 'Move west',
-                  }
-                : null,
-            {
-                code: 'leave',
-                text: 'Abandon',
-            },
-        ].filter((x) => x !== null),
-        (code, rm) => {
-            const nextRoom = () => {
-                if (settings.player.x === settings.target.x && settings.player.y === settings.target.y) {
-                    return settings.onComplete?.(backTo) ?? backTo;
-                }
-
-                return sneakRoom(backTo, settings);
-            };
-
-            if (code === 'leave') {
-                return backTo;
-            } else if (code === 'north') {
-                settings.player.y = Math.max(0, settings.player.y - 1);
-                return nextRoom;
-            } else if (code === 'east') {
-                settings.player.x = Math.max(0, settings.player.x - 1);
-                return nextRoom;
-            } else if (code === 'south') {
-                settings.player.y = Math.min(settings.gridSize - 1, settings.player.y - 1);
-                return nextRoom;
-            } else if (code === 'west') {
-                settings.player.x = Math.min(settings.gridSize - 1, settings.player.x - 1);
-                return nextRoom;
-            }
-
-            return rm;
-        }
-    )
-        .withColor(Mood.miniGame)
-        .withFastPrint();
-}

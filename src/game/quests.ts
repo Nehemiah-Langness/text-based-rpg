@@ -30,6 +30,7 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
 
     getStage<T extends keyof TQuests>(quest: T) {
         const questLog = this.getQuest(quest);
+        if (questLog.completed) return 'completed' as const;
         if (!questLog.active) return null;
 
         return questLog.stages[questLog.progress].id as TQuests[T]['stages'][number]['id'];

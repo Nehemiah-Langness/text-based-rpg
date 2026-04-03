@@ -114,7 +114,7 @@ export class Room<T = any> {
                     npcsAtLocation.map((npc) => {
                         return {
                             code: `talk-to-${npc.id}`,
-                            text: `Talk to ${npc.getName(this)[Names.FullName]}${npc.hasSpecialRemark(this) ? '*' : ''}`,
+                            text: `Talk to ${npc.getName(this)[Names.FullName]}${npc.hasSpecialRemark(this) ? ' (!)' : ''}`,
                         };
                     })
                 )
