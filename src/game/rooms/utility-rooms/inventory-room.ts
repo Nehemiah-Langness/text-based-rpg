@@ -16,7 +16,7 @@ import { Mood } from '../moods/mood';
 
 export function shopInventoryRoom(
     inventory: { item: Item; gold: number; description?: string }[],
-    onSelect: (selectedItem: Item | 'back', currentRoom: Room) => Room,
+    onSelect: (selectedItem: Item | 'back', currentRoom: RoomLike) => RoomLike,
     continueText = 'Continue'
 ) {
     return new Room(
@@ -46,7 +46,7 @@ export function shopInventoryRoom(
 }
 
 export function inventoryRoom(
-    onSelect: (selectedItem: Item | 'back', currentRoom: Room) => Room,
+    onSelect: (selectedItem: Item | 'back', currentRoom: RoomLike) => RoomLike,
     continueText = 'Continue',
     action = 'Use',
     filter?: (item: Item) => boolean
@@ -94,19 +94,21 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
         if (success) {
             return resultRoom(
                 itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
-                `You ${Inventory[code].equipped ? 'equip' : 'unequip'} your ${code}`
-            ).withColor(Mood.menu);
+                `You ${Inventory[code].equipped ? 'equip' : 'unequip'} your ${code}`,
+                undefined,
+                Mood.menu
+            );
         }
         return null;
     };
 
     return inventoryRoom((code, rm) => {
         if (code === 'back') {
-            return Room.resolve(backTo);
+            return backTo;
         }
         if (EquippableItems.includes(code)) {
             const success = equip(code);
-            if (success) return success.withColor(Mood.menu);
+            if (success) return Room.resolve(success).withColor(Mood.menu);
         } else if (isCategory('consumables', code)) {
             const healthRecovery = HealthTable[code];
             removeFromInventory(code);
@@ -116,7 +118,9 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             }
             Stats.consumedItems[code] += 1;
 
-            return heal(itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1), healthRecovery).withColor(Mood.menu);
+            return Room.resolve(
+                heal(itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1), healthRecovery)
+            ).withColor(Mood.menu);
         } else if (isCategory('food', code)) {
             const staminaRecovery = StaminaTable[code];
             const criticalChanceBonus = LuckTable[code];
@@ -127,13 +131,15 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             }
             Stats.consumedItems[code] += 1;
 
-            return energize(
-                itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
-                staminaRecovery,
-                criticalChanceBonus
+            return Room.resolve(
+                energize(
+                    itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
+                    staminaRecovery,
+                    criticalChanceBonus
+                )
             ).withColor(Mood.menu);
-        } 
+        }
 
-        return resultRoom(rm, `You cannot use your ${code} right now.`).withColor(Mood.menu);
+        return resultRoom(rm, `You cannot use your ${code} right now.`, undefined, Mood.menu);
     }, 'Close pack').withColor(Mood.menu);
 }

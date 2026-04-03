@@ -9,21 +9,7 @@ import { MermaidCityMap } from './map';
 
 export const MermaidPlaza = new Room(
     {},
-    () => `You drift at the center of the mermaid plaza, suspended in a wide circle of pale stone worn smooth by generations before you.
-
-The city rises around you in elegant tiers - arched balconies, spiraling towers, and sweeping bridges all carved in the flowing style of ancient Atlantean design. Veins of pearl and silver trace through the architecture like currents frozen in place, catching the soft blue glow of bioluminescent coral that blooms along every surface.
-
-Above, the distant surface filters faint sunlight into wavering ribbons that dance across the plaza floor. Below, the stone is etched with concentric patterns, like ripples spreading outward from where you stand - as if the city itself recognizes this moment.
-
-Mermaids pass along the outer edges of the plaza.
-
-At the northern archway, the path leads back toward the Guard Hall.
-
-To the west, the city stretches into bustling districts of life and trade.
-
-Your small apartment lies to the east.
-
-And to the south... the open ocean waits just pass the city gates.`,
+    (rm) => (rm.visited ? VisitedDescription : OnEnterDescription),
     (rm) => {
         const options: InputOption[] = [];
 
@@ -38,7 +24,7 @@ And to the south... the open ocean waits just pass the city gates.`,
             options,
             select: (code) => {
                 if (code === 'go-to-training') {
-                    return Quests.progress(Scene1, 'mainQuest', 'go-to-training')
+                    return Quests.progress(Scene1, 'mainQuest', 'go-to-training');
                 }
 
                 return rm;
@@ -47,10 +33,12 @@ And to the south... the open ocean waits just pass the city gates.`,
     },
     () => {
         return [
-            Quests.getStage('mainQuest') === 'go-to-training' ? null : {
-                code: 'travel-north',
-                text: 'Go north to the guild hall',
-            },
+            Quests.getStage('mainQuest') === 'go-to-training'
+                ? null
+                : {
+                      code: 'travel-north',
+                      text: 'Go north to the guild hall',
+                  },
             {
                 code: 'travel-east',
                 text: 'Go east to your apartment',
@@ -69,3 +57,31 @@ And to the south... the open ocean waits just pass the city gates.`,
     .atLocation(MermaidCityMap, 'D', 3)
     .withName(RoomNames.mermaidCity.mermaidPlaza)
     .withInventoryAccess();
+
+const OnEnterDescription = `You drift at the center of the mermaid plaza, suspended in a wide circle of pale stone worn smooth by generations before you.
+
+The city rises around you in elegant tiers - arched balconies, spiraling towers, and sweeping bridges all carved in the flowing style of ancient Atlantean design. Veins of pearl and silver trace through the architecture like currents frozen in place, catching the soft blue glow of bioluminescent coral that blooms along every surface.
+
+Above, the distant surface filters faint sunlight into wavering ribbons that dance across the plaza floor. Below, the stone is etched with concentric patterns, like ripples spreading outward from where you stand - as if the city itself recognizes this moment.
+
+Mermaids pass along the outer edges of the plaza.
+
+At the northern archway, the path leads back toward the Guard Hall.
+
+To the west, the city stretches into bustling districts of life and trade.
+
+Your small apartment lies to the east.
+
+And to the south... the open ocean waits just pass the city gates.`;
+
+const VisitedDescription = `You drift at the center of the mermaid plaza.
+
+Mermaids pass along the outer edges of the plaza.
+
+At the northern archway, the path leads back toward the Guard Hall.
+
+To the west, the city stretches into bustling districts of life and trade.
+
+Your small apartment lies to the east.
+
+And to the south... the open ocean waits just pass the city gates.`;

@@ -9,7 +9,7 @@ import { MermaidCityMap } from './map';
 
 export const GuardHall = new Room(
     {},
-    () => 'You are at Guard Hall',
+    () => VisitedDescription,
     (rm) => {
         const options: InputOption[] = [];
 
@@ -24,9 +24,9 @@ export const GuardHall = new Room(
             options,
             select: (code) => {
                 if (code === 'train') {
-                    console.log(Quests)
+                    console.log(Quests);
                     if (Quests.getStage('mainQuest') === 'train-tail-kick') {
-                        return tutorialCombatRoom()
+                        return tutorialCombatRoom();
                     }
                     return rm;
                 }
@@ -34,11 +34,19 @@ export const GuardHall = new Room(
             },
         };
     },
-    () => [{
-        code: 'travel-south',
-        text: 'Go south to the mermaid plaza'
-    }]
+    () => [
+        {
+            code: 'travel-south',
+            text: 'Leave the Guard Hall',
+        },
+    ]
 )
     .atLocation(MermaidCityMap, 'C', 3)
     .withName(RoomNames.mermaidCity.guardHall)
     .withInventoryAccess();
+
+const VisitedDescription = `You drift in the large arena in the center of the guard hall.
+
+Tall, columned pillars rise around you toward a domed ceiling, each one wrapped in sculpted currents and figures of mermaid warriors locked in eternal battle.
+
+An arched passage way leads to the main plaza.`;

@@ -1,11 +1,11 @@
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
-import type { Room } from '../../engine/room';
+import type { RoomLike } from '../../engine/room';
 import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
 import { Quests } from '../../quests';
 import { GuardHall } from '../mermaid-city/guard-hall';
 
-export function tutorialCombatRoom(): Room {
+export function tutorialCombatRoom(): RoomLike {
     return startCombatEncounter(
         GuardHall,
         [

@@ -1,4 +1,4 @@
-import { Room, type RoomLike } from '../engine/room';
+import { type RoomLike } from '../engine/room';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { equipItem } from './equip-item';
@@ -26,7 +26,7 @@ export function addToInventory(item: Item, backTo: RoomLike, text?: string, coun
                     equipItem(item);
                     return resultRoom(backTo, `You have equipped the ${item}${count > 1 ? Inventory[item].plural ?? 's' : ''}.`);
                 }
-                return Room.resolve(backTo);
+                return backTo;
             }
         );
     }

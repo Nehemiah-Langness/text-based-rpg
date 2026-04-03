@@ -35,7 +35,7 @@ export function Game() {
     const onSelect = useCallback(
         (code: string) => {
             const selectedRoom = Room.resolve(inputOptions.select(code));
-            const room = selectedRoom?.onEnter?.() ?? selectedRoom;
+            const room = Room.resolve(selectedRoom?.onEnter?.() ?? selectedRoom);
             setText(room.getText());
             setInputOptions(room.getOptions());
             setRoomColor(room.roomColor);

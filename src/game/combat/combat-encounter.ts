@@ -1,5 +1,5 @@
 import { rollDice } from '../dice';
-import { type RoomLike, Room } from '../engine/room';
+import { type RoomLike } from '../engine/room';
 import { Skills, SkillSet, type SkillModifier, type SkillName } from '../knowledge';
 import { Player } from '../player';
 import { healthToDescription } from '../utility-functions/health-to-description';
@@ -19,7 +19,7 @@ export function combatEncounter(
         onComplete?: (rm: RoomLike) => RoomLike;
         onFailure?: (rm: RoomLike) => RoomLike;
     }
-): Room {
+): RoomLike {
     const { nonLethal = false, completeText, onComplete, onFailure } = variants ?? {};
     if (enemies.length === 0)
         return resultRoom(onComplete ? onComplete(backTo) : backTo, completeText ?? 'All enemies have been defeated.');
@@ -131,7 +131,7 @@ export function combatEncounter(
         return resultRoom(
             () =>
                 Player.health.current < 1
-                    ? Room.resolve(onFailure?.(backTo) ?? resultRoom(Player.die(backTo), 'You have been defeated.', undefined, Mood.battle))
+                    ? onFailure?.(backTo) ?? resultRoom(Player.die(backTo), 'You have been defeated.', undefined, Mood.battle)
                     : coolDownPhase(backTo),
             [
                 enemyAttack.critical === 1

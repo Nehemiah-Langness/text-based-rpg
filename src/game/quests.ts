@@ -105,7 +105,7 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
                 questLog.progress = questLog.stages.length;
             }
 
-            return resultRoom(backTo, `You have completed the quest "${questLog.name}".`).withColor(Mood.questComplete);
+            return resultRoom(backTo, `You have completed the quest "${questLog.name}".`, undefined, Mood.questComplete);
         }
         return backTo;
     }

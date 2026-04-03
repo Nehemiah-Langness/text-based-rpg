@@ -8,7 +8,8 @@ import { Mood } from './moods/mood';
 import { Skills } from '../knowledge';
 import { MermaidPlaza } from './mermaid-city/mermaid-plaza';
 
-const Debug: RoomLike | undefined = () => {
+const Debug: RoomLike | undefined = 
+() => {
     Skills.levelSkill('tailKick');
 
     return MermaidPlaza;

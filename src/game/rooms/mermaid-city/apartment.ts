@@ -30,7 +30,7 @@ Your roommate, ${Nerissa.getName(rm)[Names.FullName]}, is nearby, as usual - foc
 She glances up as you enter and smiles.`
             : `You drift lazily inside your apartment - admiring the view of the plaza outside your open window.
 
-our roommate, ${Nerissa.getName(rm)[Names.FirstName]}, is nearby, as usual - focused on mixing something in a shallow coral bowl, completely absorbed in her work.
+Your roommate, ${Nerissa.getName(rm)[Names.FirstName]}, is nearby, as usual - focused on mixing something in a shallow coral bowl, completely absorbed in her work.
 
 She glances up as you enter and smiles.`,
     (rm) => {

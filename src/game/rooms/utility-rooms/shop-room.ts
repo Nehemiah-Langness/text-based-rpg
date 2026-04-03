@@ -16,7 +16,7 @@ import { PriceTable } from '../../inventory/tables/price-table';
 import type { Item } from '../../inventory/types/item';
 import type { VendorItem } from '../../inventory/types/vendor-item';
 import { Stats } from '../../stats';
-import { Room } from '../../engine/room';
+import { Room, type RoomLike } from '../../engine/room';
 import { choiceRoom } from './choice-room';
 import { inventoryRoom, shopInventoryRoom } from './inventory-room';
 import { resultRoom } from './result-room';
@@ -31,7 +31,7 @@ export function shopRoom(
     filter: (item: Item) => boolean,
     buysLoot = false,
     additionalOptions?: () => InputOption[],
-    handleAdditionalOptions?: (choice: string, room: Room) => Room | null
+    handleAdditionalOptions?: (choice: string, room: RoomLike) => RoomLike | null
 ) {
     return new Room(
         {

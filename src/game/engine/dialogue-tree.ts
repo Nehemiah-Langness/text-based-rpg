@@ -12,6 +12,6 @@ export class DialogueTree {
     }
 
     getRoom(rm: Room) {
-        return Room.resolve(this.dialogue.reduceRight((c, n) => (typeof n === 'string' ? resultRoom(c, n) : n(c)), rm as RoomLike));
+        return this.dialogue.reduceRight((c, n) => (typeof n === 'string' ? resultRoom(c, n) : n(c)), rm as RoomLike);
     }
 }

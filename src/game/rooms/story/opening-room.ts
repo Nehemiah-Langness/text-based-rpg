@@ -1,4 +1,3 @@
-import { Room } from '../../engine/room';
 import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
 import { Quests } from '../../quests';
@@ -7,7 +6,7 @@ import { Mood } from '../moods/mood';
 import { resultRoom } from '../utility-rooms/result-room';
 
 export const OpeningRoom = resultRoom(() => {
-    return Room.resolve(Quests.start(MermaidPlaza, 'mainQuest'));
+    return Quests.start(MermaidPlaza, 'mainQuest');
 }, [
     `The water is still and heavy, as if the ocean itself is holding its breath.
     

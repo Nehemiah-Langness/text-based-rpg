@@ -83,14 +83,11 @@ export const Shipwreck = new Room(
         return {
             options,
             select: (code) => {
-                const combat = (rm: RoomLike, difficulty?: number) => startCombatEncounter(rm, [createShark(difficulty), createShark(difficulty)], {
+                const combat = (rm: RoomLike, difficulty?: number) =>
+                    startCombatEncounter(rm, [createShark(difficulty), createShark(difficulty)], {
                         onComplete: (rm) =>
-                            resultRoom(
-                                () => Room.resolve(Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak')),
-                                'You have picked up the chest.'
-                            ),
-                    })
-
+                            resultRoom(() => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'), 'You have picked up the chest.'),
+                    });
 
                 if (code === 'sneak-crate') {
                     return startSneakRoom(rm, {
@@ -100,11 +97,8 @@ export const Shipwreck = new Room(
                         playerStart: { x: 3, y: 5 },
                         target: { x: 2, y: 1 },
                         onComplete: (rm) =>
-                            resultRoom(
-                                () => Room.resolve(Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak')),
-                                'You have picked up the chest.'
-                            ),
-                        onFailure: (rm) => resultRoom(() => Room.resolve(combat(rm, 1.2)), 'You have been spotted.'),
+                            resultRoom(() => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'), 'You have picked up the chest.'),
+                        onFailure: (rm) => resultRoom(() => combat(rm, 1.2), 'You have been spotted.'),
                     });
                 } else if (code === 'fight-for-crate') {
                     return combat(rm);

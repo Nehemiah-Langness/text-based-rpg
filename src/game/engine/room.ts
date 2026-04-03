@@ -6,7 +6,7 @@ import { NpcList } from '../npcs/npc-list';
 import { characterMenu } from '../rooms/utility-rooms/character-menu';
 import { Names } from '../npcs/npc-names';
 
-export type RoomLike = Room | (() => Room);
+export type RoomLike = Room | (() => RoomLike);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class Room<T = any> {
@@ -27,7 +27,7 @@ export class Room<T = any> {
     state: T;
     fastPrint = false;
 
-    public onEnter?: () => Room = undefined;
+    public onEnter?: () => RoomLike = undefined;
 
     private getTextLogic: (room: Room<T>) => string | (string | null)[];
     private getOptionsLogic: (room: Room<T>) => {
@@ -202,13 +202,13 @@ export class Room<T = any> {
         return this;
     }
 
-    withOnEnter(onEnter: (rm: Room) => Room) {
+    withOnEnter(onEnter: (rm: Room) => RoomLike) {
         this.onEnter = () => onEnter(this);
         return this;
     }
 
-    static resolve(room: RoomLike) {
-        if (typeof room === 'function') return room();
+    static resolve(room: RoomLike): Room {
+        if (typeof room === 'function') return Room.resolve(room());
         return room;
     }
 }
