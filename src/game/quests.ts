@@ -47,11 +47,7 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
 
         if (questLog.completed) return backTo;
 
-        const questStarted = shouldStartQuest ? this.start(backTo, quest) : null;
-
-        if (typeof requiredStage !== 'undefined') {
-            if (!questLog.active) return questStarted ?? backTo;
-        }
+        const questStarted = shouldStartQuest ? this.start(backTo, quest, stage) : null;
 
         const progress =
             typeof stage === 'number'
@@ -74,14 +70,21 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
         return questStarted ?? backTo;
     }
 
-    start<T extends keyof TQuests>(backTo: RoomLike, quest: T) {
+    start<T extends keyof TQuests>(backTo: RoomLike, quest: T, stage?: number | TQuests[T]['stages'][number]['id']) {
         const questLog = this.getQuest(quest);
+
+        const progress =
+            typeof stage === 'undefined'
+                ? 0
+                : typeof stage === 'number'
+                ? stage
+                : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
 
         if (!questLog.active && !questLog.completed) {
             questLog.active = true;
             return resultRoom(backTo, [
                 `You have started the quest "${questLog.name}".`,
-                `Your next task is ${questLog.stages[questLog.progress].stage}`,
+                `Your next task is ${questLog.stages[progress].stage}`,
             ]);
         }
         return backTo;
@@ -129,7 +132,7 @@ export const Quests = new QuestsLog({
         },
         {
             id: 'train-tail-kick' as const,
-            stage: `Learn ${Skills.skills.tailKick.name} fromCommander Thalor.`,
+            stage: `Learn ${Skills.skills.tailKick.name} from Commander Thalor.`,
         },
         {
             id: 'learn-first-clue-location' as const,
@@ -140,10 +143,22 @@ export const Quests = new QuestsLog({
             stage: `Locate the destroyed home of Velmora the Ink-Seer.`,
         },
     ]),
-    sideQuest: QuestsLog.createQuest('The Trident of the Deep', [
+    fredsSupplyRun: QuestsLog.createQuest('Supply Run Gone Wrong', [
         {
-            id: 'go-to-somewhere' as const,
-            stage: `Meet Commander Thalor at the Guild Hall.`,
+            id: 'talk-to-fred' as const,
+            stage: 'Talk to Fred and see what is wrong.',
+        },
+        {
+            id: 'travel-shipwreck' as const,
+            stage: 'Go to the Old Shipwreck north of the city.',
+        },
+        {
+            id: 'fight-or-sneak' as const,
+            stage: 'Get the supply crate.',
+        },
+        {
+            id: 'return-crate' as const,
+            stage: 'Return the crate to Fred.',
         },
     ]),
 });

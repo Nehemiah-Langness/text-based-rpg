@@ -5,19 +5,29 @@ function useInterval(callback: () => void, ms: number) {
     const interval = useMemo(() => setInterval(callback, ms), []);
 
     return {
-        clearInterval: () => clearInterval(interval)
-    }
+        clearInterval: () => clearInterval(interval),
+    };
 }
 
-export function Text({ content, onComplete, readyForInput }: { content: string; onComplete: () => void; readyForInput: boolean }) {
-    const [currentCharacter, setCurrentCharacter] = useState(0);
+export function Text({
+    content,
+    onComplete,
+    readyForInput,
+    fastPrint,
+}: {
+    content: string;
+    onComplete: () => void;
+    readyForInput: boolean;
+    fastPrint: boolean;
+}) {
+    const [currentCharacter, setCurrentCharacter] = useState(fastPrint ? content.length : 0);
     const progression = useInterval(() => {
-            setCurrentCharacter((x) => x + 1);
-        }, 50)
+        setCurrentCharacter((x) => x + 1);
+    }, 50);
 
     if (!readyForInput && currentCharacter >= content.length) {
         onComplete();
-        progression.clearInterval()
+        progression.clearInterval();
     }
 
     useEffect(() => {
@@ -42,5 +52,9 @@ export function Text({ content, onComplete, readyForInput }: { content: string; 
         };
     }, [content.length]);
 
-    return <div className='game-text' style={{ whiteSpace: 'pre-line' }}>{content.substring(0, currentCharacter)}</div>;
+    return (
+        <div className='game-text' style={{ whiteSpace: 'pre' }}>
+            {content.substring(0, currentCharacter)}
+        </div>
+    );
 }

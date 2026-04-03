@@ -1,1 +1,5 @@
 import './city-outskirts'
+import './coral-reef'
+import './wastelands'
+import './sacred-gardens'
+import './shipwreck'

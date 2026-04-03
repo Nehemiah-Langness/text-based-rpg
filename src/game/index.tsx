@@ -26,6 +26,7 @@ export function Game() {
         | undefined
     >(MainMenu.roomColor);
     const [readyForInput, setReadyForInput] = useState(false);
+    const [fastPrint, setFastPrint] = useState(MainMenu.fastPrint);
     const onTextComplete = useCallback(() => setReadyForInput(true), []);
 
     const [text, setText] = useState(MainMenu.getText());
@@ -33,10 +34,12 @@ export function Game() {
 
     const onSelect = useCallback(
         (code: string) => {
-            const room = Room.resolve(inputOptions.select(code));
+            const selectedRoom = Room.resolve(inputOptions.select(code));
+            const room = selectedRoom?.onEnter?.() ?? selectedRoom;
             setText(room.getText());
             setInputOptions(room.getOptions());
             setRoomColor(room.roomColor);
+            setFastPrint(room.fastPrint);
             setReadyForInput(false);
         },
         [inputOptions]
@@ -59,7 +62,7 @@ export function Game() {
             }
         >
             <div>
-                <Text key={text} content={text} onComplete={onTextComplete} readyForInput={readyForInput} />
+                <Text key={text} content={text} onComplete={onTextComplete} readyForInput={readyForInput} fastPrint={fastPrint} />
                 {readyForInput ? <InputOptions onInput={onSelect} options={inputOptions.options} /> : null}
             </div>
         </div>

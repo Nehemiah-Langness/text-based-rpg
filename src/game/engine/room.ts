@@ -25,13 +25,18 @@ export class Room<T = any> {
     investigated = false;
     visited = false;
     state: T;
+    fastPrint = false;
+
+    public onEnter?: () => Room = undefined;
 
     private getTextLogic: (room: Room<T>) => string | (string | null)[];
     private getOptionsLogic: (room: Room<T>) => {
         options: InputOption[];
         select: (code: string) => RoomLike;
     };
-    private getTravelOptions: (room: Room<T>) => ({ text: string; code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom` } | null)[];
+    private getTravelOptions: (
+        room: Room<T>
+    ) => ({ text: string; code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom` } | null)[];
 
     constructor(
         state: T,
@@ -109,7 +114,7 @@ export class Room<T = any> {
                     npcsAtLocation.map((npc) => {
                         return {
                             code: `talk-to-${npc.id}`,
-                            text: `Talk to ${npc.getName(this)[Names.FullName]}`,
+                            text: `Talk to ${npc.getName(this)[Names.FullName]}${npc.hasSpecialRemark(this) ? '*' : ''}`,
                         };
                     })
                 )
@@ -165,6 +170,11 @@ export class Room<T = any> {
         return this;
     }
 
+    withFastPrint() {
+        this.fastPrint = true;
+        return this;
+    }
+
     investigate(text: string) {
         this.investigated = true;
         return resultRoom(this, text);
@@ -189,6 +199,11 @@ export class Room<T = any> {
 
     withColor(color: Room['roomColor']) {
         this.roomColor = color;
+        return this;
+    }
+
+    withOnEnter(onEnter: (rm: Room) => Room) {
+        this.onEnter = () => onEnter(this);
         return this;
     }
 

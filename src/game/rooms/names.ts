@@ -5,9 +5,14 @@ export const RoomNames = {
         shops: 'shops',
         freds: 'freds-fried-fish',
         apartment: 'apartment',
-        cityGates: 'city-gates'
+        cityGates: 'city-gates',
     },
     openOcean: {
-        cityOutskirts: 'city-outskirts'
-    }
+        cityOutskirts: 'city-outskirts',
+        coralReef: 'coral-reef',
+        wastelands: 'wastelands',
+        sacredGarden: 'sacred-garden',
+        shipwreck: 'shipwreck',
+        kelpForest: 'kelp-forest',
+    },
 };

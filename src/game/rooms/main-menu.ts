@@ -9,11 +9,19 @@ import { Quests } from '../quests';
 import { Skills } from '../knowledge';
 import { Thalor } from '../npcs/thalor';
 import { GuardHall } from './mermaid-city/guard-hall';
+import { DialogueTree } from '../engine/dialogue-tree';
+import { Shipwreck } from './open-ocean/shipwreck';
 
 const Debug: RoomLike | undefined = () => {
     Skills.levelSkill('tailKick');
     Thalor.move(GuardHall);
-    return Room.resolve(Quests.start(() => Room.resolve(Quests.progress(GuardHall, 'mainQuest', 'train-tail-kick')), 'mainQuest'));
+
+    Shipwreck.visited = true;
+
+    const dialogue = new DialogueTree([
+        (backTo) => () => Room.resolve(Quests.progress(backTo, 'fredsSupplyRun', 'travel-shipwreck', { shouldStartQuest: true })),
+    ]);
+    return dialogue.getRoom(Shipwreck);
 };
 
 export const MainMenu = new Room(

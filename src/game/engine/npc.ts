@@ -1,6 +1,7 @@
 import { Room, type RoomLike } from './room';
-import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { NpcList } from '../npcs/npc-list';
+import { DialogueTree } from './dialogue-tree';
+import type { Dialogue } from './dialogue';
 
 export class Npc<TSpecialRemarks extends string = string> {
     coordinates: { y: string; x: number } | undefined;
@@ -30,20 +31,14 @@ export class Npc<TSpecialRemarks extends string = string> {
     id: string;
     name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]);
     protected remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[];
-    protected specialRemarks: Record<
-        TSpecialRemarks,
-        string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null | ((rm: RoomLike) => RoomLike))[])
-    >;
+    protected specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => Dialogue)>;
     protected needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null;
 
     constructor(
         id: string,
         name: readonly [string, string, string] | ((npc: Npc<TSpecialRemarks>, room?: Room) => readonly [string, string, string]),
         remarks: (string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | false | (string | null)[]))[],
-        specialRemarks: Record<
-            TSpecialRemarks,
-            string | ((npc: Npc<TSpecialRemarks>, room: Room) => string | (string | null | ((rm: RoomLike) => RoomLike))[])
-        >,
+        specialRemarks: Record<TSpecialRemarks, string | ((npc: Npc<TSpecialRemarks>, room: Room) => Dialogue)>,
         needsSpecialRemark: (npc: Npc<TSpecialRemarks>, room: Room) => TSpecialRemarks | null
     ) {
         this.id = id;
@@ -52,6 +47,10 @@ export class Npc<TSpecialRemarks extends string = string> {
         this.specialRemarks = specialRemarks;
         this.needsSpecialRemark = needsSpecialRemark;
         NpcList.push(this);
+    }
+
+    hasSpecialRemark(room: Room) {
+        return !!this.needsSpecialRemark(this, room);
     }
 
     getName(room?: Room) {
@@ -83,7 +82,7 @@ export class Npc<TSpecialRemarks extends string = string> {
         const statements =
             remarks === false ? [`${this.getName(room)[0]} nothing to say right now.`] : typeof remarks === 'string' ? [remarks] : remarks;
 
-        return statements.filter((x) => x !== null && typeof x !== 'undefined').reduceRight((c, n) => typeof n === 'string' ? resultRoom(c, n) : Room.resolve(n(c)), room);
+        return new DialogueTree(statements).getRoom(room);
     }
 
     private resolveConversation<TReturn>(conversation: string | ((npc: Npc<TSpecialRemarks>, room: Room) => TReturn), room: Room) {

@@ -29,7 +29,7 @@ export const CityOutskirts = new Room(
         ];
     }
 )
-    .atLocation(OpenOceanMap, 'D', 2)
+    .atLocation(OpenOceanMap, 'D', 4)
     .withName(RoomNames.openOcean.cityOutskirts)
     .withInventoryAccess();
 
