@@ -21,6 +21,7 @@ export type Skill = {
     inCoolDown: number;
     coolDown: number;
     coolDownCompleteText: string;
+    stamina?: number;
 };
 
 export class SkillSet<TSkills extends { [key in keyof TSkills]: Skill }> {
@@ -99,30 +100,35 @@ export const Skills = new SkillSet({
                 duration: 2,
             },
         ],
+        stamina: 2
     }),
 
     tailKick: SkillSet.createSkill({
         name: 'Tail Kick',
         attack: 4,
         level: 0,
+        stamina: 4
     }),
     bubbleBlast: SkillSet.createSkill({
         name: 'Bubble Blast',
         attack: 6,
         level: 0,
         coolDown: 1,
+        stamina: 5
     }),
     kineticWave: SkillSet.createSkill({
         name: 'Create Kinetic Wave',
         attack: 8,
         level: 0,
         coolDown: 2,
+        stamina: 10
     }),
     oceanTwister: SkillSet.createSkill({
         name: 'Summon Ocean Twister',
         attack: 12,
         level: 0,
         coolDown: 3,
+        stamina: 20
     }),
     sirensCall: SkillSet.createSkill({
         name: "Sing the Siren's Call",

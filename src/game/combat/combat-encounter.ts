@@ -9,6 +9,7 @@ import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import type { Enemy } from './enemy';
 import { resolveAttack } from './resolve-attack';
+import { staminaToDescription } from '../utility-functions/stamina-to-description';
 
 export function combatEncounter(
     backTo: RoomLike,
@@ -25,7 +26,7 @@ export function combatEncounter(
         return resultRoom(onComplete ? onComplete(backTo) : backTo, completeText ?? 'All enemies have been defeated.');
 
     const currentEnemy = enemies[0];
-    const skillList = Skills.getSkills();
+    const skillList = Skills.getSkills().filter((x) => !x.skill.stamina || x.skill.stamina < Player.stamina.current);
     const enemySkills = new SkillSet(currentEnemy.moves);
 
     const coolDownPhase = (backTo: RoomLike) => {
@@ -131,7 +132,7 @@ export function combatEncounter(
         return resultRoom(
             () =>
                 Player.health.current < 1
-                    ? onFailure?.(backTo) ?? resultRoom(Player.die(backTo), 'You have been defeated.', undefined, Mood.battle)
+                    ? (onFailure?.(backTo) ?? resultRoom(Player.die(backTo), 'You have been defeated.', undefined, Mood.battle))
                     : coolDownPhase(backTo),
             [
                 enemyAttack.critical === 1
@@ -142,8 +143,8 @@ export function combatEncounter(
                                     enemyAttack.critical === 20 ? ' (Critical)' : ''
                                 }`
                               : enemyAttack.attack > 0
-                              ? '. You block the attack'
-                              : ''
+                                ? '. You block the attack'
+                                : ''
                       }.`,
                 ...(pickedSkill.modifiers?.map(
                     (modifier) =>
@@ -186,7 +187,7 @@ export function combatEncounter(
         choiceRoom(
             `You are in ${nonLethal ? 'non-lethal ' : ''}combat with ${currentEnemy.genericName}.  You are ${healthToDescription(
                 Player.health.current / Player.health.max
-            )}${Player.modifiers.length ? ` and ${Player.modifiers.map((x) => modifierToPastTenseVerb(x.effect)).join(', ')}` : ''}.  ${
+            )} and ${staminaToDescription(Player.stamina.current / Player.stamina.max)}${Player.modifiers.length ? ` and ${Player.modifiers.map((x) => modifierToPastTenseVerb(x.effect)).join(', ')}` : ''}.  ${
                 currentEnemy.specificName
             } is ${healthToDescription(currentEnemy.health.current / currentEnemy.health.max)}${
                 currentEnemy.effects.length ? ` and ${currentEnemy.effects.map((x) => modifierToPastTenseVerb(x.effect)).join(', ')}` : ''
@@ -214,6 +215,8 @@ export function combatEncounter(
                 if (code.startsWith('perform-')) {
                     const skillName = code.replace('perform-', '') as SkillName;
                     const skill = Skills.useSkill(skillName);
+
+                    if (skill.stamina) Player.stamina.current -= skill.stamina;
 
                     const playerAttack = resolveAttack(
                         {
@@ -277,8 +280,8 @@ export function combatEncounter(
                                                 playerAttack.critical === 20 ? ' (Critical)' : ''
                                             }`
                                           : playerAttack.attack > 0
-                                          ? `. ${currentEnemy.specificName} blocks the attack`
-                                          : ''
+                                            ? `. ${currentEnemy.specificName} blocks the attack`
+                                            : ''
                                   }.`,
                             ...playerAttack.attackerModifiers.map(
                                 (modifier) =>
@@ -300,9 +303,13 @@ export function combatEncounter(
                     return enemyCoolDownPhase(() => resultRoom(backTo, 'You flee combat.'));
                 } else if (code === 'dodge') {
                     Player.addModifier({ duration: 1, effect: 'alert' });
+
+                    const staminaGained = Math.min(Player.stamina.max - Player.stamina.current, 10);
+                    Player.stamina.current += staminaGained;
+
                     return resultRoom(
                         () => enemyCoolDownPhase(nextTurn),
-                        `You are ${modifierToPastTenseVerb('alert')}.`,
+                        [`You are ${modifierToPastTenseVerb('alert')}.`, `You have gained ${staminaGained} stamina.`],
                         undefined,
                         Mood.battle
                     );

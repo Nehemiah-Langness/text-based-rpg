@@ -22,7 +22,7 @@ export function winRoom(backTo: Room) {
         `You earned a total of ${Stats.goldEarned ?? 0} gold and spent ${Stats.goldSpent}.`,
         `You consumed:\n\n${
             Object.entries(Stats.consumedItems)
-                .map(([item, count]) => `${count} ${item}${count === 1 ? '' : (Inventory[item as Item].plural ?? 's')}`)
+                .map(([item, count]) => `${count} ${item}${count === 1 ? '' : (Inventory[item as Item].pluralSuffix ?? 's')}`)
                 .join('\n') || 'Nothing at all.'
         }`,
         `The defeated:\n\n${

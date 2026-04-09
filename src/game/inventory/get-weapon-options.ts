@@ -10,7 +10,7 @@ export function getWeaponOptions() {
         .sort(compare((x) => x.name))
         .map((x, i) => ({
             option: i + 1,
-            text: `Use your ${x.name}${isCategory('rangeWeapons', x.name) ? ` (x${Inventory[AmmoTable[x.name]].count} ${AmmoTable[x.name]}${Inventory[AmmoTable[x.name]].count === 1 ? '' : (Inventory[AmmoTable[x.name]].plural ?? 's')})` : ''}`,
+            text: `Use your ${x.name}${isCategory('rangeWeapons', x.name) ? ` (x${Inventory[AmmoTable[x.name]].count} ${AmmoTable[x.name]}${Inventory[AmmoTable[x.name]].count === 1 ? '' : (Inventory[AmmoTable[x.name]].pluralSuffix ?? 's')})` : ''}`,
             code: x.name,
         }));
 }

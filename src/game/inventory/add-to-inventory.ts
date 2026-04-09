@@ -10,7 +10,7 @@ export function addToInventory(item: Item, backTo: RoomLike, text?: string, coun
     Inventory[item].count += count;
     if (shouldEquip(item)) {
         return choiceRoom(
-            (text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].plural ?? 's' : ''}.`) + `  Would you like to equip it?`,
+            (text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`) + `  Would you like to equip it?`,
             [
                 {
                     text: `Equip the ${item}`,
@@ -24,11 +24,11 @@ export function addToInventory(item: Item, backTo: RoomLike, text?: string, coun
             (choice) => {
                 if (choice === 'equip') {
                     equipItem(item);
-                    return resultRoom(backTo, `You have equipped the ${item}${count > 1 ? Inventory[item].plural ?? 's' : ''}.`);
+                    return resultRoom(backTo, `You have equipped the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`);
                 }
                 return backTo;
             }
         );
     }
-    return resultRoom(backTo, text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].plural ?? 's' : ''}.`);
+    return resultRoom(backTo, text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`);
 }

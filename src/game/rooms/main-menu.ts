@@ -5,15 +5,9 @@ import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
 import { OpeningRoom } from './story/opening-room';
 import { Mood } from './moods/mood';
-import { Skills } from '../knowledge';
-import { MermaidPlaza } from './mermaid-city/mermaid-plaza';
+import debug from './debug';
 
-const Debug: RoomLike | undefined = 
-() => {
-    Skills.levelSkill('tailKick');
-
-    return MermaidPlaza;
-};
+const Debug: RoomLike | undefined = import.meta.env.DEV ? debug : undefined;
 
 export const MainMenu = new Room(
     null,

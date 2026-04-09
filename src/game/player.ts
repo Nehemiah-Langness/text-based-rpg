@@ -1,6 +1,5 @@
 import { staminaToDescription } from './utility-functions/stamina-to-description';
 import { healthToDescription } from './utility-functions/health-to-description';
-import { Inventory } from './inventory/inventory';
 import { type RoomLike } from './engine/room';
 import { resultRoom } from './rooms/utility-rooms/result-room';
 import { Stats } from './stats';
@@ -17,9 +16,28 @@ export class PlayerObject {
     };
     criticalChance = 0;
 
+    valor: number;
+    truthfulness: number;
+    speed: number;
+    strength: number;
+
     modifiers: NonNullable<Skill['modifiers']> = [];
 
-    constructor(health: number, stamina: number) {
+    constructor({
+        health,
+        stamina,
+        speed,
+        strength,
+        truthfulness,
+        valor,
+    }: {
+        health: number;
+        stamina: number;
+        valor: number;
+        truthfulness: number;
+        speed: number;
+        strength: number;
+    }) {
         this.health = {
             current: health,
             max: health,
@@ -28,6 +46,10 @@ export class PlayerObject {
             current: stamina,
             max: stamina,
         };
+        this.valor = valor;
+        this.strength = strength;
+        this.speed = speed;
+        this.truthfulness = truthfulness;
     }
 
     coolDown(all = false) {
@@ -71,10 +93,17 @@ export class PlayerObject {
     }
 }
 
-export const Player = new PlayerObject(20, 100);
+export const Player = new PlayerObject({
+    health: 20,
+    stamina: 100,
+    speed: 10,
+    strength: 10,
+    truthfulness: 50,
+    valor: 0,
+});
 
 export function criticalChance() {
-    const playerLuck = (Player.stamina.current >= 60 ? 2 : 0) + Player.criticalChance + Inventory['Luck Aura'].count;
+    const playerLuck = (Player.stamina.current >= 60 ? 2 : 0) + Player.criticalChance;
     if (playerLuck > (Stats.highestLuck ?? 0)) {
         Stats.highestLuck = playerLuck;
     }
