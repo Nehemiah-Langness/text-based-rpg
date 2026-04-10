@@ -1,8 +1,8 @@
 import { compare } from '../helpers/compare';
 import type { RoomLike } from './engine/room';
-import { Skills } from './knowledge';
 import { Mood } from './rooms/moods/mood';
 import { resultRoom } from './rooms/utility-rooms/result-room';
+import { Skills } from './skills';
 
 type QuestType<TStages> = ReturnType<typeof QuestsLog.createQuest<TStages>>;
 

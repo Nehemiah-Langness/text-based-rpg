@@ -11,8 +11,9 @@ import { startCombatEncounter } from '../../combat/start-combat-encounter';
 
 function createShark(difficulty = 1): Enemy {
     return {
+        level: 1,
         defense: Math.floor(difficulty * 2),
-        dodge: Math.floor(difficulty * 1),
+        speed: Math.floor(difficulty * 3),
         effects:
             difficulty > 1
                 ? [
@@ -24,22 +25,23 @@ function createShark(difficulty = 1): Enemy {
                 : [],
         genericName: 'a shark',
         specificName: 'The shark',
-        health: {
-            current: Math.floor(difficulty * 10),
-            max: Math.floor(difficulty * 10),
-        },
-        level: 1,
+        health: Math.floor(difficulty * 10),
+        stamina: 50,
+        strength: difficulty - 1,
         moves: [
             {
                 name: 'Chomp',
+                actionDescription: 'chomps at you',
                 attack: 4,
                 coolDown: 0,
                 coolDownCompleteText: '',
                 inCoolDown: 0,
                 level: 1,
+                stamina: 5,
             },
             {
                 name: 'Ram',
+                actionDescription: 'rams you',
                 attack: 2,
                 coolDown: 3,
                 coolDownCompleteText: '',
@@ -51,6 +53,7 @@ function createShark(difficulty = 1): Enemy {
                         effect: 'stun',
                     },
                 ],
+                stamina: 15,
             },
         ],
     };

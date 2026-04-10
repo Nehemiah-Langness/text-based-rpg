@@ -1,11 +1,11 @@
-import { Skills } from '../../knowledge';
 import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
+import { Player } from '../../player';
 import { resultRoom } from '../utility-rooms/result-room';
 import { tutorialCombatRoom } from './tutorial-combat-room';
 
 export const Scene1 = resultRoom(() => {
-    return resultRoom(tutorialCombatRoom, [Skills.levelSkill('tailKick')]);
+    return resultRoom(tutorialCombatRoom, [Player.skillSet.levelSkill('tailKick')]);
 }, [
     `You follow ${Thalor.getName()[Names.FullName]} through the arched passageway, leaving the open plaza behind.
 

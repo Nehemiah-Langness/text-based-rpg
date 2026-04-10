@@ -1,4 +1,4 @@
-import type { SkillModifier } from "../knowledge";
+import type { SkillModifier } from "../engine/skill-set";
 
 export function modifierToPastTenseVerb(modifier: SkillModifier) {
     switch (modifier) {

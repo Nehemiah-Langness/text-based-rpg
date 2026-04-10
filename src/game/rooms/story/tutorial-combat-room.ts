@@ -4,6 +4,7 @@ import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
 import { Quests } from '../../quests';
 import { GuardHall } from '../mermaid-city/guard-hall';
+import { resultRoom } from '../utility-rooms/result-room';
 
 export function tutorialCombatRoom(): RoomLike {
     return startCombatEncounter(
@@ -12,12 +13,11 @@ export function tutorialCombatRoom(): RoomLike {
             {
                 level: 1,
                 defense: 0,
-                dodge: 0,
+                speed: 0,
                 effects: [],
-                health: {
-                    current: 10,
-                    max: 10,
-                },
+                health: 10,
+                stamina: 100,
+                strength: 0,
                 moves: [
                     {
                         attack: 0,
@@ -26,6 +26,7 @@ export function tutorialCombatRoom(): RoomLike {
                         inCoolDown: 0,
                         level: 1,
                         name: 'Taunt',
+                        actionDescription: 'taunts you',
                         modifiers: [
                             {
                                 duration: 1,
@@ -40,8 +41,11 @@ export function tutorialCombatRoom(): RoomLike {
         ],
         {
             nonLethal: true,
-            completeText: `You have finished training with ${Thalor.getName()[Names.FirstName]}.`,
-            onComplete: (rm) => Quests.progress(rm, 'mainQuest', 'train-tail-kick'),
+            onComplete: (rm) =>
+                resultRoom(
+                    () => Quests.progress(rm, 'mainQuest', 'train-tail-kick'),
+                    `You have finished training with ${Thalor.getName()[Names.FirstName]}.`
+                ),
         }
     );
 }

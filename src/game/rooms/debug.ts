@@ -1,10 +1,10 @@
 import { DialogueTree } from '../engine/dialogue-tree';
-import { Skills } from '../knowledge';
+import { Player } from '../player';
 import { Quests } from '../quests';
 import { Shipwreck } from './open-ocean/shipwreck';
 
 export default () => {
-    Skills.levelSkill('tailKick');
+    Player.skillSet.levelSkill('tailKick');
 
     return new DialogueTree([
         (rm) => () => Quests.start(rm, 'fredsSupplyRun'),

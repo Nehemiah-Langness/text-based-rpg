@@ -1,20 +1,7 @@
-export const Knowledge = {
-    guardName: false,
-    farmerName: false,
-    innKeeperName: false,
-    innKeeperWifeName: false,
-    generalStoreOwnerName: false,
-    armorStoreOwnerName: false,
-    weaponStoreOwnerName: false,
-    guildMasterName: false,
-    wizardName: false,
-    hunterName: false,
-    pathToPond: false,
-};
-
 export type SkillModifier = 'stun' | 'distract' | 'alert';
 export type Skill = {
     name: string;
+    actionDescription: string;
     attack: number;
     level: number;
     modifiers?: { effect: SkillModifier; duration: number }[];
@@ -24,7 +11,11 @@ export type Skill = {
     stamina?: number;
 };
 
-export class SkillSet<TSkills extends { [key in keyof TSkills]: Skill }> {
+export class SkillSet<
+    TSkills extends {
+        [key in keyof TSkills]: Skill;
+    },
+> {
     skills: TSkills;
 
     constructor(skills: TSkills) {
@@ -86,60 +77,3 @@ export class SkillSet<TSkills extends { [key in keyof TSkills]: Skill }> {
         };
     }
 }
-
-export type SkillName = keyof typeof Skills.skills;
-export const Skills = new SkillSet({
-    starfishThrow: SkillSet.createSkill({
-        name: 'Throw Starfish Friend',
-        attack: 6,
-        level: 0,
-        coolDown: 2,
-        modifiers: [
-            {
-                effect: 'distract',
-                duration: 2,
-            },
-        ],
-        stamina: 2
-    }),
-
-    tailKick: SkillSet.createSkill({
-        name: 'Tail Kick',
-        attack: 4,
-        level: 0,
-        stamina: 4
-    }),
-    bubbleBlast: SkillSet.createSkill({
-        name: 'Bubble Blast',
-        attack: 6,
-        level: 0,
-        coolDown: 1,
-        stamina: 5
-    }),
-    kineticWave: SkillSet.createSkill({
-        name: 'Create Kinetic Wave',
-        attack: 8,
-        level: 0,
-        coolDown: 2,
-        stamina: 10
-    }),
-    oceanTwister: SkillSet.createSkill({
-        name: 'Summon Ocean Twister',
-        attack: 12,
-        level: 0,
-        coolDown: 3,
-        stamina: 20
-    }),
-    sirensCall: SkillSet.createSkill({
-        name: "Sing the Siren's Call",
-        attack: 0,
-        level: 0,
-        modifiers: [
-            {
-                duration: 1,
-                effect: 'stun',
-            },
-        ],
-        coolDown: 2,
-    }),
-});

@@ -1,4 +1,4 @@
-import type { SkillModifier } from '../../knowledge';
+import type { SkillModifier } from "../../engine/skill-set";
 
 export type InventoryItem<TCategory> = {
     count: number;

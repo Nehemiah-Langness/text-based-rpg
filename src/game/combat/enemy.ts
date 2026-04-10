@@ -1,14 +1,12 @@
-import type { Skill } from '../knowledge';
-
+import type { Skill } from '../engine/skill-set';
 
 export interface Enemy {
     level: number;
     defense: number;
-    dodge: number;
-    health: {
-        current: number;
-        max: number;
-    };
+    strength: number;
+    speed: number;
+    health: number;
+    stamina: number;
     specificName: string;
     genericName: string;
     moves: Skill[];

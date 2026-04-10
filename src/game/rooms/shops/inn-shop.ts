@@ -1,7 +1,6 @@
 import { addToInventory } from '../../inventory/add-to-inventory';
 import { Inventory } from '../../inventory/inventory';
 import { isCategory } from '../../inventory/is-category';
-import { Knowledge } from '../../knowledge';
 import { Names, NpcNames } from '../../npcs/npc-names';
 import { Stats } from '../../stats';
 import { Room } from '../../engine/room';
