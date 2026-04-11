@@ -11,8 +11,8 @@ export function saveGame(currentRoom: Room) {
     localStorage.setItem(
         'saved-game',
         JSON.stringify({
-            player: Player,
-            inventory: Inventory,
+            player: Player.save(),
+            inventory: Inventory.save(),
             maps: MapList.map((map) => map.saveMap()),
             location: {
                 map: currentRoom.map?.id,
@@ -31,11 +31,11 @@ export function loadGame() {
         if (!savedState) return false;
 
         const { inventory, maps, player, location, quests, npcs, stats } = JSON.parse(savedState) as {
-            player?: typeof Player;
-            inventory?: typeof Inventory;
+            player?: ReturnType<typeof Player.save>;
+            inventory?: ReturnType<typeof Inventory.save>;
             maps?: ReturnType<Map['saveMap']>[];
             location?: {
-                id: Map['id'];
+                map: Map['id'];
                 coordinates: Room['coordinates'];
             };
             quests?: ReturnType<(typeof Quests)['save']>;
@@ -43,12 +43,15 @@ export function loadGame() {
             stats?: typeof Stats;
         };
 
-        Object.assign(Player, player);
-        Object.assign(Inventory, inventory);
         Object.assign(Stats, stats);
-
+        if (player) {
+            Player.load(player);
+        }
         if (quests) {
             Quests.load(quests);
+        }
+        if (inventory) {
+            Inventory.load(inventory);
         }
 
         maps?.forEach(({ data, id }) => {
@@ -65,7 +68,7 @@ export function loadGame() {
             }
         });
 
-        const savedMap = MapList.find((m) => m.id === location?.id);
+        const savedMap = MapList.find((m) => m.id === location?.map);
         if (savedMap && location?.coordinates) {
             return savedMap.cells[location.coordinates.y][location.coordinates.x] ?? null;
         }

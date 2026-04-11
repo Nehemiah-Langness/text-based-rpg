@@ -222,7 +222,7 @@ function playerTurn(
                                   )
                               )}.`
                             : null,
-                        leveledUp ? `You have increased your skill at ${skill.actionDescription}` : null,
+                        leveledUp ? `You have increased your damage when you ${skill.actionDescription}.` : null,
                     ].filter((x) => x !== null),
                     undefined,
                     Mood.battle

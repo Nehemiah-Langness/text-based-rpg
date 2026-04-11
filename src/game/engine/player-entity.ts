@@ -56,12 +56,12 @@ export class PlayerEntity<
 
     addValor(amount: number) {
         this.valor += amount;
-        return `You have gained ${amount} valor.`;
+        return `You have ${amount >= 0 ? 'gained' : 'lost'} ${Math.abs(amount)} valor.`;
     }
 
     addTruth(amount: number) {
         this.truthfulness += amount;
-        return `You have gained ${amount} honesty.`;
+        return `You have ${amount >= 0 ? 'gained' : 'lost'} ${Math.abs(amount)} honesty.`;
     }
 
     getDefense() {

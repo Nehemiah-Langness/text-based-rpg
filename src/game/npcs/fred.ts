@@ -59,7 +59,7 @@ export const Fred = new Npc(
                             },
                             {
                                 code: 'lie',
-                                text: 'Keep some items for yourself',
+                                text: 'Keep some items for yourself (Lie)',
                             },
                         ],
                         (code, choiceRoom) => {
@@ -76,7 +76,7 @@ export const Fred = new Npc(
                                     `"It looks like everything is accounted for - here's a little something for your trouble." Fred states with a little more enthusiasm than his normal.
                                     
 "Here's a little something for your trouble."`,
-                                    Player.addTruth(5)
+                                    Player.addTruth(5),
                                 ]);
                             } else if (code === 'lie') {
                                 const lootTable = Inventory.createLootTable([
@@ -150,6 +150,7 @@ export const Fred = new Npc(
 
                                 return resultRoom(questCompletion, [
                                     `You quickly stash away several items from the top of the crate before returning it to Fred.  You pocket:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`,
+                                    Player.addTruth(-10),
                                     `"Figures", says ${npc.getName()[Names.FirstName]}, "several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."
                                     
 "Still, Here's a little something for your trouble."`,

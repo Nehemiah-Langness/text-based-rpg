@@ -83,13 +83,17 @@ export class SkillSet<
             .filter((x) => x);
     }
 
+    nextLevelXpRequirement(level: number) {
+        return Math.min(1, level) * 25;
+    }
+
     useSkill<T extends keyof TSkills>(skillName: T) {
         const skill = this.skills[skillName];
         if (skill.coolDown) skill.inCoolDown = skill.coolDown + 1;
 
         let leveledUp = false;
         skill.xp += 1;
-        const nextLevel = Math.min(1, skill.level) * 25;
+        const nextLevel = this.nextLevelXpRequirement(skill.level);
         if (skill.xp >= nextLevel) {
             skill.level += 1;
             skill.xp -= nextLevel;

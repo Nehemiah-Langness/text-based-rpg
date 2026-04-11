@@ -7,6 +7,8 @@ import { openInventoryRoom } from './inventory-room';
 import { resultRoom } from './result-room';
 import type { Room } from '../../engine/room';
 import { Mood } from '../moods/mood';
+import { resolveAttackRoll } from '../../combat/resolve-attack';
+import { oxfordComma } from '../../utility-functions/oxford-comma';
 
 export function characterMenu(backTo: Room) {
     return choiceRoom(
@@ -25,6 +27,10 @@ export function characterMenu(backTo: Room) {
                 text: 'Review your current quests',
             },
             {
+                code: 'skills',
+                text: 'Review your skills',
+            },
+            {
                 code: 'back',
                 text: 'Done',
             },
@@ -38,8 +44,17 @@ export function characterMenu(backTo: Room) {
                 return resultRoom(
                     rm,
                     [
-                        `You are ${healthToDescription(Player.health.current / Player.health.max)} and ${staminaToDescription(
-                            Player.stamina.current / Player.stamina.max
+                        `You ${oxfordComma(
+                            `are ${healthToDescription(Player.health.current / Player.health.max)} and ${staminaToDescription(
+                                Player.stamina.current / Player.stamina.max
+                            )}`,
+                            `have ${oxfordComma(
+                                `${Player.getDefense()} defense`,
+                                `${Player.strength} strength`,
+                                `${Player.speed} speed`,
+                                `${Player.valor} valor`,
+                                `${Player.truthfulness - 50} honesty`
+                            )}`
                         )}.`,
                     ].filter((x) => x !== null && typeof x !== 'undefined'),
                     undefined,
@@ -83,6 +98,61 @@ export function characterMenu(backTo: Room) {
                                         `${stageIndex + 1}. ${stage.stage} ${stageIndex < quest.progress ? '(COMPLETED)' : ''}`
                                 )
                                 .join('\n')}`
+                        ).withColor(Mood.menu);
+                    }
+                ).withColor(Mood.menu);
+            } else if (code === 'skills') {
+                const skills = Player.skillSet.getSkills();
+                if (!skills.length) return resultRoom(rm, 'You have not learned any skills.').withColor(Mood.menu);
+
+                return choiceRoom(
+                    `You have learned the following skills:`,
+                    skills
+                        .map(({ name, skill }) => ({
+                            code: name as string,
+                            text: `View ${skill.name} (Level ${skill.level})`,
+                        }))
+                        .concat({
+                            code: 'done',
+                            text: 'Done',
+                        }),
+                    (choice, inventoryRoom) => {
+                        if (choice === 'done') {
+                            return rm;
+                        }
+
+                        const chosen = skills.find((q) => q.name === choice);
+                        if (!chosen) {
+                            return resultRoom(inventoryRoom, `You do not know that skill yet.`).withColor(Mood.menu);
+                        }
+                        const { skill } = chosen;
+
+                        const estimateDamage = () => {
+                            const { maxAttack, minAttack } = resolveAttackRoll({
+                                level: skill.level,
+                                strength: skill.attack + Player.strength,
+                                penalty: 0,
+                            });
+
+                            if (maxAttack === 0) return '';
+                            if (minAttack === maxAttack) return `${maxAttack} damage`;
+                            return `${minAttack}-${maxAttack} damage`;
+                        };
+
+                        return resultRoom(
+                            inventoryRoom,
+                            [
+                                `${skill.name} - Level ${skill.level}`,
+                                estimateDamage(),
+                                skill.modifiers?.length
+                                    ? ' applies ' + oxfordComma(...(skill.modifiers?.map((x) => `${x.effect}`) ?? []))
+                                    : '',
+                                skill.stamina ? `Costs ${skill.stamina} stamina point${skill.stamina === 1 ? '' : 's'}.` : '',
+                                skill.coolDown ? `${skill.coolDown}-turn cool down.` : '',
+                                `${skill.xp}/${Player.skillSet.nextLevelXpRequirement(skill.level)} xp until level ${skill.level + 1}.`,
+                            ]
+                                .filter((x) => x)
+                                .join('\n\n')
                         ).withColor(Mood.menu);
                     }
                 ).withColor(Mood.menu);
