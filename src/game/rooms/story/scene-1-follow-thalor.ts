@@ -39,7 +39,7 @@ In a single, fluid motion, he pivots - his tail whipping through the water with 
 "Tail Kick," he says, "Simple. Fast. Effective."
 
 He straightens, eyes locking onto yours.`,
-    `${Thalor.getName()[Names.FirstName]} 's voice cuts through the silence.
+    `${Thalor.getName()[Names.FirstName]}'s voice cuts through the silence.
 
 "Now you try."`,
 ]);

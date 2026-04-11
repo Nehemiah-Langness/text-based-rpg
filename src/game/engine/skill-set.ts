@@ -70,7 +70,7 @@ export class SkillSet<
             .map(([, skill]) => {
                 if (skill.inCoolDown > 0) {
                     if (all) {
-                        skill.coolDown = 0;
+                        skill.inCoolDown = 0;
                     } else {
                         skill.inCoolDown -= 1;
                     }

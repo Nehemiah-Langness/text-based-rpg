@@ -13,9 +13,9 @@ export function trainingCombatRoom(): RoomLike {
             {
                 level: 1,
                 defense: 0,
-                speed: 0,
+                speed: 30,
                 effects: [],
-                health: 10,
+                health: Player.health.max,
                 stamina: 100,
                 strength: 0,
                 moves: [
@@ -35,9 +35,9 @@ export function trainingCombatRoom(): RoomLike {
                         inCoolDown: 0,
                         xp: -100000,
                     },
-                    ...Object.values(Player.skillSet.skills)
-                        .filter((x) => x.level > 0)
-                        .map((x) => ({ ...x, xp: -100000 })),
+                    ...Object.entries(Player.skillSet.skills)
+                        .filter(([name, x]) => x.level > 0 && (name as keyof typeof Player.skillSet.skills) !== 'starfishThrow')
+                        .map(([, x]) => ({ ...x, xp: -100000 })),
                 ],
                 specificName: Thalor.getName()[Names.FirstName],
                 genericName: Thalor.getName()[Names.FullName],
