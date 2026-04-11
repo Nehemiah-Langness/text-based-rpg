@@ -25,7 +25,7 @@ export interface InventoryItemMeta<TCategory> {
         text?: string;
     };
     equippable?: {
-        subCategory: string;
+        subCategory?: string;
         defense?: number;
     };
 }

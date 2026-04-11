@@ -168,4 +168,14 @@ export const Quests = new QuestsLog({
             stage: 'Free the starfish from the kelp strands.',
         },
     ]),
+    seaCucumber: QuestsLog.createQuest('Soft Skin, Strong Scales', [
+        {
+            id: 'find-sea-cucumber' as const,
+            stage: 'Locate a special striped reef variant of sea-cucumber.',
+        },
+        {
+            id: 'return-sea-cucumber' as const,
+            stage: 'Return the sea cucumber to Nerissa.',
+        },
+    ]),
 });

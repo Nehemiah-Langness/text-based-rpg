@@ -10,6 +10,7 @@ export const RoomNames = {
     openOcean: {
         cityOutskirts: 'city-outskirts',
         coralReef: 'coral-reef',
+        deepCoralReef: 'deep-coral-reef',
         wastelands: 'wastelands',
         sacredGarden: 'sacred-garden',
         shipwreck: 'shipwreck',

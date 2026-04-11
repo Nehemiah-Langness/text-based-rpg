@@ -3,9 +3,9 @@ import type { InputOption } from '../../input-option';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
 
-export const CoralReef = new Room(
+export const DeepCoralReef = new Room(
     {},
-    () => `You are in the coral reef`,
+    () => `You are in the deep coral reef`,
     (rm) => {
         const options: InputOption[] = [];
 
@@ -19,20 +19,12 @@ export const CoralReef = new Room(
     () => {
         return [
             {
-                code: 'travel-north',
-                text: 'Go north towards the sacred garden',
-            },
-            {
-                code: 'travel-east',
-                text: 'Go east deeper into the coral reef',
-            },
-            {
                 code: 'travel-west',
-                text: 'Go west towards the city',
+                text: 'Go west to the coral reef',
             },
         ];
     }
 )
-    .atLocation(OpenOceanMap, 'D', 5)
-    .withName(RoomNames.openOcean.coralReef)
+    .atLocation(OpenOceanMap, 'D', 6)
+    .withName(RoomNames.openOcean.deepCoralReef)
     .withInventoryAccess();

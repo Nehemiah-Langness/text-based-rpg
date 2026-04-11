@@ -353,6 +353,14 @@ export const Inventory = new InventorySystem({
             value: 194,
         },
     }),
+    seaCucumberCream: InventorySystem.createInventoryItem<'ointment'>({
+        category: 'ointment',
+        name: "Nerissa's Sea-Salt and Sea-Cucumber Ointment",
+        description: "Apply it before a fight.  You'll feel the difference.",
+        equippable: {
+            defense: 5,
+        },
+    }),
 });
 
 export type InventoryKey = BaseInventoryKey<typeof Inventory>;

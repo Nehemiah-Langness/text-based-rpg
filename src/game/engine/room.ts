@@ -124,7 +124,7 @@ export class Room<T = any> {
                         ? [
                               {
                                   code: 'character-menu',
-                                  text: 'Open Character Menu',
+                                  text: 'Open character menu',
                               },
                           ]
                         : []

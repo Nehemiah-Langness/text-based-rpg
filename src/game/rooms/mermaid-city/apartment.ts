@@ -20,7 +20,7 @@ She glances up as you enter and smiles.`,
 
         options.push({
             code: 'sleep',
-            text: 'Sleep',
+            text: 'Sleep (Save progress)',
         });
 
         return {
