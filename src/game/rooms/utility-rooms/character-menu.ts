@@ -145,7 +145,7 @@ export function characterMenu(backTo: Room) {
                                 `${skill.name} - Level ${skill.level}`,
                                 estimateDamage(),
                                 skill.modifiers?.length
-                                    ? ' applies ' + oxfordComma(...(skill.modifiers?.map((x) => `${x.effect}`) ?? []))
+                                    ? 'Applies ' + oxfordComma(...(skill.modifiers?.map((x) => `${x.effect}`) ?? []))
                                     : '',
                                 skill.stamina ? `Costs ${skill.stamina} stamina point${skill.stamina === 1 ? '' : 's'}.` : '',
                                 skill.coolDown ? `${skill.coolDown}-turn cool down.` : '',

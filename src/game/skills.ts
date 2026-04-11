@@ -3,11 +3,12 @@ import { SkillSet } from './engine/skill-set';
 export type SkillName = keyof typeof Skills.skills;
 export const Skills = new SkillSet({
     starfishThrow: SkillSet.createSkill({
-        name: 'Throw Starfish Friend',
-        actionDescription: 'throw starfish friend',
-        attack: 6,
+        name: 'Throw Wiggles',
+        actionDescription: 'throw Wiggles, your best starfish friend in the whole world,',
+        attack: 8,
         level: 0,
         coolDown: 2,
+        coolDownCompleteText: 'Wiggles has swam back to you.',
         modifiers: [
             {
                 effect: 'distract',

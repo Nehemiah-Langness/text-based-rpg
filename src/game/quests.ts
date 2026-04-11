@@ -162,4 +162,10 @@ export const Quests = new QuestsLog({
             stage: 'Return the crate to Fred.',
         },
     ]),
+    freeWiggles: QuestsLog.createQuest('Wiggling Free', [
+        {
+            id: 'free-wiggles' as const,
+            stage: 'Free the starfish from the kelp strands.',
+        },
+    ]),
 });
