@@ -16,31 +16,30 @@ The corridor opens into the Guard Hall.
 It is vast.`,
     `Tall, columned pillars rise toward a domed ceiling, each one wrapped in sculpted currents and figures of mermaid warriors locked in eternal battle. Between them, glowing orbs of soft blue light drift lazily, illuminating racks of spears, bladed fins, and reinforced armor crafted from shell and coral. The floor beneath you is polished stone, etched with concentric rings like ripples frozen in time.
 
-    At the center of the hall lies a wide, circular arena.
+At the center of the hall lies a wide, circular arena.
 
-    This is where mermaids learn to fight.`,
+This is where mermaids learn to fight.`,
     `${
         Thalor.getName()[Names.FirstName]
     } moves to its edge and turns to face you, his expression already shifting from ceremony to discipline.
 
-    "Out there," he says, gesturing vaguely toward the distant ocean beyond the city walls,
-    "you won't have the luxury of distance."
+"Out there," he says, gesturing vaguely toward the distant ocean beyond the city walls, "you won't have the luxury of distance."
 
-    He swims into the arena and motions for you to join him.
+He swims into the arena and motions for you to join him.
 
-    "Your body is your first weapon. Learn to use it properly, or it will fail you."
+"Your body is your first weapon. Learn to use it properly, or it will fail you."
 
-    You take your place across from him. The space suddenly feels smaller.`,
+You take your place across from him. The space suddenly feels smaller.`,
     `${Thalor.getName()[Names.FirstName]} lowers his stance slightly, his powerful tail coiling beneath him.
 
-    "Watch carefully."
+"Watch carefully."
 
-    In a single, fluid motion, he pivots - his tail whipping through the water with explosive force. The movement is fast, precise, and controlled, sending a sharp current rippling across the arena.
+In a single, fluid motion, he pivots - his tail whipping through the water with explosive force. The movement is fast, precise, and controlled, sending a sharp current rippling across the arena.
 
-    "Tail Kick," he says, "Simple. Fast. Effective."
+"Tail Kick," he says, "Simple. Fast. Effective."
 
-    He straightens, eyes locking onto yours.`,
+He straightens, eyes locking onto yours.`,
     `${Thalor.getName()[Names.FirstName]} 's voice cuts through the silence.
 
-    "Now you try."`,
+"Now you try."`,
 ]);

@@ -131,7 +131,7 @@ export function sneakRoom(
                     }
                 });
 
-                return lost ? settings.onFailure?.(backTo) ?? backTo : sneakRoom(backTo, settings);
+                return lost ? (settings.onFailure?.(backTo) ?? backTo) : sneakRoom(backTo, settings);
             };
 
             if (code === 'leave') {
@@ -140,13 +140,13 @@ export function sneakRoom(
                 settings.player.y = Math.max(0, settings.player.y - 1);
                 return nextRoom;
             } else if (code === 'east') {
-                settings.player.x = Math.max(0, settings.player.x - 1);
+                settings.player.x = Math.min(settings.gridSize - 1, settings.player.x + 1);
                 return nextRoom;
             } else if (code === 'south') {
                 settings.player.y = Math.min(settings.gridSize - 1, settings.player.y + 1);
                 return nextRoom;
             } else if (code === 'west') {
-                settings.player.x = Math.min(settings.gridSize - 1, settings.player.x + 1);
+                settings.player.x = Math.max(0, settings.player.x - 1);
                 return nextRoom;
             }
 

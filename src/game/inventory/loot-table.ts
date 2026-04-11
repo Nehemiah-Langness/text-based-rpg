@@ -30,19 +30,31 @@ export class LootTable<TInventory> {
     }
 
     roll() {
-        return this.rolls
-            .map((roll) => {
-                const rolledItem = roll[rollDice(roll.length) - 1];
-                if (!rolledItem) return null;
-                const count = Math.min(
-                    rolledItem.number.max,
-                    rollDice(rolledItem.number.max - rolledItem.number.min) + rolledItem.number.min
-                );
-                return {
-                    item: rolledItem.item,
-                    count,
-                };
-            })
-            .filter((x) => x !== null);
+        return Object.entries(
+            this.rolls
+                .map((roll) => {
+                    const rolledItem = roll[rollDice(roll.length) - 1];
+                    if (!rolledItem) return null;
+                    const count = Math.min(
+                        rolledItem.number.max,
+                        rollDice(rolledItem.number.max - rolledItem.number.min) + rolledItem.number.min
+                    );
+                    return {
+                        item: rolledItem.item,
+                        count,
+                    };
+                })
+                .filter((x) => x !== null)
+                .reduce(
+                    (c, n) => ({
+                        ...c,
+                        [n.item]: (c[n.item] ?? 0) + n.count,
+                    }),
+                    {} as Record<InventoryKey<TInventory>, number>
+                )
+        ).map(([key, count]) => ({
+            item: key as InventoryKey<TInventory>,
+            count: count as number,
+        }));
     }
 }

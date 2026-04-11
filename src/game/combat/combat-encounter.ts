@@ -8,10 +8,11 @@ import { modifierToPastTenseVerb } from '../utility-functions/modifier-to-past-t
 import { Mood } from '../rooms/moods/mood';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
-import { resolveAttack } from './resolve-attack';
+import { resolveAttack, resolveAttackRoll } from './resolve-attack';
 import { staminaToDescription } from '../utility-functions/stamina-to-description';
 import { oxfordComma } from '../utility-functions/oxford-comma';
 import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
+import type { Skill } from '../engine/skill-set';
 
 export function combatEncounter(
     backTo: RoomLike,
@@ -122,6 +123,18 @@ function playerTurn(
     const playerSkillList = Player.skillSet.getSkills().filter((x) => !x.skill.stamina || x.skill.stamina < Player.stamina.current);
     const modifiers = Player.getModifiers();
 
+    const estimateDamage = (skill: Skill) => {
+        const { maxAttack, minAttack } = resolveAttackRoll({
+            level: skill.level,
+            strength: skill.attack + Player.strength + (modifiers.strength ? 3 : 0),
+            penalty: modifiers.distract ? 1 : 0,
+        });
+
+        if (maxAttack === 0) return '';
+        if (minAttack === maxAttack) return `(${maxAttack} damage)`;
+        return `(${minAttack}-${maxAttack} damage)`;
+    };
+
     return choiceRoom(
         `You are in ${nonLethal ? 'non-lethal ' : ''}combat with ${currentEnemy.genericName}${enemies.length > 1 ? `.  ${enemies.length - 1} other enem${enemies.length == 2 ? 'y is' : 'ies are'} nearby` : ''}.${playerStatus ? `\n\n${playerStatus}.` : ''}${enemyStatus ? `\n\n${enemyStatus}.` : ''}`,
         modifiers.stun
@@ -135,13 +148,13 @@ function playerTurn(
                   .map((availableSkills) => {
                       return {
                           code: `perform-${availableSkills.name}`,
-                          text: availableSkills.skill.name,
+                          text: `${availableSkills.skill.name} ${estimateDamage(availableSkills.skill)}${availableSkills.skill.modifiers?.length ? ' applies ' + oxfordComma(...(availableSkills.skill.modifiers?.map((x) => `${x.effect}`) ?? [])) : ''}`,
                       };
                   })
                   .concat(
                       {
                           code: 'dodge',
-                          text: 'Dodge attack',
+                          text: `Dodge attack - ${oxfordComma(...[{ effect: 'alert' as const }].map((x) => `applies ${x.effect}`))}`,
                       },
                       {
                           code: 'flee',
@@ -161,7 +174,7 @@ function playerTurn(
                 return openInventoryRoom(nextPhase, 1);
             } else if (code.startsWith('perform-')) {
                 const skillName = code.replace('perform-', '') as SkillName;
-                const skill = Player.useSkill(skillName);
+                const { skill, leveledUp } = Player.useSkill(skillName);
                 if (!skill) {
                     return resultRoom(nextPhase, `You are too exhausted.`, undefined, Mood.battle);
                 }
@@ -188,7 +201,7 @@ function playerTurn(
                     [
                         resolvedAttack.critical === 'fail'
                             ? `You failed to ${skill.actionDescription}.`
-                            : `You ${skill.actionDescription} with ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}`,
+                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                         resolvedAttack.attackerModifiers.length
                             ? `You have been ${oxfordComma(
                                   ...resolvedAttack.attackerModifiers.map(
@@ -209,6 +222,7 @@ function playerTurn(
                                   )
                               )}.`
                             : null,
+                        leveledUp ? `You have increased your skill at ${skill.actionDescription}` : null,
                     ].filter((x) => x !== null),
                     undefined,
                     Mood.battle
@@ -223,7 +237,10 @@ function playerTurn(
 
                 return resultRoom(
                     nextPhase,
-                    [`You are ${modifierToPastTenseVerb(effect)}.`, `You have gained ${staminaGained} stamina.`],
+                    [
+                        `You are ${modifierToPastTenseVerb(effect)}.`,
+                        staminaGained > 0 ? `You have gained ${staminaGained} stamina.` : null,
+                    ].filter((x) => x !== null),
                     undefined,
                     Mood.battle
                 );
@@ -356,7 +373,7 @@ function enemyAttack(
 
     if (chosenOption.startsWith('perform-')) {
         const skillName = chosenOption.replace('perform-', '');
-        const skill = currentEnemy.useSkill(skillName);
+        const { leveledUp, skill } = currentEnemy.useSkill(skillName);
         if (!skill) {
             return resultRoom(nextPhase, `${currentEnemy.specificName} is too exhausted to do anything.`, undefined, Mood.battle);
         }
@@ -383,7 +400,7 @@ function enemyAttack(
             [
                 resolvedAttack.critical === 'fail'
                     ? `${currentEnemy.specificName} failed to perform a ${skill.name}.`
-                    : `${currentEnemy.specificName} ${skill.actionDescription} with ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}`,
+                    : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                 resolvedAttack.attackerModifiers.length
                     ? `${currentEnemy.specificName} has been ${oxfordComma(
                           ...resolvedAttack.attackerModifiers.map(
@@ -404,6 +421,8 @@ function enemyAttack(
                           )
                       )}.`
                     : null,
+
+                leveledUp ? `${currentEnemy.specificName} has improved at ${skill.actionDescription}` : null,
             ].filter((x) => x !== null),
             undefined,
             Mood.battle
@@ -415,8 +434,8 @@ function enemyAttack(
             nextPhase,
             [
                 `${currentEnemy.specificName} is ${modifierToPastTenseVerb(effect)}.`,
-                `${currentEnemy.specificName} has gained ${staminaGained} stamina.`,
-            ],
+                staminaGained > 0 ? `${currentEnemy.specificName} has gained ${staminaGained} stamina.` : null,
+            ].filter((x) => x !== null),
             undefined,
             Mood.battle
         );

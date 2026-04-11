@@ -1,4 +1,15 @@
-export type SkillModifier = 'stun' | 'distract' | 'alert' | 'stamina-regen-low' | 'health-regen-low'| 'stamina-regen-med' | 'health-regen-med' | 'stamina-regen-high' | 'health-regen-high' | 'speed' | 'strength';
+export type SkillModifier =
+    | 'stun'
+    | 'distract'
+    | 'alert'
+    | 'stamina-regen-low'
+    | 'health-regen-low'
+    | 'stamina-regen-med'
+    | 'health-regen-med'
+    | 'stamina-regen-high'
+    | 'health-regen-high'
+    | 'speed'
+    | 'strength';
 export type Skill = {
     name: string;
     actionDescription: string;
@@ -9,6 +20,7 @@ export type Skill = {
     coolDown: number;
     coolDownCompleteText: string;
     stamina?: number;
+    xp: number;
 };
 
 export class SkillSet<
@@ -20,6 +32,14 @@ export class SkillSet<
 
     constructor(skills: TSkills) {
         this.skills = skills;
+    }
+
+    save() {
+        return this.skills;
+    }
+
+    load(data: Partial<TSkills>) {
+        Object.assign(this.skills, data);
     }
 
     private skillList(): [keyof TSkills, Skill][] {
@@ -63,16 +83,31 @@ export class SkillSet<
             .filter((x) => x);
     }
 
-    useSkill<T extends keyof TSkills>(skill: T): Skill {
-        if (this.skills[skill].coolDown) this.skills[skill].inCoolDown = this.skills[skill].coolDown + 1;
-        return this.skills[skill];
+    useSkill<T extends keyof TSkills>(skillName: T) {
+        const skill = this.skills[skillName];
+        if (skill.coolDown) skill.inCoolDown = skill.coolDown + 1;
+
+        let leveledUp = false;
+        skill.xp += 1;
+        const nextLevel = Math.min(1, skill.level) * 25;
+        if (skill.xp >= nextLevel) {
+            skill.level += 1;
+            skill.xp -= nextLevel;
+            leveledUp = true;
+        }
+
+        return {
+            skill,
+            leveledUp,
+        };
     }
 
-    static createSkill(skill: Omit<Skill, 'coolDown' | 'inCoolDown' | 'coolDownCompleteText'> & Partial<Skill>): Skill {
+    static createSkill(skill: Omit<Skill, 'coolDown' | 'inCoolDown' | 'coolDownCompleteText' | 'xp'> & Partial<Skill>): Skill {
         return {
             inCoolDown: 0,
             coolDown: 0,
             coolDownCompleteText: `You can ${skill.name} again.`,
+            xp: 0,
             ...skill,
         };
     }

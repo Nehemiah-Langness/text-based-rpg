@@ -1,3 +1,4 @@
+import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
 import type { InputOption } from '../../input-option';
 import { Names } from '../../npcs/npc-names';
@@ -9,7 +10,7 @@ import { MermaidCityMap } from './map';
 
 export const MermaidPlaza = new Room(
     {},
-    (rm) => (rm.visited ? VisitedDescription : OnEnterDescription),
+    () => VisitedDescription,
     (rm) => {
         const options: InputOption[] = [];
 
@@ -56,23 +57,23 @@ export const MermaidPlaza = new Room(
 )
     .atLocation(MermaidCityMap, 'D', 3)
     .withName(RoomNames.mermaidCity.mermaidPlaza)
-    .withInventoryAccess();
+    .withInventoryAccess()
+    .withOnEnter((rm) => {
+        const dialogue = new DialogueTree([...(!rm.visited ? OnEnterDescription : [])]);
 
-const OnEnterDescription = `You drift at the center of the mermaid plaza, suspended in a wide circle of pale stone worn smooth by generations before you.
+        rm.visited = true;
 
-The city rises around you in elegant tiers - arched balconies, spiraling towers, and sweeping bridges all carved in the flowing style of ancient Atlantean design. Veins of pearl and silver trace through the architecture like currents frozen in place, catching the soft blue glow of bioluminescent coral that blooms along every surface.
+        return dialogue.getRoom(rm);
+    });
 
-Above, the distant surface filters faint sunlight into wavering ribbons that dance across the plaza floor. Below, the stone is etched with concentric patterns, like ripples spreading outward from where you stand - as if the city itself recognizes this moment.
-
-Mermaids pass along the outer edges of the plaza.
-
-At the northern archway, the path leads back toward the Guard Hall.
-
-To the west, the city stretches into bustling districts of life and trade.
-
-Your small apartment lies to the east.
-
-And to the south... the open ocean waits just pass the city gates.`;
+const OnEnterDescription = [
+    `The city rises around you in elegant tiers - arched balconies, spiraling towers, and sweeping bridges all carved in the flowing style of ancient Atlantean design. 
+    
+Veins of pearl and silver trace through the architecture like currents frozen in place, catching the soft blue glow of bioluminescent coral that blooms along every surface.`,
+    `Above, the distant surface filters faint sunlight into wavering ribbons that dance across the plaza floor. 
+    
+Below, the stone is etched with concentric patterns, like ripples spreading outward from where you stand - as if the city itself recognizes this moment.`,
+];
 
 const VisitedDescription = `You drift at the center of the mermaid plaza.
 

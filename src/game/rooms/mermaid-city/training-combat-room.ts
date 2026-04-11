@@ -2,11 +2,11 @@ import { startCombatEncounter } from '../../combat/start-combat-encounter';
 import type { RoomLike } from '../../engine/room';
 import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
-import { Quests } from '../../quests';
-import { GuardHall } from '../mermaid-city/guard-hall';
+import { GuardHall } from './guard-hall';
 import { resultRoom } from '../utility-rooms/result-room';
+import { Player } from '../../player';
 
-export function tutorialCombatRoom(): RoomLike {
+export function trainingCombatRoom(): RoomLike {
     return startCombatEncounter(
         GuardHall,
         [
@@ -33,8 +33,11 @@ export function tutorialCombatRoom(): RoomLike {
                         coolDown: 2,
                         coolDownCompleteText: '',
                         inCoolDown: 0,
-                        xp: -100000
+                        xp: -100000,
                     },
+                    ...Object.values(Player.skillSet.skills)
+                        .filter((x) => x.level > 0)
+                        .map((x) => ({ ...x, xp: -100000 })),
                 ],
                 specificName: Thalor.getName()[Names.FirstName],
                 genericName: Thalor.getName()[Names.FullName],
@@ -42,11 +45,7 @@ export function tutorialCombatRoom(): RoomLike {
         ],
         {
             nonLethal: true,
-            onComplete: (rm) =>
-                resultRoom(
-                    () => Quests.progress(rm, 'mainQuest', 'train-tail-kick'),
-                    `You have finished training with ${Thalor.getName()[Names.FirstName]}.`
-                ),
+            onComplete: (rm) => resultRoom(rm, `You have finished training with ${Thalor.getName()[Names.FirstName]}.`),
         }
     );
 }

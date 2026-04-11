@@ -8,6 +8,7 @@ import { OpenOceanMap } from './map';
 import { startSneakRoom } from '../../stealth/start-sneak-room';
 import type { Enemy } from '../../combat/enemy';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
+import { Player } from '../../player';
 
 function createShark(difficulty = 1): Enemy {
     return {
@@ -38,6 +39,7 @@ function createShark(difficulty = 1): Enemy {
                 inCoolDown: 0,
                 level: 1,
                 stamina: 5,
+                xp: -100000,
             },
             {
                 name: 'Ram',
@@ -54,6 +56,7 @@ function createShark(difficulty = 1): Enemy {
                     },
                 ],
                 stamina: 15,
+                xp: -100000,
             },
         ],
     };
@@ -86,10 +89,14 @@ export const Shipwreck = new Room(
         return {
             options,
             select: (code) => {
-                const combat = (rm: RoomLike, difficulty?: number) =>
+                const combat = (rm: RoomLike, difficulty = 1, applyValor = false) =>
                     startCombatEncounter(rm, [createShark(difficulty), createShark(difficulty)], {
-                        onComplete: (rm) =>
-                            resultRoom(() => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'), 'You have picked up the chest.'),
+                        onComplete: (rm) => {
+                            return resultRoom(
+                                () => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'),
+                                ['You have picked up the chest.', applyValor ? Player.addValor(1) : null].filter((x) => x !== null)
+                            );
+                        },
                     });
 
                 if (code === 'sneak-crate') {
@@ -101,10 +108,10 @@ export const Shipwreck = new Room(
                         target: { x: 2, y: 1 },
                         onComplete: (rm) =>
                             resultRoom(() => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'), 'You have picked up the chest.'),
-                        onFailure: (rm) => resultRoom(() => combat(rm, 1.2), 'You have been spotted.'),
+                        onFailure: (rm) => resultRoom(() => combat(rm, 1.2, false), 'You have been spotted.'),
                     });
                 } else if (code === 'fight-for-crate') {
-                    return combat(rm);
+                    return combat(rm, 1, true);
                 }
 
                 return rm;

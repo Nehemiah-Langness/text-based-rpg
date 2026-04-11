@@ -5,9 +5,6 @@ import { resultRoom } from './rooms/utility-rooms/result-room';
 import { Stats } from './stats';
 
 export function fullRest(room: Room) {
-    if (Player.stamina.current === Player.stamina.max) {
-        Player.criticalChance += 3;
-    }
     Stats.nightsSlept = (Stats.nightsSlept ?? 0) + 1;
     saveGame(room);
     return resultRoom(

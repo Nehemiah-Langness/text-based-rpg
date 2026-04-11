@@ -13,7 +13,6 @@ export class Entity<
         current: number;
         max: number;
     };
-    criticalChance = 0;
 
     speed: number;
     strength: number;
@@ -53,7 +52,7 @@ export class Entity<
             this.stamina.current -= staminaCost;
             return this.skillSet.useSkill(skill);
         }
-        return null;
+        return { skill: null, leveledUp: false };
     }
 
     getModifiers() {
@@ -69,7 +68,7 @@ export class Entity<
     getDodge() {
         const isAlert = !!this.modifiers.find((e) => e.effect === 'alert');
         const bonusSpeed = this.modifiers.find((e) => e.effect === 'speed') ? 10 : 0;
-        return Math.min(70, this.speed) + (isAlert ? 5 : 0) + bonusSpeed;
+        return Math.min(45, this.speed) + (isAlert ? 30 : 0) + bonusSpeed;
     }
 
     coolDown(all = false) {
@@ -100,7 +99,7 @@ export class Entity<
             if (existing) {
                 existing.duration += modifier.duration;
             } else {
-                this.modifiers.push(modifier);
+                this.modifiers.push({ ...modifier });
             }
         });
     }

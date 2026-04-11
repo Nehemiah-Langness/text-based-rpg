@@ -6,6 +6,7 @@ import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { tutorialCombatRoom } from '../story/tutorial-combat-room';
 import { MermaidCityMap } from './map';
+import { trainingCombatRoom } from './training-combat-room';
 
 export const GuardHall = new Room(
     {},
@@ -24,11 +25,10 @@ export const GuardHall = new Room(
             options,
             select: (code) => {
                 if (code === 'train') {
-                    console.log(Quests);
                     if (Quests.getStage('mainQuest') === 'train-tail-kick') {
-                        return tutorialCombatRoom();
+                        return tutorialCombatRoom;
                     }
-                    return rm;
+                    return trainingCombatRoom;
                 }
                 return rm;
             },

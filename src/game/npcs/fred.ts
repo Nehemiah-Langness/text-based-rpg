@@ -1,9 +1,12 @@
 import { Npc } from '../engine/npc';
+import { Inventory } from '../inventory';
 import { addToInventory } from '../inventory/add-to-inventory';
+import { Player } from '../player';
 import { Quests } from '../quests';
 import { FredsFish } from '../rooms/mermaid-city/freds-fish';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
+import { Names } from './npc-names';
 
 export const Fred = new Npc(
     'fred',
@@ -44,7 +47,7 @@ export const Fred = new Npc(
                     }),
             ];
         },
-        supplyCrateTurnIn: () => {
+        supplyCrateTurnIn: (npc) => {
             return [
                 (rm) =>
                     choiceRoom(
@@ -61,24 +64,96 @@ export const Fred = new Npc(
                         ],
                         (code, choiceRoom) => {
                             const questCompletion = () =>
-                                addToInventory('coralShard', Quests.finish(rm, 'fredsSupplyRun'), 'Fred hands you a handful of coins.', 100);
-
-                            if (code === 'truth') {
-                                return resultRoom(
-                                    questCompletion,
-                                    `"It looks like everything is accounted for - here's a little something for your trouble."`
-                                );
-                            } else if (code === 'lie') {
-                                return addToInventory(
+                                addToInventory(
                                     'coralShard',
-                                    () =>
-                                        resultRoom(questCompletion, [
-                                            `"Figures - several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."`,
-                                            `"Here's a little something for your trouble, still."`,
-                                        ]),
-                                    'You quickly stash away several items from the top of the crate before returning it to Fred.',
+                                    Quests.finish(rm, 'fredsSupplyRun'),
+                                    'Fred hands you a handful of Coral Shards.',
                                     100
                                 );
+
+                            if (code === 'truth') {
+                                return resultRoom(questCompletion, [
+                                    `"It looks like everything is accounted for - here's a little something for your trouble." Fred states with a little more enthusiasm than his normal.
+                                    
+"Here's a little something for your trouble."`,
+                                    Player.addTruth(5)
+                                ]);
+                            } else if (code === 'lie') {
+                                const lootTable = Inventory.createLootTable([
+                                    [
+                                        {
+                                            item: 'spicedFishPlatter',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'kelpNoodleBowl',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'coralFruitMedley',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'herbalBroth',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            item: 'spicedFishPlatter',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'kelpNoodleBowl',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'coralFruitMedley',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                        {
+                                            item: 'herbalBroth',
+                                            chance: 1,
+                                            number: 2,
+                                        },
+                                    ],
+                                    [
+                                        {
+                                            item: 'deepCurrentElixir',
+                                            chance: 2,
+                                            number: 1,
+                                        },
+                                        {
+                                            item: 'grilledSharkFillet',
+                                            chance: 1,
+                                            number: 1,
+                                        },
+                                        {
+                                            item: 'bloomTonic',
+                                            chance: 2,
+                                            number: 1,
+                                        },
+                                    ],
+                                ]);
+
+                                const loot = lootTable.roll();
+                                loot.forEach(({ count, item }) => {
+                                    Inventory.add(item, count);
+                                });
+
+                                return resultRoom(questCompletion, [
+                                    `You quickly stash away several items from the top of the crate before returning it to Fred.  You pocket:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`,
+                                    `"Figures", says ${npc.getName()[Names.FirstName]}, "several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."
+                                    
+"Still, Here's a little something for your trouble."`,
+                                ]);
                             }
 
                             return choiceRoom;

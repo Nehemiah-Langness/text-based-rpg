@@ -1,5 +1,7 @@
 export function oxfordComma(...items: string[]) {
-    if (items.length < 2) return items.join(' ');
-    if (items.length === 2) return items.join(' and ');
-    return items.slice(0, -1).join(', ') + ', and ' + items.slice(-1)[0];
+    const cleaned = items.filter((x) => x);
+
+    if (cleaned.length < 2) return cleaned.join(' ');
+    if (cleaned.length === 2) return cleaned.join(' and ');
+    return cleaned.slice(0, -1).join(', ') + ', and ' + cleaned.slice(-1)[0];
 }

@@ -14,6 +14,19 @@ export class InventorySystem<
         this.items = items;
     }
 
+    save() {
+        return this.items;
+    }
+
+    load(data: Partial<TInventory>) {
+        Object.assign(this.items, data);
+    }
+
+    add(key: keyof TInventory, amount: number) {
+        const item = this.get(key);
+        item.count += amount;
+    }
+
     get(key: keyof TInventory) {
         return this.items[key];
     }
@@ -93,7 +106,7 @@ export class InventorySystem<
         return null;
     }
 
-    createLootTable(items: LootTableRolls<TInventory>) {
-        return new LootTable<TInventory>(items);
+    createLootTable(items: LootTableRolls<InventorySystem<TInventory>>) {
+        return new LootTable<InventorySystem<TInventory>>(items);
     }
 }

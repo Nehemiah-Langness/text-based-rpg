@@ -1,11 +1,27 @@
 import { rollDice } from '../dice';
 import type { Skill } from '../engine/skill-set';
 
+export function resolveAttackRoll({ level, strength, penalty }: { strength: number; level: number; penalty: number }) {
+    const effectiveLevel = Math.max(0, level - penalty);
+    const levelScaling = strength * (effectiveLevel - 1);
+
+    const maxAttack = strength + levelScaling;
+    const minAttack = 1 + levelScaling;
+    const attackRolled = rollDice(strength) + levelScaling;
+
+    return {
+        effectiveLevel,
+        maxAttack,
+        minAttack,
+        attackRolled,
+    };
+}
+
 export function resolveAttack(
     { level, strength, penalty }: { strength: number; level: number; penalty: number },
     defense: { armor: number; dodge: number }
 ) {
-    const critical = rollDice(Math.max(1, 20 - penalty));
+    const critical = rollDice(Math.max(1, Math.floor(20 / (penalty + 1))));
 
     const stunned: NonNullable<Skill['modifiers']> =
         critical === 1
@@ -17,11 +33,11 @@ export function resolveAttack(
               ]
             : [];
 
-    const effectiveLevel = Math.max(0, level - penalty);
-    const levelScaling = strength * (effectiveLevel - 1);
-
-    const maxAttack = strength + levelScaling;
-    const attackRolled = rollDice(strength) + levelScaling;
+    const { attackRolled, maxAttack, effectiveLevel } = resolveAttackRoll({
+        level,
+        penalty,
+        strength,
+    });
 
     const attackRoll =
         critical === 1

@@ -16,7 +16,6 @@ export const Skills = new SkillSet({
         ],
         stamina: 2,
     }),
-
     tailKick: SkillSet.createSkill({
         name: 'Tail Kick',
         actionDescription: 'do a tail kick',
@@ -55,10 +54,10 @@ export const Skills = new SkillSet({
         level: 0,
         modifiers: [
             {
-                duration: 1,
+                duration: 2,
                 effect: 'stun',
             },
         ],
-        coolDown: 2,
+        coolDown: 4,
     }),
 });

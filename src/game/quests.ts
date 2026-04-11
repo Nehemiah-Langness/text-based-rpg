@@ -78,8 +78,8 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
             typeof stage === 'undefined'
                 ? 0
                 : typeof stage === 'number'
-                ? stage
-                : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
+                  ? stage
+                  : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
 
         if (!questLog.active && !questLog.completed) {
             questLog.active = true;
@@ -141,7 +141,7 @@ export const Quests = new QuestsLog({
         },
         {
             id: 'find-hermit-home' as const,
-            stage: `Locate the destroyed home of Velmora the Ink-Seer.`,
+            stage: `Locate the destroyed home of Velmora the Ink-Seer in the Coral Reef southeast of the city.`,
         },
     ]),
     fredsSupplyRun: QuestsLog.createQuest('Supply Run Gone Wrong', [

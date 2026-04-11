@@ -10,6 +10,7 @@ export class PlayerEntity<
 > extends Entity<T> {
     valor: number;
     truthfulness: number;
+
     constructor({
         truthfulness,
         valor,
@@ -28,12 +29,46 @@ export class PlayerEntity<
         this.truthfulness = truthfulness ?? 50;
     }
 
+    save() {
+        return {
+            health: this.health,
+            stamina: this.stamina,
+            valor: this.valor,
+            truthfulness: this.truthfulness,
+            speed: this.speed,
+            strength: this.strength,
+            modifiers: this.modifiers,
+            skills: this.skillSet.save(),
+        };
+    }
+
+    load(data: Partial<ReturnType<typeof this.save>>) {
+        this.health = data.health ?? this.health;
+        this.stamina = data.stamina ?? this.stamina;
+        this.valor = data.valor ?? this.valor;
+        this.truthfulness = data.truthfulness ?? this.truthfulness;
+        this.speed = data.speed ?? this.speed;
+        this.strength = data.strength ?? this.strength;
+        this.modifiers = data.modifiers ?? this.modifiers;
+
+        this.skillSet.load(data.skills ?? {});
+    }
+
+    addValor(amount: number) {
+        this.valor += amount;
+        return `You have gained ${amount} valor.`;
+    }
+
+    addTruth(amount: number) {
+        this.truthfulness += amount;
+        return `You have gained ${amount} honesty.`;
+    }
+
     getDefense() {
         return 0;
     }
 
     die(room: RoomLike) {
-        this.criticalChance = 0;
         this.stamina.current = 1;
         this.health.current = 1;
 
