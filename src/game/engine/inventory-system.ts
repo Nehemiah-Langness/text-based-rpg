@@ -1,6 +1,7 @@
 import type { Category } from './category';
 import type { InventoryItem, InventoryItemMeta } from '../inventory/types/inventory-item';
 import type { Entity } from './entity';
+import { LootTable, type LootTableRolls } from '../inventory/loot-table';
 
 export class InventorySystem<
     TInventory extends {
@@ -68,11 +69,13 @@ export class InventorySystem<
         };
     }
 
-    list() {
-        return (Object.entries(this.items) as [keyof TInventory, InventoryItem<Category<TInventory>>][]).map((x) => ({
-            key: x[0],
-            item: x[1],
-        }));
+    list(filter?: (item: InventoryItem<Category<TInventory>>) => boolean) {
+        return (Object.entries(this.items) as [keyof TInventory, InventoryItem<Category<TInventory>>][])
+            .map((x) => ({
+                key: x[0],
+                item: x[1],
+            }))
+            .filter((x) => filter?.(x.item) ?? true);
     }
 
     find(item: InventoryItemMeta<Category<TInventory>>) {
@@ -88,5 +91,9 @@ export class InventorySystem<
         }
 
         return null;
+    }
+
+    createLootTable(items: LootTableRolls<TInventory>) {
+        return new LootTable<TInventory>(items);
     }
 }

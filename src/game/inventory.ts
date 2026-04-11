@@ -1,7 +1,5 @@
-import { rollDice } from '../dice';
-import type { InventoryKey as BaseInventoryKey } from '../engine/category';
-import { InventorySystem } from '../engine/inventory-system';
-import type { InventoryItemMeta } from './types/inventory-item';
+import type { InventoryKey as BaseInventoryKey } from './engine/category';
+import { InventorySystem } from './engine/inventory-system';
 
 export const Inventory = new InventorySystem({
     coralShard: InventorySystem.createInventoryItem<'currency'>({
@@ -129,7 +127,6 @@ export const Inventory = new InventorySystem({
             value: 192,
         },
     }),
-
     sealedOrderRelic: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Silent Order Relic',
@@ -170,73 +167,192 @@ export const Inventory = new InventorySystem({
             value: 531,
         },
     }),
+    friedReefFish: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Fried Reef Fish',
+        description: "Fred's specialty.",
+        consumable: {
+            health: 5,
+        },
+        vendor: {
+            value: 6,
+        },
+    }),
+    kelpWrap: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Kelp Wrap',
+        description: 'Light and quick.',
+        consumable: {
+            stamina: 10,
+        },
+        vendor: {
+            value: 13,
+        },
+    }),
+    seaBerries: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Sea Berries',
+        description: 'Who knew you could find berries in the ocean.',
+        consumable: {
+            stamina: 10,
+            health: 5,
+        },
+        vendor: {
+            value: 17,
+        },
+    }),
+    saltedMinnowStrips: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Salted Minnow Strips',
+        description: 'The perfect food for an on-the-go go-getter.',
+        consumable: {
+            stamina: 15,
+        },
+        vendor: {
+            value: 16,
+        },
+    }),
+    spicedFishPlatter: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Spiced Fish Platter',
+        description: 'Spicy.  Just the way you like it.',
+        consumable: {
+            health: 20,
+            stamina: 10,
+        },
+        vendor: {
+            value: 26,
+        },
+    }),
+    kelpNoodleBowl: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Kelp Noodle Bowl',
+        description: 'Put the kelp in the bowl and call it a noodle.',
+        consumable: {
+            stamina: 45,
+            effects: [
+                {
+                    effect: 'stamina-regen-low',
+                    duration: 5,
+                },
+            ],
+        },
+        vendor: {
+            value: 48,
+        },
+    }),
+    coralFruitMedley: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Coral Fruit Medley',
+        description: 'For the balanced diet.',
+        consumable: {
+            stamina: 30,
+            health: 30,
+        },
+        vendor: {
+            value: 65,
+        },
+    }),
+    herbalBroth: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Herbal Broth',
+        description: 'Herbal remedies for the non-herbal tragedies.',
+        consumable: {
+            health: 40,
+            effects: [
+                {
+                    effect: 'health-regen-low',
+                    duration: 5,
+                },
+            ],
+        },
+        vendor: {
+            value: 48,
+        },
+    }),
+    grilledSharkFillet: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Grilled Shark Fillet',
+        description: 'Big food from a bigger fish.',
+        consumable: {
+            stamina: 40,
+            health: 75,
+        },
+        vendor: {
+            value: 125,
+        },
+    }),
+    abyssalStew: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Abyssal Stew',
+        description: "Stew darker than Velmora's ink.  And hopefully does not contain Velmora's ink.",
+        consumable: {
+            health: 75,
+            effects: [
+                {
+                    effect: 'stamina-regen-med',
+                    duration: 5,
+                },
+            ],
+        },
+        vendor: {
+            value: 90,
+        },
+    }),
+    goldenReefPlatter: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Golden Reef Platter',
+        description: "Stew darker than Velmora's ink.  And hopefully does not contain Velmora's ink.",
+        consumable: {
+            health: 80,
+            stamina: 80,
+        },
+        vendor: {
+            value: 194,
+        },
+    }),
+    deepCurrentElixir: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Deep Current Elixir',
+        description: 'An elixir that grants you the speed of the deepest currents.',
+        consumable: {
+            stamina: 50,
+            effects: [
+                {
+                    duration: 5,
+                    effect: 'speed',
+                },
+                {
+                    duration: 5,
+                    effect: 'stamina-regen-high',
+                },
+            ],
+        },
+        vendor: {
+            value: 194,
+        },
+    }),
+    bloomTonic: InventorySystem.createInventoryItem<'food'>({
+        category: 'food',
+        name: 'Bloom Tonic',
+        description: 'Tonic that packs a punch.',
+        consumable: {
+            health: 50,
+            effects: [
+                {
+                    duration: 5,
+                    effect: 'strength',
+                },
+                {
+                    duration: 5,
+                    effect: 'health-regen-high',
+                },
+            ],
+        },
+        vendor: {
+            value: 194,
+        },
+    }),
 });
 
 export type InventoryKey = BaseInventoryKey<typeof Inventory>;
-
-class LootTable<TCategory> {
-    rolls: { item: InventoryItemMeta<TCategory>; number: { min: number; max: number } }[][];
-
-    constructor(items: { item: InventoryItemMeta<TCategory>; chance: number; number: number | { min: number; max: number } }[][]) {
-        this.rolls = items.map((rolls) => {
-            return rolls
-                .flatMap((roll) => {
-                    return new Array(roll.chance).fill({
-                        item: roll.item,
-                        number:
-                            typeof roll.number === 'number'
-                                ? {
-                                      min: roll.number,
-                                      max: roll.number,
-                                  }
-                                : roll.number,
-                    });
-                })
-                .sort(() => (rollDice(20) <= 10 ? -1 : 1));
-        });
-    }
-
-    roll() {
-        return this.rolls
-            .map((roll) => {
-                const rolledItem = roll[rollDice(roll.length) - 1];
-                if (!rolledItem) return null;
-                const count = Math.min(
-                    rolledItem.number.max,
-                    rollDice(rolledItem.number.max - rolledItem.number.min) + rolledItem.number.min
-                );
-                return {
-                    item: rolledItem.item,
-                    count,
-                };
-            })
-            .filter((x) => x !== null);
-    }
-}
-
-console.log(
-    Inventory.find(
-        new LootTable([
-            [
-                {
-                    item: Inventory.items.abyssalCoreShard,
-                    chance: 3,
-                    number: 1,
-                },
-                {
-                    item: Inventory.items.polishedShellFragment,
-                    chance: 4,
-                    number: 3,
-                },
-                {
-                    item: Inventory.items.forgottenCrownPiece,
-                    chance: 1,
-                    number: {
-                        max: 3,
-                        min: 1,
-                    },
-                },
-            ],
-        ]).roll()[0].item
-    )
-);

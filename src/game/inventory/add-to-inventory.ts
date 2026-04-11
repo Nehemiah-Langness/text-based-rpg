@@ -1,7 +1,7 @@
 import { type RoomLike } from '../engine/room';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
-import { Inventory, type InventoryKey } from './inventory';
+import { Inventory, type InventoryKey } from '../inventory';
 
 export function addToInventory(itemName: InventoryKey, backTo: RoomLike, text?: string, count = 1) {
     const item = Inventory.get(itemName);

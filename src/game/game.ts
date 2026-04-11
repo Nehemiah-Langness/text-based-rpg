@@ -1,4 +1,4 @@
-import { Inventory } from './inventory/inventory';
+import { Inventory } from './inventory';
 import { NpcList } from './npcs/npc-list';
 import { MapList } from './rooms/map-list';
 import { Player } from './player';

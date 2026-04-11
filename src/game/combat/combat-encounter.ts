@@ -11,6 +11,7 @@ import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { resolveAttack } from './resolve-attack';
 import { staminaToDescription } from '../utility-functions/stamina-to-description';
 import { oxfordComma } from '../utility-functions/oxford-comma';
+import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 
 export function combatEncounter(
     backTo: RoomLike,
@@ -42,7 +43,39 @@ function roundStart(
 ) {
     const { effects, skills } = Player.coolDown();
 
-    const nextPhase = () => playerTurn(backTo, enemies, variants);
+    const staminaRegeneration = Player.energize(
+        Player.modifiers
+            .map((x) => {
+                switch (x.effect) {
+                    case 'stamina-regen-low':
+                        return rollDice(6);
+                    case 'stamina-regen-med':
+                        return rollDice(6, 2);
+                    case 'stamina-regen-high':
+                        return rollDice(6, 3);
+                    default:
+                        return 0;
+                }
+            })
+            .reduce((c, n) => c + n, 0)
+    );
+
+    const healthRegeneration = Player.heal(
+        Player.modifiers
+            .map((x) => {
+                switch (x.effect) {
+                    case 'health-regen-low':
+                        return rollDice(6);
+                    case 'health-regen-med':
+                        return rollDice(6, 2);
+                    case 'health-regen-high':
+                        return rollDice(6, 3);
+                    default:
+                        return 0;
+                }
+            })
+            .reduce((c, n) => c + n, 0)
+    );
 
     const updates = effects
         .map((x) => `You are no longer ${modifierToPastTenseVerb(x)}.`)
@@ -50,11 +83,16 @@ function roundStart(
         .filter((x) => x)
         .join('\n\n');
 
-    if (!updates) {
-        return nextPhase();
-    }
-
-    return resultRoom(nextPhase, updates, undefined, Mood.battle);
+    return resultRoom(
+        () => playerTurn(backTo, enemies, variants),
+        [
+            healthRegeneration ? `You regenerate ${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}.` : null,
+            staminaRegeneration ? `You regenerate ${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.` : null,
+            updates ? updates : null,
+        ].filter((x) => x !== null),
+        undefined,
+        Mood.battle
+    );
 }
 
 function playerTurn(
@@ -108,6 +146,10 @@ function playerTurn(
                       {
                           code: 'flee',
                           text: 'Flee combat',
+                      },
+                      {
+                          code: 'inventory',
+                          text: 'Open your pouch',
                       }
                   ),
         (code, rm) => {
@@ -115,6 +157,8 @@ function playerTurn(
 
             if (code === 'nothing') {
                 return nextPhase();
+            } else if (code === 'inventory') {
+                return openInventoryRoom(nextPhase, 1);
             } else if (code.startsWith('perform-')) {
                 const skillName = code.replace('perform-', '') as SkillName;
                 const skill = Player.useSkill(skillName);
@@ -125,7 +169,7 @@ function playerTurn(
                 const resolvedAttack = resolveAttack(
                     {
                         level: skill.level,
-                        strength: skill.attack + Player.strength,
+                        strength: skill.attack + Player.strength + (modifiers.strength ? 3 : 0),
                         penalty: modifiers.distract ? 1 : 0,
                     },
                     {
@@ -202,27 +246,77 @@ function enemyTurn(
 ) {
     const currentEnemy = enemies[0];
     if (currentEnemy.health.current === 0) {
-        return combatEncounter(backTo, enemies.slice(1), {
-            nonLethal: variants?.nonLethal,
-            onComplete: variants.onComplete,
-            onFailure: variants.onFailure,
-        });
+        return resultRoom(
+            () =>
+                combatEncounter(backTo, enemies.slice(1), {
+                    nonLethal: variants?.nonLethal,
+                    onComplete: variants.onComplete,
+                    onFailure: variants.onFailure,
+                }),
+            `${currentEnemy.specificName} has been defeated.`,
+            undefined,
+            Mood.battle
+        );
     }
 
     const nextPhase = () => enemyAttack(backTo, enemies, variants);
 
     const { effects, skills } = currentEnemy.coolDown();
+
+    const staminaRegeneration = currentEnemy.energize(
+        currentEnemy.modifiers
+            .map((x) => {
+                switch (x.effect) {
+                    case 'stamina-regen-low':
+                        return rollDice(6);
+                    case 'stamina-regen-med':
+                        return rollDice(6, 2);
+                    case 'stamina-regen-high':
+                        return rollDice(6, 3);
+                    default:
+                        return 0;
+                }
+            })
+            .reduce((c, n) => c + n, 0)
+    );
+
+    const healthRegeneration = currentEnemy.heal(
+        currentEnemy.modifiers
+            .map((x) => {
+                switch (x.effect) {
+                    case 'health-regen-low':
+                        return rollDice(6);
+                    case 'health-regen-med':
+                        return rollDice(6, 2);
+                    case 'health-regen-high':
+                        return rollDice(6, 3);
+                    default:
+                        return 0;
+                }
+            })
+            .reduce((c, n) => c + n, 0)
+    );
+
     const updates = effects
         .map((x) => `${currentEnemy.specificName} is no longer ${modifierToPastTenseVerb(x)}.`)
         .concat(skills)
         .filter((x) => x)
         .join('\n\n');
 
-    if (!updates) {
-        return nextPhase;
-    }
-
-    return resultRoom(nextPhase, updates, undefined, Mood.battle);
+    return resultRoom(
+        nextPhase,
+        [
+            healthRegeneration
+                ? `${currentEnemy.specificName} regenerates ${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}.`
+                : null,
+            staminaRegeneration
+                ? `${currentEnemy.specificName} regenerates ${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.`
+                : null,
+            updates ? updates : null,
+        ].filter((x) => x !== null),
+        undefined,
+        Mood.battle
+    );
 }
 
 function enemyAttack(
@@ -250,7 +344,7 @@ function enemyAttack(
 
     const modifiers = currentEnemy.getModifiers();
     if (modifiers.stun) {
-        return resultRoom(nextPhase, `${currentEnemy} is stunned and unable to attack.`, undefined, Mood.battle);
+        return resultRoom(nextPhase, `${currentEnemy.specificName} is stunned and unable to attack.`, undefined, Mood.battle);
     }
 
     const enemySkillList = currentEnemy.skillSet
@@ -270,7 +364,7 @@ function enemyAttack(
         const resolvedAttack = resolveAttack(
             {
                 level: skill.level,
-                strength: skill.attack + currentEnemy.strength,
+                strength: skill.attack + currentEnemy.strength + (modifiers.strength ? 3 : 0),
                 penalty: modifiers.distract ? 1 : 0,
             },
             {

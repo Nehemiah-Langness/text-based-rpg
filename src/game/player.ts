@@ -6,5 +6,6 @@ export const Player = new PlayerEntity({
     stamina: 100,
     truthfulness: 50,
     valor: 0,
+    speed: 5,
     moves: Skills,
 });

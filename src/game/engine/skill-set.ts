@@ -1,4 +1,4 @@
-export type SkillModifier = 'stun' | 'distract' | 'alert';
+export type SkillModifier = 'stun' | 'distract' | 'alert' | 'stamina-regen-low' | 'health-regen-low'| 'stamina-regen-med' | 'health-regen-med' | 'stamina-regen-high' | 'health-regen-high' | 'speed' | 'strength';
 export type Skill = {
     name: string;
     actionDescription: string;
