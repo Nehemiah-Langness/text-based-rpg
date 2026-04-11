@@ -1,30 +1,26 @@
-import { equipItem } from '../../inventory/equip-item';
-import { getInventory } from '../../inventory/get-inventory';
-import { Inventory } from '../../inventory/inventory';
-import { isCategory } from '../../inventory/is-category';
-import { EquippableItems } from '../../inventory/lists/equippable-items';
-import { removeFromInventory } from '../../inventory/remove-from-inventory';
-import { HealthTable } from '../../inventory/tables/health-table';
-import { LuckTable } from '../../inventory/tables/luck-table';
-import { StaminaTable } from '../../inventory/tables/stamina-table';
-import type { Item } from '../../inventory/types/item';
-import { energize, heal } from '../../player';
-import { Stats } from '../../stats';
+import { Inventory, type InventoryKey } from '../../inventory/inventory';
+import { Player } from '../../player';
 import { Room, type RoomLike } from '../../engine/room';
 import { resultRoom } from './result-room';
 import { Mood } from '../moods/mood';
+import { healthToDescription } from '../../utility-functions/health-to-description';
+import { staminaToDescription } from '../../utility-functions/stamina-to-description';
+import { oxfordComma } from '../../utility-functions/oxford-comma';
+import { modifierToPastTenseVerb } from '../../utility-functions/modifier-to-past-tense-verb';
 
 export function shopInventoryRoom(
-    inventory: { item: Item; gold: number; description?: string }[],
-    onSelect: (selectedItem: Item | 'back', currentRoom: RoomLike) => RoomLike,
+    inventory: { item: InventoryKey; gold: number; description?: string }[],
+    onSelect: (selectedItem: InventoryKey | 'back', currentRoom: RoomLike) => RoomLike,
     continueText = 'Continue'
 ) {
     return new Room(
         null,
-        () =>
-            inventory.length
-                ? `You browse the shop and find the following wares available.  You have ${Inventory['Gold Coin'].count} gold coins in your pouch.`
-                : 'The shop is empty',
+        () => {
+            const currency = Inventory.get('coralShard');
+            return inventory.length
+                ? `You browse the shop and find the following wares available.  You have ${currency.count} ${currency.name}${currency.pluralSuffix ?? 's'} in your pouch.`
+                : 'The shop is empty';
+        },
         (rm) => {
             return {
                 options: [
@@ -39,33 +35,33 @@ export function shopInventoryRoom(
                         text: continueText,
                     },
                 ],
-                select: (code) => onSelect(code as Item | 'back', rm),
+                select: (code) => onSelect(code as InventoryKey | 'back', rm),
             };
         }
     );
 }
 
 export function inventoryRoom(
-    onSelect: (selectedItem: Item | 'back', currentRoom: RoomLike) => RoomLike,
+    onSelect: (selectedItem: InventoryKey | 'back', currentRoom: RoomLike) => RoomLike,
     continueText = 'Continue',
     action = 'Use',
-    filter?: (item: Item) => boolean
+    filter?: (item: InventoryKey) => boolean
 ) {
-    const getItems = () => getInventory().filter((item) => filter?.(item.name) ?? true);
+    const getItems = () => Inventory.list().filter((item) => filter?.(item.key) ?? true);
 
     return new Room(
         null,
         () => {
             return getItems().length
-                ? `You rummage through your pack and find the following items:`
+                ? `You rummage through your pouch and find the following items:`
                 : filter
-                ? 'Nothing in your pack is useful at this time.'
-                : 'Your pack is empty';
+                  ? 'Nothing in your pouch is useful at this time.'
+                  : 'Your pouch is empty.';
         },
         (rm) => {
             return {
                 options: [
-                    ...getItems().map((item) => {
+                    ...getItems().map(({ item }) => {
                         return {
                             text: `${action} ${item.name}${item.equipped ? ' (Equipped)' : ''} ${item.count > 1 ? `(x${item.count})` : ''}`,
                             code: item.name,
@@ -76,25 +72,26 @@ export function inventoryRoom(
                         text: continueText,
                     },
                 ],
-                select: (code) => onSelect(code as Item | 'back', rm),
+                select: (code) => onSelect(code as InventoryKey | 'back', rm),
             };
         }
-    );
+    ).withColor(Mood.menu);
 }
 
 export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = null): Room {
-    const equip = (code: keyof typeof Inventory) => {
+    const equip = (code: InventoryKey) => {
         let success = true;
-        if (Inventory[code].equipped) {
-            Inventory[code].equipped = false;
+        const item = Inventory.get(code);
+        if (item.equipped) {
+            item.equipped = false;
         } else {
-            success = equipItem(code);
+            success = Inventory.equip(code).equipped;
         }
 
         if (success) {
             return resultRoom(
                 itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
-                `You ${Inventory[code].equipped ? 'equip' : 'unequip'} your ${code}`,
+                `You ${item.equipped ? 'equip' : 'unequip'} your ${code}`,
                 undefined,
                 Mood.menu
             );
@@ -106,40 +103,37 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
         if (code === 'back') {
             return backTo;
         }
-        if (EquippableItems.includes(code)) {
+
+        const selectedItem = Inventory.get(code);
+
+        if (selectedItem.equippable) {
             const success = equip(code);
-            if (success) return Room.resolve(success).withColor(Mood.menu);
-        } else if (isCategory('consumables', code)) {
-            const healthRecovery = HealthTable[code];
-            removeFromInventory(code);
+            if (success) return success;
+        } else if (selectedItem.consumable) {
+            const { effects, energized, healed, text } = Inventory.consume(code, Player);
 
-            if (!Stats.consumedItems[code]) {
-                Stats.consumedItems[code] = 0;
-            }
-            Stats.consumedItems[code] += 1;
+            const nextScreen = () => (itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1));
 
-            return Room.resolve(
-                heal(itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1), healthRecovery)
-            ).withColor(Mood.menu);
-        } else if (isCategory('food', code)) {
-            const staminaRecovery = StaminaTable[code];
-            const criticalChanceBonus = LuckTable[code];
-            removeFromInventory(code);
-
-            if (!Stats.consumedItems[code]) {
-                Stats.consumedItems[code] = 0;
-            }
-            Stats.consumedItems[code] += 1;
-
-            return Room.resolve(
-                energize(
-                    itemLimit === 1 ? backTo : openInventoryRoom(backTo, itemLimit === null ? null : itemLimit - 1),
-                    staminaRecovery,
-                    criticalChanceBonus
-                )
-            ).withColor(Mood.menu);
+            return resultRoom(
+                nextScreen,
+                [
+                    text ?? `You consume your ${selectedItem.name}.`,
+                    healed
+                        ? `You gain ${Math.round(healed)} health points.  You are ${healthToDescription(
+                              Player.health.current / Player.health.max
+                          )}.`
+                        : null,
+                    energized
+                        ? `You gain ${Math.round(energized)} stamina points.  You are ${staminaToDescription(
+                              Player.stamina.current / Player.stamina.max
+                          )}.`
+                        : null,
+                    effects?.length ? `You are ${oxfordComma(...effects.map((e) => modifierToPastTenseVerb(e.effect)))}.` : null,
+                ].filter((x) => x !== null),
+                undefined,
+                Mood.menu
+            );
         }
-
-        return resultRoom(rm, `You cannot use your ${code} right now.`, undefined, Mood.menu);
-    }, 'Close pack').withColor(Mood.menu);
+        return resultRoom(rm, `You cannot use your ${selectedItem.name} right now.`, undefined, Mood.menu);
+    }, 'Close pouch');
 }

@@ -1,16 +1,14 @@
 import { type RoomLike } from '../engine/room';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
-import { equipItem } from './equip-item';
-import { Inventory } from './inventory';
-import { shouldEquip } from './should-equip';
-import type { Item } from './types/item';
+import { Inventory, type InventoryKey } from './inventory';
 
-export function addToInventory(item: Item, backTo: RoomLike, text?: string, count = 1) {
-    Inventory[item].count += count;
-    if (shouldEquip(item)) {
+export function addToInventory(itemName: InventoryKey, backTo: RoomLike, text?: string, count = 1) {
+    const item = Inventory.get(itemName);
+    item.count += count;
+    if (item.equippable) {
         return choiceRoom(
-            (text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`) + `  Would you like to equip it?`,
+            (text ?? `You have picked up the ${item}${count > 1 ? (item.pluralSuffix ?? 's') : ''}.`) + `  Would you like to equip it?`,
             [
                 {
                     text: `Equip the ${item}`,
@@ -23,12 +21,12 @@ export function addToInventory(item: Item, backTo: RoomLike, text?: string, coun
             ],
             (choice) => {
                 if (choice === 'equip') {
-                    equipItem(item);
-                    return resultRoom(backTo, `You have equipped the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`);
+                    Inventory.equip(itemName);
+                    return resultRoom(backTo, `You have equipped the ${item}${count > 1 ? (item.pluralSuffix ?? 's') : ''}.`);
                 }
                 return backTo;
             }
         );
     }
-    return resultRoom(backTo, text ?? `You have picked up the ${item}${count > 1 ? Inventory[item].pluralSuffix ?? 's' : ''}.`);
+    return resultRoom(backTo, text ?? `You have picked up the ${item}${count > 1 ? (item.pluralSuffix ?? 's') : ''}.`);
 }

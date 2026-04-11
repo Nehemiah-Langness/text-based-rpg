@@ -1,44 +1,18 @@
 import { rollDice } from '../dice';
-import type { InventoryItem, InventoryItemMeta } from './types/inventory-item';
-
-type Category<T> = T extends Record<string, InventoryItem<infer U>> ? U : never;
-
-export class InventorySystem<TInventory extends { [key in keyof TInventory]: InventoryItem<Category<TInventory>> }> {
-    items: TInventory;
-
-    constructor(items: TInventory) {
-        this.items = items;
-    }
-
-    static createInventoryItem<T>(meta: InventoryItemMeta<T> & Partial<InventoryItem<T>>): InventoryItem<T> {
-        return {
-            count: 0,
-            equipped: false,
-            ...meta,
-        };
-    }
-
-    find(item: InventoryItemMeta<Category<TInventory>>) {
-        const allItems = Object.entries(this.items) as [keyof TInventory, InventoryItem<Category<TInventory>>][];
-
-        const found = allItems.find(([, inventoryItem]) => inventoryItem === item);
-        if (found) {
-            return found[0];
-        }
-        const nameMatch = allItems.filter(([, inventoryItem]) => inventoryItem.name === item.name);
-        if (nameMatch.length === 1) {
-            return nameMatch[0][0];
-        }
-
-        return null;
-    }
-}
+import type { InventoryKey as BaseInventoryKey } from '../engine/category';
+import { InventorySystem } from '../engine/inventory-system';
+import type { InventoryItemMeta } from './types/inventory-item';
 
 export const Inventory = new InventorySystem({
+    coralShard: InventorySystem.createInventoryItem<'currency'>({
+        category: 'currency',
+        name: 'Coral Shard',
+        description: 'The main currency among mermaids.',
+    }),
     polishedShellFragment: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Polished Shell Fragment',
-        description: 'A smooth, decorative shell piece',
+        description: 'A smooth, decorative shell piece.',
         vendor: {
             value: 5,
         },
@@ -46,7 +20,7 @@ export const Inventory = new InventorySystem({
     crackedPearl: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Cracked Pearl',
-        description: 'Slightly flawed but still valuable',
+        description: 'Slightly flawed but still valuable.',
         vendor: {
             value: 7,
         },
@@ -54,7 +28,7 @@ export const Inventory = new InventorySystem({
     coralCharm: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Coral Charm',
-        description: 'Simple carved coral pendant',
+        description: 'Simple carved coral pendant.',
         vendor: {
             value: 10,
         },
@@ -62,7 +36,7 @@ export const Inventory = new InventorySystem({
     barnacleCoveredCoin: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Barnacle-Covered Coin',
-        description: 'Currency from a lost surface ship',
+        description: 'Currency from a lost surface ship.',
         vendor: {
             value: 13,
         },
@@ -70,7 +44,7 @@ export const Inventory = new InventorySystem({
     wornFinRing: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Worn Fin Ring',
-        description: 'Old jewelry with faded engravings',
+        description: 'Old jewelry with faded engravings.',
         vendor: {
             value: 16,
         },
@@ -78,7 +52,7 @@ export const Inventory = new InventorySystem({
     luminousPearl: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Luminous Pearl',
-        description: 'Emits a soft glow',
+        description: 'Emits a soft glow.',
         vendor: {
             value: 53,
         },
@@ -86,7 +60,7 @@ export const Inventory = new InventorySystem({
     glassBottleMessage: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Glass Bottle Message',
-        description: 'Contains partial, cryptic writing',
+        description: 'Contains partial, cryptic writing.',
         vendor: {
             value: 57,
         },
@@ -94,7 +68,7 @@ export const Inventory = new InventorySystem({
     engravedCoralIdol: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Engraved Coral Idol',
-        description: 'Depicts an unknown ocean figure',
+        description: 'Depicts an unknown ocean figure.',
         vendor: {
             value: 62,
         },
@@ -102,7 +76,7 @@ export const Inventory = new InventorySystem({
     silverTideBracelet: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Silver Tide Bracelet',
-        description: 'Atlantean-crafted jewelry',
+        description: 'Atlantean-crafted jewelry.',
         vendor: {
             value: 65,
         },
@@ -110,7 +84,7 @@ export const Inventory = new InventorySystem({
     oldNavigationCompass: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Old Navigation Compass',
-        description: 'Rusted, but intriguing',
+        description: 'Rusted, but intriguing.',
         vendor: {
             value: 72,
         },
@@ -118,7 +92,7 @@ export const Inventory = new InventorySystem({
     sharkToothTotem: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Shark Tooth Totem',
-        description: 'Tribal artifact, valued by collectors',
+        description: 'Tribal artifact, valued by collectors.',
         vendor: {
             value: 127,
         },
@@ -126,7 +100,7 @@ export const Inventory = new InventorySystem({
     dolphinCrestMedallion: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Dolphin Crest Medallion',
-        description: 'Symbol of high rank',
+        description: 'Symbol of high rank.',
         vendor: {
             value: 142,
         },
@@ -134,7 +108,7 @@ export const Inventory = new InventorySystem({
     ancientAtlanteanSigil: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Ancient Atlantean Sigil',
-        description: 'Mark of old authority',
+        description: 'Mark of old authority.',
         vendor: {
             value: 164,
         },
@@ -142,7 +116,7 @@ export const Inventory = new InventorySystem({
     tridentFragment: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Trident Fragment',
-        description: 'Broken shard from a ceremonial weapon',
+        description: 'Broken shard from a ceremonial weapon.',
         vendor: {
             value: 173,
         },
@@ -150,7 +124,7 @@ export const Inventory = new InventorySystem({
     velmorasInkVial: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: "Velmora's Ink Vial",
-        description: 'Still faintly swirling with dark energy',
+        description: 'Still faintly swirling with dark energy.',
         vendor: {
             value: 192,
         },
@@ -159,7 +133,7 @@ export const Inventory = new InventorySystem({
     sealedOrderRelic: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Silent Order Relic',
-        description: 'Marked with symbols of the Silent Order',
+        description: 'Marked with symbols of the Silent Order.',
         vendor: {
             value: 463,
         },
@@ -167,7 +141,7 @@ export const Inventory = new InventorySystem({
     echoPearl: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Echo Pearl',
-        description: 'Replays faint voices when held',
+        description: 'Replays faint voices when held.',
         vendor: {
             value: 485,
         },
@@ -175,7 +149,7 @@ export const Inventory = new InventorySystem({
     abyssalCoreShard: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Abyssal Core Shard',
-        description: 'Pulses with deep-sea energy',
+        description: 'Pulses with deep-sea energy.',
         vendor: {
             value: 489,
         },
@@ -183,7 +157,7 @@ export const Inventory = new InventorySystem({
     forgottenCrownPiece: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: 'Forgotten Crown Piece',
-        description: 'Fragment of a lost ruler’s crown',
+        description: "Fragment of a lost ruler's crown.",
         vendor: {
             value: 512,
         },
@@ -191,12 +165,14 @@ export const Inventory = new InventorySystem({
     inkSeersBrokenLens: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
         name: "Ink-Seer's Broken Lens",
-        description: 'Once used by Velmora to "see truth"',
+        description: 'Once used by Velmora to "see truth".',
         vendor: {
             value: 531,
         },
     }),
 });
+
+export type InventoryKey = BaseInventoryKey<typeof Inventory>;
 
 class LootTable<TCategory> {
     rolls: { item: InventoryItemMeta<TCategory>; number: { min: number; max: number } }[][];

@@ -61,7 +61,7 @@ export const Fred = new Npc(
                         ],
                         (code, choiceRoom) => {
                             const questCompletion = () =>
-                                addToInventory('Gold Coin', Quests.finish(rm, 'fredsSupplyRun'), 'Fred hands you a handful of coins.', 100);
+                                addToInventory('coralShard', Quests.finish(rm, 'fredsSupplyRun'), 'Fred hands you a handful of coins.', 100);
 
                             if (code === 'truth') {
                                 return resultRoom(
@@ -70,7 +70,7 @@ export const Fred = new Npc(
                                 );
                             } else if (code === 'lie') {
                                 return addToInventory(
-                                    'Gold Coin',
+                                    'coralShard',
                                     () =>
                                         resultRoom(questCompletion, [
                                             `"Figures - several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."`,

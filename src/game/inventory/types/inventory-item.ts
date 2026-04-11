@@ -1,4 +1,4 @@
-import type { SkillModifier } from "../../engine/skill-set";
+import type { SkillModifier } from '../../engine/skill-set';
 
 export type InventoryItem<TCategory> = {
     count: number;
@@ -23,5 +23,8 @@ export interface InventoryItemMeta<TCategory> {
             duration: number;
         }[];
         text?: string;
+    };
+    equippable?: {
+        subCategory: string;
     };
 }

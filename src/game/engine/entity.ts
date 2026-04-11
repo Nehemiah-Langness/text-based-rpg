@@ -86,8 +86,7 @@ export class Entity<
 
     prepareForAttack() {
         this.addModifier({ duration: 0, effect: 'alert' });
-        const staminaGained = Math.min(this.stamina.max - this.stamina.current, 10);
-        this.stamina.current += staminaGained;
+        const staminaGained = this.energize(10);
         return {
             effect: 'alert' as const,
             staminaGained,
@@ -103,5 +102,17 @@ export class Entity<
                 this.modifiers.push(modifier);
             }
         });
+    }
+
+    heal(amount: number) {
+        const amountHealed = Math.max(0, Math.min(amount, this.health.max - this.health.current));
+        this.health.current += amountHealed;
+        return amountHealed;
+    }
+
+    energize(amount: number) {
+        const amountEnergized = Math.max(0, Math.min(amount, this.stamina.max - this.stamina.current));
+        this.stamina.current += amountEnergized;
+        return amountEnergized;
     }
 }
