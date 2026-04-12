@@ -24,6 +24,7 @@ export function startSearchRoom(
     return searchRoom(backTo, {
         maxAttempts: settings.maxAttempts ?? null,
         tries: [],
+        hints: [],
         gridSize: settings.gridSize,
         player: settings.playerStart,
         target: target,

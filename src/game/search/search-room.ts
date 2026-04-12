@@ -8,6 +8,7 @@ export function searchRoom(
         gridSize: number;
         maxAttempts: number | null;
         tries: { x: number; y: number }[];
+        hints: { x: number; y: number }[];
         player: { x: number; y: number };
         target: { x: number; y: number };
         onComplete?: (rm: RoomLike) => RoomLike;
@@ -23,6 +24,9 @@ export function searchRoom(
         .concat(settings.tries.map(x => ({
             coordinates: x,
             icon: 'x'
+        }))).concat(settings.hints.map(x => ({
+            coordinates: x,
+            icon: '?'
         })));
 
     const drawGrid = () => {
@@ -34,7 +38,7 @@ export function searchRoom(
                     if (row === 0 || (row === 2 && y === settings.gridSize - 1)) {
                         currentLine += `----${x === settings.gridSize - 1 ? '-' : ''}`;
                     } else if (row === 1) {
-                        currentLine += `|${entities.filter(({coordinates}) => coordinates.x === x && coordinates.y === y).map(x => x.icon).join('').substring(0, 3).padEnd(2, ' ').padStart(3, ' ')}${x === settings.gridSize - 1 ? '|' : ''
+                        currentLine += `|${entities.filter(({ coordinates }) => coordinates.x === x && coordinates.y === y).map(x => x.icon).join('').substring(0, 3).padEnd(2, ' ').padStart(3, ' ')}${x === settings.gridSize - 1 ? '|' : ''
                             }`;
                     }
                 }
@@ -102,13 +106,27 @@ export function searchRoom(
                 settings.player.x = Math.max(0, settings.player.x - 1);
                 return nextRoom;
             } else if (code === 'search') {
-
                 if (settings.player.x === settings.target.x && settings.player.y === settings.target.y) {
                     return settings.onComplete?.(backTo) ?? backTo;
                 }
                 settings.tries.push({
                     ...settings.player
                 })
+                if ((Math.abs(settings.target.x - settings.player.x) < 2) && (Math.abs(settings.target.x - settings.player.x) < 2)) {
+                    [
+                        { x: settings.player.x - 1, y: settings.player.y - 1 },
+                        { x: settings.player.x + 1, y: settings.player.y - 1 },
+                        { x: settings.player.x - 1, y: settings.player.y + 1 },
+                        { x: settings.player.x + 1, y: settings.player.y + 1 },
+                        { x: settings.player.x + 1, y: settings.player.y },
+                        { x: settings.player.x - 1, y: settings.player.y },
+                        { x: settings.player.x, y: settings.player.y - 1 },
+                        { x: settings.player.x, y: settings.player.y + 1 }
+                    ]
+                        .filter(({ x, y }) => x >= 0 && y >= 0 && x < settings.gridSize && y < settings.gridSize)
+                        .filter(({ x, y }) => !settings.tries.find(tries => tries.x === x && tries.y === y) && !settings.hints.find(hint => hint.x === x && hint.y === y))
+                        .forEach(coordinate => settings.hints.push(coordinate))
+                }
                 const lost = settings.maxAttempts !== null && settings.tries.length >= settings.maxAttempts;
                 return lost ? (settings.onFailure?.(backTo) ?? backTo) : nextRoom
             }
