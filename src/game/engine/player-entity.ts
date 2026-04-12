@@ -2,6 +2,7 @@ import type { RoomLike } from './room';
 import type { Skill, SkillSet } from './skill-set';
 import { Entity } from './entity';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
+import { Inventory } from '../inventory';
 
 export class PlayerEntity<
     T extends {
@@ -65,7 +66,7 @@ export class PlayerEntity<
     }
 
     getDefense() {
-        return 0;
+        return Inventory.list(x => !!x.equippable?.defense).reduce((c, n) => c + (n.item.equippable?.defense ?? 0), 0);
     }
 
     die(room: RoomLike) {
