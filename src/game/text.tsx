@@ -25,10 +25,15 @@ export function Text({
         setCurrentCharacter((x) => x + 1);
     }, 50);
 
-    if (!readyForInput && currentCharacter >= content.length) {
-        onComplete();
+    const complete = !readyForInput && currentCharacter >= content.length;
+    if (complete) {
         progression.clearInterval();
     }
+    useEffect(() => {
+        if (complete) {
+            onComplete();
+        }
+    }, [complete, onComplete]);
 
     useEffect(() => {
         const handler = (ev: KeyboardEvent | MouseEvent) => {

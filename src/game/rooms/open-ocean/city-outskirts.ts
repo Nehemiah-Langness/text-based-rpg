@@ -41,6 +41,14 @@ export const CityOutskirts = new Room(
     .atLocation(OpenOceanMap, 'D', 4)
     .withName(RoomNames.openOcean.cityOutskirts)
     .withInventoryAccess()
+    .withRoomAccess(() =>
+        MermaidCityMap.entrance
+            ? {
+                  code: 'travel-north-custom',
+                  room: MermaidCityMap.entrance,
+              }
+            : null
+    )
     .withOnEnter((rm) => {
         const dialogue = new DialogueTree([...(!rm.visited ? OnEnterDescription : [])]);
 

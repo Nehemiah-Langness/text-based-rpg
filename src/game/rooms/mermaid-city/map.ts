@@ -1,4 +1,5 @@
 import { Map } from '../../engine/map';
+import { MapNames } from '../names';
 
 /* MAP
       N
@@ -36,4 +37,4 @@ import { Map } from '../../engine/map';
 |-----------|-----------|-----------|-----------|-----------|-----------|
 */
 
-export const MermaidCityMap = new Map('MermaidCityMap', 6, 'F');
+export const MermaidCityMap = new Map(MapNames.mermaidCity, 6, 'F');

@@ -38,6 +38,14 @@ export const CityGates = new Room(
     .atLocation(MermaidCityMap, 'E', 3)
     .withName(RoomNames.mermaidCity.cityGates)
     .withInventoryAccess()
+    .withRoomAccess(() =>
+        OpenOceanMap.entrance
+            ? {
+                  code: 'travel-south-custom',
+                  room: OpenOceanMap.entrance,
+              }
+            : null
+    )
     .withOnEnter((rm) => {
         const dialogue = new DialogueTree([...(!rm.visited ? OnEnterDescription : [])]);
 
@@ -57,14 +65,12 @@ Towering arches of white stone and polished pearl curve upward in sweeping, eleg
 A pair of armored guards drift near the entrance, watchful but still, their presence more ceremonial than threatening... yet unmistakably resolute.`,
     `Crossing this boundary feels heavier than it should.
 
-Like stepping out of safety - and into something that does not promise your return.
-
-To the north, the path leads back into the heart of the city, where the main plaza opens in quiet contrast to the wild unknown beyond the gates.`,
+Like stepping out of safety - and into something that does not promise your return.`,
 ];
 const VisitedDescription = [
     `The city gates rise before you like a boundary between two worlds.
 
 A pair of armored guards drift near the entrance, watchful but still, their presence more ceremonial than threatening... yet unmistakably resolute.
 
-To the north, the path leads back into the heart of the city, where the main plaza opens in quiet contrast to the wild unknown beyond the gates.`,
+To the north, the path leads back into the heart of the city, where the main plaza opens in quiet contrast to the wild unknown beyond the gates to the south.`,
 ];

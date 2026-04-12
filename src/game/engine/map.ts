@@ -108,4 +108,10 @@ export class Map {
 
         return this.cells[room.coordinates.y][room.coordinates.x - 1] ?? room;
     }
+
+    find(id: string) {
+        return Object.values(this.cells)
+            .map((row) => row.find((rm) => rm?.name === id))
+            .filter((x) => x)[0];
+    }
 }

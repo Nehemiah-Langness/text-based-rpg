@@ -143,6 +143,62 @@ export const Quests = new QuestsLog({
             id: 'find-hermit-home' as const,
             stage: `Locate the destroyed home of Velmora the Ink-Seer in the Coral Reef southeast of the city.`,
         },
+        {
+            id: 'follow-compass' as const,
+            stage: `Follow the compass to the Abyssal Crown.`,
+        },
+        {
+            id: 'learn-how-to-fix-crown' as const,
+            stage: `Talk to Commander Thalor.`,
+        },
+        {
+            id: 'fix-crown' as const,
+            stage: `Talk to [Blacksmith].`,
+        },
+        {
+            id: 'find-jewel-1' as const,
+            stage: `Follow the compass.`,
+        },
+        {
+            id: 'get-jewel-1' as const,
+            stage: `Get the jewel.`,
+        },
+        {
+            id: 'find-jewel-2' as const,
+            stage: `Follow the compass.`,
+        },
+        {
+            id: 'get-jewel-2' as const,
+            stage: `Get the jewel.`,
+        },
+        {
+            id: 'find-jewel-3' as const,
+            stage: `Follow the compass.`,
+        },
+        {
+            id: 'get-jewel-3' as const,
+            stage: `Get the jewel.`,
+        },
+        {
+            id: 'find-jewel-4' as const,
+            stage: `Follow the compass.`,
+        },
+        {
+            id: 'get-jewel-4' as const,
+            stage: `Get the jewel.`,
+        },
+        {
+            id: 'find-jewel-5' as const,
+            stage: `Follow the compass.`,
+        },
+        {
+            id: 'get-jewel-5' as const,
+            stage: `Meet the Dolphin Patrol in the trench south of the city.`,
+        },
+        {
+            id: 'go-to-trident-cave' as const,
+            stage: `Follow the Abyssal Descent to the Trident Cave.`,
+        },
     ]),
     fredsSupplyRun: QuestsLog.createQuest('Supply Run Gone Wrong', [
         {

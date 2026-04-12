@@ -17,3 +17,7 @@ export const RoomNames = {
         kelpForest: 'kelp-forest',
     },
 };
+export const MapNames = {
+    mermaidCity: 'MermaidCityMap',
+    openOcean: 'OpenOceanMap'
+}

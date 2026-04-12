@@ -5,6 +5,8 @@ import { isTravelOption, type TravelOption, type TravelOptions } from './travel-
 import { NpcList } from '../npcs/npc-list';
 import { characterMenu } from '../rooms/utility-rooms/character-menu';
 import { Names } from '../npcs/npc-names';
+import { getPath } from './path-finding/get-path';
+import { Compass } from '../compass';
 
 export type RoomLike = Room | (() => RoomLike);
 
@@ -26,6 +28,11 @@ export class Room<T = any> {
     visited = false;
     state: T;
     fastPrint = false;
+
+    additionalRoomAccess: (() => {
+        room: Room;
+        code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom`;
+    } | null)[] = [];
 
     public onEnter?: () => RoomLike = undefined;
 
@@ -72,6 +79,25 @@ export class Room<T = any> {
         this.roomColor = color;
     }
 
+    getAdjacentRooms() {
+        return (
+            this.getTravelOptions(this)
+                .filter((x) => x !== null)
+                .map(({ code }) =>
+                    isTravelOption(code)
+                        ? {
+                              code,
+                              room: this.travel(code),
+                          }
+                        : null
+                )
+                .filter((rm) => rm !== null && rm.room !== null) as {
+                room: Room;
+                code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom`;
+            }[]
+        ).concat(this.additionalRoomAccess.map((getRoom) => getRoom()).filter((x) => x !== null));
+    }
+
     save() {
         return {
             investigated: this.investigated,
@@ -90,8 +116,17 @@ export class Room<T = any> {
 
     getText() {
         const text = this.getTextLogic(this);
-        if (typeof text === 'string') return text;
-        return text.filter((x) => x).join('\n\n');
+        const parts = typeof text === 'string' ? [text] : text;
+
+        const compass = Compass.getDestination();
+        if (this.inventoryAccess && compass) {
+            const pathForward = getPath(this, compass);
+            const direction = pathForward?.[1]?.direction;
+            if (direction) {
+                parts.push(`Your compass points ${direction.replace('travel-', '').replace('-custom', '')}`);
+            }
+        }
+        return parts.filter((x) => x).join('\n\n');
     }
 
     getNpcsInRoom() {
@@ -204,6 +239,13 @@ export class Room<T = any> {
 
     withOnEnter(onEnter: (rm: Room) => RoomLike) {
         this.onEnter = () => onEnter(this);
+        return this;
+    }
+
+    withRoomAccess(
+        ...rooms: (() => { room: Room; code: (typeof TravelOptions)[number] | `${(typeof TravelOptions)[number]}-custom` } | null)[]
+    ) {
+        rooms.forEach((rm) => this.additionalRoomAccess.push(rm));
         return this;
     }
 

@@ -1,4 +1,5 @@
 import { Map } from '../../engine/map';
+import { MapNames } from '../names';
 
 /* MAP
       N
@@ -36,4 +37,4 @@ import { Map } from '../../engine/map';
 |-----------|-----------|-----------|-----------|-----------|-----------|
 */
 
-export const OpenOceanMap = new Map('OpenOceanMap', 6, 'F');
+export const OpenOceanMap = new Map(MapNames.openOcean, 6, 'F');
