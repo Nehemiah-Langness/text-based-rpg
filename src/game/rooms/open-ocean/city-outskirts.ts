@@ -25,7 +25,7 @@ export const CityOutskirts = new Room(
         return [
             {
                 code: 'travel-north-custom',
-                text: 'Enter the city',
+                text: 'Go north and enter the city',
             },
             {
                 code: 'travel-east',

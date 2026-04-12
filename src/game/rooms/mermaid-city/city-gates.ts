@@ -30,7 +30,7 @@ export const CityGates = new Room(
             },
             {
                 code: 'travel-south-custom',
-                text: 'Leave the city',
+                text: 'Go south and leave the city',
             },
         ];
     }
