@@ -25,7 +25,7 @@ export const Wastelands = new Room(
             },
             {
                 code: 'travel-east',
-                text: 'Go south to shark territory',
+                text: 'Go east to shark territory',
             },
             {
                 code: 'travel-south',
