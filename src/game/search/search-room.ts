@@ -125,7 +125,7 @@ export function searchRoom(
                 settings.tries.push({
                     ...settings.player,
                 });
-                if (Math.abs(settings.target.x - settings.player.x) < 2 && Math.abs(settings.target.x - settings.player.x) < 2) {
+                if (Math.abs(settings.target.x - settings.player.x) < 2 && Math.abs(settings.target.y - settings.player.y) < 2) {
                     const adjacentSquares = [
                         { x: settings.player.x - 1, y: settings.player.y - 1 },
                         { x: settings.player.x + 1, y: settings.player.y - 1 },

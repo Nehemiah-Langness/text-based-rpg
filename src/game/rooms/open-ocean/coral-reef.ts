@@ -32,8 +32,8 @@ export const CoralReef = new Room(
             select: (code) => {
                 if (code === 'search-hermit-home') {
                     return startSearchRoom(rm, {
-                        gridSize: 11,
-                        playerStart: { x: 5, y: 5 },
+                        gridSize: 7,
+                        playerStart: { x: 4, y: 4 },
                         maxAttempts: 10,
                         onComplete: (nxtRm) =>
                             resultRoom(

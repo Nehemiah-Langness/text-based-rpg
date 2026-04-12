@@ -63,17 +63,17 @@ export const DeepCoralReef = new Room(
     });
 
 const OnEnterDescription = [
-    `The reef tightens around you as you descend deeper, its beauty sharpening into something more intense… and more dangerous.
+    `The reef tightens around you as you descend deeper, its beauty sharpening into something more intense... and more dangerous.
 
-The coral here grows taller, denser—massive structures twisting upward like spires and jagged crowns, their colors deepening into rich crimsons, dark violets, and glowing blues that pulse faintly in the dim light. The water feels heavier, the currents slower, as if the ocean itself is pressing in.`,
+The coral here grows taller, denser - massive structures twisting upward like spires and jagged crowns, their colors deepening into rich crimsons, dark violets, and glowing blues that pulse faintly in the dim light. The water feels heavier, the currents slower, as if the ocean itself is pressing in.`,
     `Passages narrow into winding corridors between towering formations, forcing you to move carefully. Light struggles to reach this far down, breaking into thin, scattered beams that flicker across the reef in shifting patterns. Shadows cling longer here, stretching between the coral like something alive.
 
-In places, the reef is violently warped—collapsed arches, fused layers of coral, and sudden drops where the seafloor has fallen away. The signs of ancient upheaval are stronger here, as though this was the heart of whatever force once shattered the region.`,
-    `Movement catches your eye—then disappears. Something watching. Waiting.
+In places, the reef is violently warped - collapsed arches, fused layers of coral, and sudden drops where the seafloor has fallen away. The signs of ancient upheaval are stronger here, as though this was the heart of whatever force once shattered the region.`,
+    `Movement catches your eye - then disappears. Something watching. Waiting.
 
 The vibrant life of the upper reef feels distant now.
 
-Down here, the coral still glows…
+Down here, the coral still glows...
 
 But it no longer feels welcoming.`,
 ];

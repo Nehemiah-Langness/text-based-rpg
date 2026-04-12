@@ -129,7 +129,7 @@ const OnEnterDescription = [
     `The water darkens as you cross into the kelp forest, the open ocean giving way to towering walls of green.
 
 Massive strands of kelp rise from the seafloor to heights that vanish into the dim light above, their long, ribbon-like leaves swaying slowly with the current. They crowd close together, forming narrow passages that twist and shift as the water moves, turning the forest into a living maze.`,
-    `Light filters through in scattered beams, breaking apart against the dense growth and casting shifting shadows that dance across the sand below. Every movement feels watched—shapes flicker just beyond sight, vanishing as quickly as they appear.
+    `Light filters through in scattered beams, breaking apart against the dense growth and casting shifting shadows that dance across the sand below. Every movement feels watched - shapes flicker just beyond sight, vanishing as quickly as they appear.
 
 The sounds of the ocean feel muted here, replaced by the soft rustle of kelp brushing against itself and the occasional distant snap of something moving deeper within.`,
 ];
