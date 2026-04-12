@@ -74,7 +74,7 @@ You watch as the mixture shifts color slightly, settling into a soft, iridescent
 
 After a moment, she turns back to you, holding a small sealed container.
 
-Nerissa: "Here."`,
+"Here."`,
                 `"This is a stabilized version of the cream. Not as strong as what I'll refine later... but it should help."
 
 She presses it into your hand.
