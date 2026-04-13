@@ -67,7 +67,10 @@ export class PlayerEntity<
     }
 
     getDefense() {
-        return Inventory.list((x) => !!x.equippable?.defense).reduce((c, n) => c + (n.item.equippable?.defense ?? 0), 0);
+        return Inventory.list((x) => !!x.equippable?.defense && x.count > 0 && x.equipped).reduce(
+            (c, n) => c + (n.item.equippable?.defense ?? 0),
+            0
+        );
     }
 
     die(room: RoomLike) {
