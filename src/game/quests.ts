@@ -36,6 +36,17 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
         return questLog.stages[questLog.progress].id as TQuests[T]['stages'][number]['id'];
     }
 
+    checkStage<T extends keyof TQuests>(quest: T, stage: number | TQuests[T]['stages'][number]['id']) {
+        const questLog = this.getQuest(quest);
+        if (questLog.completed) return true;
+        if (!questLog.active) return false;
+
+        const progress =
+            typeof stage === 'number' ? stage : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]);
+
+        return questLog.progress >= progress;
+    }
+
     progress<T extends keyof TQuests>(
         backTo: RoomLike,
         quest: T,

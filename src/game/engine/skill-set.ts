@@ -46,12 +46,16 @@ export class SkillSet<
         return Object.entries(this.skills) as [keyof TSkills, Skill][];
     }
 
-    levelSkill<T extends keyof TSkills>(skill: T) {
-        this.skills[skill].level += 1;
-        if (this.skills[skill].level === 1) {
-            return `You have learned how to ${this.skills[skill].name}.`;
+    levelSkill<T extends keyof TSkills>(skill: T, value: number | null = null) {
+        const currentSkill = this.skills[skill];
+        if (value === null || currentSkill.level < value) {
+            currentSkill.level = value === null ? currentSkill.level + 1 : value;
+            if (currentSkill.level === 1) {
+                return `You have learned how to ${currentSkill.name}.`;
+            }
+            return `Your skill when you ${currentSkill.actionDescription} has increased.`;
         }
-        return `Your skill when you ${this.skills[skill].name} has increased.`;
+        return null;
     }
 
     getSkills() {

@@ -71,7 +71,10 @@ Something small... stuck.`
                                     }
 
                                     const finishQuest = () =>
-                                        resultRoom(() => Quests.finish(rm, 'freeWiggles'), Player.skillSet.levelSkill('starfishThrow'));
+                                        resultRoom(
+                                            () => Quests.finish(rm, 'freeWiggles'),
+                                            [Player.skillSet.levelSkill('starfishThrow')].filter((x) => x !== null)
+                                        );
 
                                     if (investigateChoice === 'careful') {
                                         return resultRoom(

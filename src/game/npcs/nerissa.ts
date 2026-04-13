@@ -12,7 +12,7 @@ export const Nerissa = new Npc(
         `"Wait - don't move. Your skin looks terrible. I made something for that."`,
         `"Imagine being chosen for a legendary quest and still having to pay rent."`,
         () => {
-            if (Quests.quests.mainQuest.progress < 3) return false;
+            if (!Quests.checkStage('mainQuest', 'train-tail-kick')) return false;
 
             return `"If Thalor didn't break you today, I'm calling that a win."`;
         },

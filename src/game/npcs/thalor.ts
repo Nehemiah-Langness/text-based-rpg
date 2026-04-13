@@ -2,6 +2,8 @@ import { Npc } from '../engine/npc';
 import { Factions } from '../factions';
 import { Quests } from '../quests';
 import { GuardHall } from '../rooms/mermaid-city/guard-hall';
+import { resultRoom } from '../rooms/utility-rooms/result-room';
+import { Skills } from '../skills';
 import { Names } from './npc-names';
 import { Velmora } from './velmora';
 
@@ -70,9 +72,50 @@ A final glance.
                 (rm) => Quests.progress(rm, 'mainQuest', 'learn-first-clue-location'),
             ];
         },
+        learnBubbleBlast: (npc, room) => {
+            return [
+                `${npc.getName(room)[Names.FullName]} watches you in silence for a long moment.
+
+Then he exhales slowly.
+
+"You rely too much on proximity."
+
+He steps forward into the training circle, raising one hand.`,
+                `"Out there, you won't always have the luxury of closing the distance. Some enemies won't let you."
+
+He shifts his stance, planting himself firmly as the current around him seems to still.
+
+"So you make distance... your weapon."`,
+                `His arms draw back - then strike forward in a rapid, controlled series of punches. Too fast to follow cleanly. The water in front of him compresses, tightening unnaturally - and then releases.
+
+A focused burst surges outward, a visible wave of force cutting through the arena. In its wake, a spiraling trail of bubbles lingers, drifting and popping as the energy dissipates.
+
+The strike hits the far wall with a dull, echoing impact.`,
+                `Thalor lowers his arms.
+
+"Bubble Blast."
+
+He glances back at you.
+
+"Speed. Control. Precision."
+
+A brief pause.
+
+"Your body doesn't just move through the water. It shapes it."`,
+                `He steps aside, giving you space.
+
+"Now show me you understand that."`,
+                (backTo) =>
+                    resultRoom(
+                        backTo,
+                        [Skills.levelSkill('bubbleBlast', 1)].filter((x) => x !== null)
+                    ),
+            ];
+        },
     },
     () => {
         if (Quests.getStage('mainQuest') === 'learn-first-clue-location') return 'firstClue';
+        if (Quests.checkStage('mainQuest', 'fight-for-crown') && Skills.skills.bubbleBlast.level === 0) return 'learnBubbleBlast';
         return null;
     }
 )

@@ -20,10 +20,10 @@ export function searchRoom(
             coordinates: settings.player,
             icon: '*',
         },
-        {
-            coordinates: settings.target,
-            icon: '.',
-        },
+        // {
+        //     coordinates: settings.target,
+        //     icon: '.',
+        // },
     ]
         .concat(
             settings.tries.map((x) => ({

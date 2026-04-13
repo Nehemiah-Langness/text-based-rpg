@@ -5,7 +5,10 @@ import { resultRoom } from '../utility-rooms/result-room';
 import { tutorialCombatRoom } from './tutorial-combat-room';
 
 export const Scene1 = resultRoom(() => {
-    return resultRoom(tutorialCombatRoom, [Player.skillSet.levelSkill('tailKick')]);
+    return resultRoom(
+        tutorialCombatRoom,
+        [Player.skillSet.levelSkill('tailKick')].filter((x) => x !== null)
+    );
 }, [
     `You follow ${Thalor.getName()[Names.FullName]} through the arched passageway, leaving the open plaza behind.
 
