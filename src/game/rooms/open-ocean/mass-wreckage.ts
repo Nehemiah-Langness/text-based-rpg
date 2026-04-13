@@ -217,11 +217,7 @@ export const MassWreckage = new Room(
 
         const mainQuest = Quests.getStage('mainQuest');
 
-        if (
-            ['follow-compass-to-crown', 'find-crown-piece-1', 'find-crown-piece-2', 'find-crown-piece-3', 'fight-for-crown'].includes(
-                mainQuest ?? ''
-            )
-        ) {
+        if (['find-crown-piece-1', 'find-crown-piece-2', 'find-crown-piece-3'].includes(mainQuest ?? '')) {
             options.push({
                 code: 'search',
                 text: 'Search for the Abyssal Crown',
@@ -293,7 +289,8 @@ And somewhere beyond it... the path forward.`,
 
                 if (code === 'search') {
                     return startSearchRoom(mainWreckage, {
-                        gridSize: 9,
+                        gridSize: 7,
+                        maxAttempts: 5,
                         onComplete: (rm) => {
                             if (mainWreckage.state.piecesFound === 0) {
                                 mainWreckage.state.piecesFound += 1;
