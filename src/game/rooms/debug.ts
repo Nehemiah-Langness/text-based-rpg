@@ -1,9 +1,11 @@
 import { DialogueTree } from '../engine/dialogue-tree';
 import { Quests } from '../quests';
-import { CoralReef } from './open-ocean/coral-reef';
+import { MassWreckage } from './open-ocean/mass-wreckage';
 
 export default () => {
-    return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'learn-first-clue-location', { shouldStartQuest: true })]).getRoom(
-        CoralReef
+    MassWreckage.visited = true;
+    MassWreckage.state.piecesFound = 2;
+    return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'find-crown-piece-2', { shouldStartQuest: true })]).getRoom(
+        MassWreckage
     );
 };

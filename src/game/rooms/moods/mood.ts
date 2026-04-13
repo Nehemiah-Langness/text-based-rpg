@@ -30,4 +30,8 @@ export const Mood = {
         secondary: '#006c6214',
     },
     questComplete: '#077400',
+    dead: {
+        primary: '#180000',
+        secondary: '#000',
+    },
 };

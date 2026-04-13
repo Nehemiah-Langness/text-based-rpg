@@ -20,6 +20,10 @@ export const SacredGarden = new Room(
     () => {
         return [
             {
+                code: 'travel-north',
+                text: 'Go north into shark territory',
+            },
+            {
                 code: 'travel-south',
                 text: 'Go south through the wastelands to the coral reef',
             },
@@ -55,6 +59,8 @@ It feels watched over.`,
 ];
 
 const VisitedDescription = `The ocean is quiet around you as you rest in the Sacred Gardens.
+
+To the north, you see the rough shapes of swimming sharks against the backdrop of the ocean.
 
 To the west, the silhouette of an old shipwreck looms faintly, its broken frame a distant contrast to the harmony here.
 

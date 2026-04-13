@@ -20,6 +20,10 @@ export function searchRoom(
             coordinates: settings.player,
             icon: '*',
         },
+        {
+            coordinates: settings.target,
+            icon: '.',
+        },
     ]
         .concat(
             settings.tries.map((x) => ({
@@ -122,9 +126,7 @@ export function searchRoom(
                 if (settings.player.x === settings.target.x && settings.player.y === settings.target.y) {
                     return settings.onComplete?.(backTo) ?? backTo;
                 }
-                settings.tries.push({
-                    ...settings.player,
-                });
+
                 if (Math.abs(settings.target.x - settings.player.x) < 2 && Math.abs(settings.target.y - settings.player.y) < 2) {
                     const adjacentSquares = [
                         { x: settings.player.x - 1, y: settings.player.y - 1 },
@@ -135,7 +137,13 @@ export function searchRoom(
                         { x: settings.player.x - 1, y: settings.player.y },
                         { x: settings.player.x, y: settings.player.y - 1 },
                         { x: settings.player.x, y: settings.player.y + 1 },
-                    ].filter(({ x, y }) => x >= 0 && y >= 0 && x < settings.gridSize && y < settings.gridSize);
+                    ]
+                        .filter(({ x, y }) => x >= 0 && y >= 0 && x < settings.gridSize && y < settings.gridSize)
+                        .filter(
+                            (hint) =>
+                                (hint.x === settings.target.x && hint.y === settings.target.y) ||
+                                !settings.tries.find((tries) => isAdjacent(tries, hint))
+                        );
 
                     if (!settings.hints.length) {
                         adjacentSquares
@@ -151,6 +159,11 @@ export function searchRoom(
                         );
                     }
                 }
+
+                settings.tries.push({
+                    ...settings.player,
+                });
+
                 const lost = settings.maxAttempts !== null && settings.tries.length >= settings.maxAttempts;
                 return lost ? (settings.onFailure?.(backTo) ?? backTo) : nextRoom;
             }
@@ -160,4 +173,8 @@ export function searchRoom(
     )
         .withColor(Mood.miniGame)
         .withFastPrint();
+}
+
+function isAdjacent({ x: x1, y: y1 }: { x: number; y: number }, { x: x2, y: y2 }: { x: number; y: number }) {
+    return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
 }

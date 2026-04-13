@@ -15,9 +15,10 @@ export const RoomNames = {
         sacredGarden: 'sacred-garden',
         shipwreck: 'shipwreck',
         kelpForest: 'kelp-forest',
+        massWreckage: 'mass-wreckage',
     },
 };
 export const MapNames = {
     mermaidCity: 'MermaidCityMap',
-    openOcean: 'OpenOceanMap'
-}
+    openOcean: 'OpenOceanMap',
+};

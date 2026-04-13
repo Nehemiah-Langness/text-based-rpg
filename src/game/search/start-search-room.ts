@@ -7,15 +7,15 @@ export function startSearchRoom(
     settings: {
         gridSize: number;
         maxAttempts?: number;
-        playerStart: { x: number; y: number };
+        playerStart?: { x: number; y: number };
         target?: { x: number; y: number };
         onFailure?: (rm: RoomLike) => RoomLike;
         onComplete?: (rm: RoomLike) => RoomLike;
     }
 ) {
     const getSpawnLocation = () => {
-        let x = rollDice(settings.gridSize) - 1;
-        let y = rollDice(settings.gridSize) - 1;
+        const x = rollDice(settings.gridSize) - 1;
+        const y = rollDice(settings.gridSize) - 1;
         return { x, y };
     };
 
@@ -26,7 +26,10 @@ export function startSearchRoom(
         tries: [],
         hints: [],
         gridSize: settings.gridSize,
-        player: settings.playerStart,
+        player: settings.playerStart ?? {
+            x: Math.floor(settings.gridSize / 2),
+            y: Math.floor(settings.gridSize / 2),
+        },
         target: target,
         onComplete: settings.onComplete,
         onFailure: settings.onFailure,

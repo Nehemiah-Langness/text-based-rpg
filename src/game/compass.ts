@@ -6,10 +6,20 @@ export const Compass = {
     destination: null as string | null,
     getDestination: () => {
         const mainQuest = Quests.getStage('mainQuest');
-        if (mainQuest === 'follow-compass') {
-            return MapList.find((map) => map.id === MapNames.openOcean)?.find(RoomNames.openOcean.shipwreck) ?? null;
+        if (
+            (
+                [
+                    'follow-compass-to-crown',
+                    'find-crown-piece-1',
+                    'find-crown-piece-2',
+                    'find-crown-piece-3',
+                    'fight-for-crown',
+                ] as (typeof mainQuest)[]
+            ).includes(mainQuest)
+        ) {
+            return MapList.find((map) => map.id === MapNames.openOcean)?.find(RoomNames.openOcean.massWreckage) ?? null;
         } else if (Compass.destination) {
-            return MapList.map((map) => map.find(RoomNames.openOcean.shipwreck))[0] ?? null;
+            return MapList.map((map) => map.find(Compass.destination ?? ''))[0] ?? null;
         }
         return null;
     },

@@ -31,6 +31,10 @@ export class InventorySystem<
         return this.items[key];
     }
 
+    getCategory(category: Category<TInventory>) {
+        return this.list((item) => item.category === category);
+    }
+
     equip(key: keyof TInventory) {
         const item = this.get(key);
         if (item.equippable) {

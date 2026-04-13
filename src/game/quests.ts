@@ -144,8 +144,24 @@ export const Quests = new QuestsLog({
             stage: `Locate the destroyed home of Velmora the Ink-Seer in the Coral Reef southeast of the city.`,
         },
         {
-            id: 'follow-compass' as const,
+            id: 'follow-compass-to-crown' as const,
             stage: `Follow the compass to the Abyssal Crown.`,
+        },
+        {
+            id: 'find-crown-piece-1' as const,
+            stage: `Locate a piece of the Abyssal Crown.`,
+        },
+        {
+            id: 'find-crown-piece-2' as const,
+            stage: `Locate a second piece of the Abyssal Crown.`,
+        },
+        {
+            id: 'find-crown-piece-3' as const,
+            stage: `Locate the third piece of the Abyssal Crown.`,
+        },
+        {
+            id: 'fight-for-crown' as const,
+            stage: `Fight the Bloodfins for the crown.`,
         },
         {
             id: 'learn-how-to-fix-crown' as const,

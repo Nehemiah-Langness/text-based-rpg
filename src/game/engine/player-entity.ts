@@ -3,6 +3,7 @@ import type { Skill, SkillSet } from './skill-set';
 import { Entity } from './entity';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Inventory } from '../inventory';
+import { Mood } from '../rooms/moods/mood';
 
 export class PlayerEntity<
     T extends {
@@ -66,7 +67,7 @@ export class PlayerEntity<
     }
 
     getDefense() {
-        return Inventory.list(x => !!x.equippable?.defense).reduce((c, n) => c + (n.item.equippable?.defense ?? 0), 0);
+        return Inventory.list((x) => !!x.equippable?.defense).reduce((c, n) => c + (n.item.equippable?.defense ?? 0), 0);
     }
 
     die(room: RoomLike) {
@@ -77,13 +78,10 @@ export class PlayerEntity<
             room,
             [
                 `You drift into unconsciousness - barely holding onto your life.`,
-                `You don't know how long you have been out, but you awaken - still alive, but barely so.`,
+                `You don't know how long you have been out, but you eventually awaken - still alive, but barely so.`,
             ],
             undefined,
-            {
-                primary: '#000',
-                secondary: '#000',
-            }
+            Mood.dead
         );
     }
 }

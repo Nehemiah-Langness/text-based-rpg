@@ -121,6 +121,10 @@ export const Shipwreck = new Room(
     () => {
         return [
             {
+                code: 'travel-north',
+                text: 'Go north to the old battlefield',
+            },
+            {
                 code: 'travel-east',
                 text: 'Go east to the sacred garden',
             },
@@ -161,5 +165,7 @@ The wreck sits between them - caught between light and darkness, memory and deca
 ];
 
 const VisitedDescription = [
-    'A shattered vessel rests between the Sacred Gardens to the east and the Kelp Forest to the west, its hollow interior dark and full of secrets.',
+    `A shattered vessel rests between the Sacred Gardens to the east and the Kelp Forest to the west, its hollow interior dark and full of secrets.
+    
+To the north, the ocean opens into the remnants of a long ago battle.`,
 ];
