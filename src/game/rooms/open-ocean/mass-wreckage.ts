@@ -247,12 +247,13 @@ export const MassWreckage = new Room(
                             return resultRoom(
                                 () =>
                                     Quests.progress(
-                                        resultRoom(
-                                            rm,
-                                            `You rummage through the area and pick up:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`
-                                        ),
+                                        () =>
+                                            resultRoom(
+                                                rm,
+                                                `You rummage through the area and pick up:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`
+                                            ),
                                         'mainQuest',
-                                        'find-crown-piece-1'
+                                        'fight-for-crown'
                                     ),
                                 [
                                     `The last Bloodfin jerks once - then goes still.
