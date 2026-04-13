@@ -88,7 +88,7 @@ export class SkillSet<
     }
 
     nextLevelXpRequirement(level: number) {
-        return Math.min(1, level) * 25;
+        return Math.max(1, level) * 25;
     }
 
     useSkill<T extends keyof TSkills>(skillName: T) {
