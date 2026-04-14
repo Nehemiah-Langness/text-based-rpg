@@ -20,11 +20,14 @@ export function searchRoom(
             coordinates: settings.player,
             icon: '*',
         },
-        // {
-        //     coordinates: settings.target,
-        //     icon: '.',
-        // },
+        import.meta.env.DEV
+            ? {
+                  coordinates: settings.target,
+                  icon: '.',
+              }
+            : null,
     ]
+        .filter((x) => x !== null)
         .concat(
             settings.tries.map((x) => ({
                 coordinates: x,

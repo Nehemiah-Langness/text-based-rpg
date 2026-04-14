@@ -73,7 +73,7 @@ export const Fred = new Npc(
 
                             if (code === 'truth') {
                                 return resultRoom(questCompletion, [
-                                    `"It looks like everything is accounted for - here's a little something for your trouble." Fred states with a little more enthusiasm than his normal.
+                                    `"It looks like everything is accounted for," Fred states with a little more enthusiasm than his normal.
                                     
 "Here's a little something for your trouble."`,
                                     Player.addTruth(5),

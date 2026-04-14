@@ -194,14 +194,14 @@ function playerTurn(
                 Player.addModifier(...resolvedAttack.attackerModifiers);
 
                 currentEnemy.health.current = Math.max(0, currentEnemy.health.current - resolvedAttack.damage);
-                currentEnemy.addModifier(...(skill.modifiers ?? []));
+                if (!resolvedAttack.dodged) currentEnemy.addModifier(...(skill.modifiers ?? []));
 
                 return resultRoom(
                     nextPhase,
                     [
                         resolvedAttack.critical === 'fail'
                             ? `You failed to ${skill.actionDescription}.`
-                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
+                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)': ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                         resolvedAttack.attackerModifiers.length
                             ? `You have been ${oxfordComma(
                                   ...resolvedAttack.attackerModifiers.map(
@@ -212,7 +212,7 @@ function playerTurn(
                                   )
                               )}.`
                             : null,
-                        skill.modifiers?.length
+                        !resolvedAttack.dodged && skill.modifiers?.length
                             ? `${currentEnemy.specificName} has been ${oxfordComma(
                                   ...skill.modifiers.map(
                                       (modifier) =>
@@ -367,8 +367,10 @@ function enemyAttack(
     const enemySkillList = currentEnemy.skillSet
         .getSkills()
         .filter((x) => !x.skill.stamina || x.skill.stamina < currentEnemy.stamina.current);
-
-    const options = enemySkillList.map((e) => `perform-${e.name}`).concat('dodge');
+    const options = enemySkillList
+        .flatMap((x) => new Array(x.skill.attack * x.skill.level).fill(x) as (typeof x)[])
+        .map((e) => `perform-${e.name}`)
+        .concat('dodge');
     const chosenOption = options[rollDice(options.length) - 1];
 
     if (chosenOption.startsWith('perform-')) {
@@ -393,14 +395,14 @@ function enemyAttack(
         currentEnemy.addModifier(...resolvedAttack.attackerModifiers);
 
         Player.health.current = Math.max(0, Player.health.current - resolvedAttack.damage);
-        Player.addModifier(...(skill.modifiers ?? []));
+        if (!resolvedAttack.dodged) Player.addModifier(...(skill.modifiers ?? []));
 
         return resultRoom(
             nextPhase,
             [
                 resolvedAttack.critical === 'fail'
                     ? `${currentEnemy.specificName} failed to perform a ${skill.name}.`
-                    : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
+                    : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)': ''}${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                 resolvedAttack.attackerModifiers.length
                     ? `${currentEnemy.specificName} has been ${oxfordComma(
                           ...resolvedAttack.attackerModifiers.map(
@@ -411,7 +413,7 @@ function enemyAttack(
                           )
                       )}.`
                     : null,
-                skill.modifiers?.length
+                !resolvedAttack.dodged && skill.modifiers?.length
                     ? `You have been ${oxfordComma(
                           ...skill.modifiers.map(
                               (modifier) =>
@@ -433,6 +435,7 @@ function enemyAttack(
         return resultRoom(
             nextPhase,
             [
+                `${currentEnemy.specificName} readies for your attack.`,
                 `${currentEnemy.specificName} is ${modifierToPastTenseVerb(effect)}.`,
                 staminaGained > 0 ? `${currentEnemy.specificName} has gained ${staminaGained} stamina.` : null,
             ].filter((x) => x !== null),

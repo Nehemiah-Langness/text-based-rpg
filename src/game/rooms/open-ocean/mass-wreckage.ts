@@ -224,7 +224,7 @@ export const MassWreckage = new Room(
             });
         } else if (mainQuest === 'fight-for-crown') {
             options.push({
-                code: 'search',
+                code: 'fight',
                 text: 'Fight the Bloodfins',
             });
         }
@@ -358,6 +358,8 @@ Before you can even react, one of the sharks charges past you and swipes the cro
                             return rm;
                         },
                     });
+                } else if (code === 'fight') {
+                    return bloodfinCombat(mainWreckage);
                 }
 
                 return mainWreckage;
