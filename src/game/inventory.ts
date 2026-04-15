@@ -223,6 +223,7 @@ export const Inventory = new InventorySystem({
         vendor: {
             value: 26,
         },
+        count: 2,
     }),
     kelpNoodleBowl: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -240,6 +241,7 @@ export const Inventory = new InventorySystem({
         vendor: {
             value: 48,
         },
+        count: 1,
     }),
     coralFruitMedley: InventorySystem.createInventoryItem<'food'>({
         category: 'food',

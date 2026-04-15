@@ -1,13 +1,17 @@
 import type { InputOption } from '../../input-option';
 import { Room, type RoomLike } from '../../engine/room';
 
-export function choiceRoom(choice: string, options: InputOption[], onChoice: (choice: string, room: Room) => RoomLike) {
+export function choiceRoom(
+    choice: string | (() => string),
+    options: (InputOption | null)[] | (() => (InputOption | null)[]),
+    onChoice: (choice: string, room: Room) => RoomLike
+) {
     return new Room(
         null,
-        () => choice,
+        () => (typeof choice === 'string' ? choice : choice()),
         (rm) => {
             return {
-                options: options,
+                options: (typeof options === 'function' ? options() : options).filter((x) => x !== null),
                 select: (code) => onChoice(code, rm),
             };
         }

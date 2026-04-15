@@ -5,7 +5,7 @@ export type InventoryItem<TCategory> = {
     equipped: boolean;
 } & InventoryItemMeta<TCategory>;
 
-export interface InventoryItemMeta<TCategory> {
+export interface InventoryItemMeta<TCategory = string> {
     name: string;
     category: TCategory;
     vendor?: {

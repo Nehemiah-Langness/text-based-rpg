@@ -3,11 +3,11 @@ import type { InventoryItem, InventoryItemMeta } from '../inventory/types/invent
 import type { Entity } from './entity';
 import { LootTable, type LootTableRolls } from '../inventory/loot-table';
 
-export class InventorySystem<
-    TInventory extends {
-        [key in keyof TInventory]: InventoryItem<Category<TInventory>>;
-    },
-> {
+export type InventoryConstraint<TInventory> = {
+    [key in keyof TInventory]: InventoryItem<Category<TInventory>>;
+};
+
+export class InventorySystem<TInventory extends InventoryConstraint<TInventory>> {
     items: TInventory;
 
     constructor(items: TInventory) {

@@ -8,38 +8,84 @@ import { staminaToDescription } from '../../utility-functions/stamina-to-descrip
 import { oxfordComma } from '../../utility-functions/oxford-comma';
 import { modifierToPastTenseVerb } from '../../utility-functions/modifier-to-past-tense-verb';
 import { choiceRoom } from './choice-room';
+import type { Store } from '../../engine/store';
+import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
 
-export function shopInventoryRoom(
-    inventory: { item: InventoryKey; gold: number; description?: string }[],
-    onSelect: (selectedItem: InventoryKey | 'back', currentRoom: RoomLike) => RoomLike,
-    continueText = 'Continue'
-) {
-    return new Room(
-        null,
-        () => {
-            const currency = Inventory.get('coralShard');
-            return inventory.length
-                ? `You browse the shop and find the following wares available.  You have ${currency.count} ${currency.name}${currency.pluralSuffix ?? 's'} in your pouch.`
-                : 'The shop is empty';
-        },
-        (rm) => {
-            return {
-                options: [
-                    ...inventory.map((item) => {
-                        return {
-                            text: `Buy ${item.description ?? item.item} for ${item.gold}g`,
-                            code: item.item,
-                        };
-                    }),
-                    {
-                        code: 'back',
-                        text: continueText,
-                    },
-                ],
-                select: (code) => onSelect(code as InventoryKey | 'back', rm),
-            };
+export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, mode: 'buy' | 'sell', continueText = 'Done'): RoomLike {
+    const currency = Inventory.get('coralShard');
+
+    const items = mode === 'buy' ? store.getItemsToSell() : store.getItemsToBuy();
+
+    return choiceRoom(
+        `${text}\n\nYou currently have ${currency.count} coral shards.`,
+        [
+            ...items.map(({ item, price, itemKey }) => {
+                return {
+                    text: `View ${item.name} (${price} coral shards)`,
+                    code: itemKey,
+                };
+            }),
+            {
+                code: 'back',
+                text: continueText,
+            },
+        ],
+        (code, rm) => {
+            if (code === 'back') {
+                return backTo;
+            } else {
+                const selectedItem = items.find((item) => item.itemKey === code);
+                if (selectedItem) {
+                    return choiceRoom(
+                        () => {
+                            const selectedItem = items.find((item) => item.itemKey === code);
+                            if (!selectedItem) return `This item is longer available to ${mode}.`;
+                            return (
+                                getItemDescription(selectedItem.item) +
+                                `\n\n${mode === 'buy' ? 'Costs ' : 'Sells for '}${selectedItem.price} coral shards.${mode === 'sell' ? `\n\nYou have ${selectedItem.item.count}.` : ''}`
+                            );
+                        },
+                        () => [
+                            (mode === 'buy' && Inventory.items.coralShard.count >= selectedItem.price) || selectedItem.item.count > 0
+                                ? {
+                                      code: 'transaction',
+                                      text: mode === 'buy' ? 'Buy' : 'Sell',
+                                  }
+                                : null,
+                            {
+                                code: 'back',
+                                text: 'Back',
+                            },
+                        ],
+                        (transactionCode, transactionRoom) => {
+                            if (transactionCode === 'back') {
+                                return shopInventoryRoom(backTo, text, store, mode, continueText);
+                            } else if (transactionCode === 'transaction') {
+                                if (mode === 'buy') {
+                                    if (Inventory.items.coralShard.count >= selectedItem.price) {
+                                        Inventory.add(selectedItem.itemKey as InventoryKey, 1);
+                                        Inventory.add('coralShard', -selectedItem.price);
+                                        return resultRoom(transactionRoom, `You buy the ${selectedItem.item.name}.`, undefined, Mood.menu);
+                                    }
+                                } else {
+                                    const toSell = Inventory.get(selectedItem.itemKey as InventoryKey);
+                                    if (toSell.count > 0) {
+                                        Inventory.add(selectedItem.itemKey as InventoryKey, -1);
+                                        Inventory.add('coralShard', selectedItem.price);
+                                        return resultRoom(transactionRoom, `You sell the ${selectedItem.item.name}.`, undefined, Mood.menu);
+                                    }
+                                }
+                            }
+
+                            return transactionRoom;
+                        }
+                    ).withColor(Mood.menu);
+                }
+            }
+
+            return rm;
         }
-    );
+    ).withColor(Mood.menu);
 }
 
 export function inventoryRoom(
@@ -79,6 +125,24 @@ export function inventoryRoom(
     ).withColor(Mood.menu);
 }
 
+function getItemDescription(item: InventoryItemMeta) {
+    return [
+        `${item.name}\n${item.description}`,
+        item.equippable?.defense ? `Adds ${item.equippable.defense} defense when equipped.` : null,
+        item.consumable?.health
+            ? `Heals ${item.consumable.health} health point${item.consumable.health === 1 ? '' : 's'} when consumed.`
+            : null,
+        item.consumable?.stamina
+            ? `Energizes ${item.consumable.stamina} stamina point${item.consumable.stamina === 1 ? '' : 's'} when consumed.`
+            : null,
+        item.consumable?.effects
+            ? `Makes you ${oxfordComma(...item.consumable.effects.map((effect) => `${modifierToPastTenseVerb(effect.effect)} (${effect.duration} turn${effect.duration === 1 ? '' : 's'})`))} when consumed.`
+            : null,
+    ]
+        .filter((x) => x)
+        .join('\n\n');
+}
+
 export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = null): Room {
     return inventoryRoom((code, rm) => {
         if (code === 'back') {
@@ -105,21 +169,7 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
         };
 
         return choiceRoom(
-            [
-                `${selectedItem.name}\n${selectedItem.description}`,
-                selectedItem.equippable?.defense ? `Adds ${selectedItem.equippable.defense} defense when equipped.` : null,
-                selectedItem.consumable?.health
-                    ? `Heals ${selectedItem.consumable.health} health point${selectedItem.consumable.health === 1 ? '' : 's'} when consumed.`
-                    : null,
-                selectedItem.consumable?.stamina
-                    ? `Energizes ${selectedItem.consumable.stamina} stamina point${selectedItem.consumable.stamina === 1 ? '' : 's'} when consumed.`
-                    : null,
-                selectedItem.consumable?.effects
-                    ? `Makes you ${oxfordComma(...selectedItem.consumable.effects.map((effect) => `${modifierToPastTenseVerb(effect.effect)} (${effect.duration} turn${effect.duration === 1 ? '' : 's'})`))} when consumed.`
-                    : null,
-            ]
-                .filter((x) => x)
-                .join('\n\n'),
+            getItemDescription(selectedItem),
             [
                 selectedItem.equippable
                     ? {

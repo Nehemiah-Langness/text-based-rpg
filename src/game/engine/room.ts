@@ -7,6 +7,9 @@ import { characterMenu } from '../rooms/utility-rooms/character-menu';
 import { Names } from '../npcs/npc-names';
 import { getPath } from './path-finding/get-path';
 import { Compass } from '../compass';
+import type { Store } from './store';
+import { choiceRoom } from '../rooms/utility-rooms/choice-room';
+import { shopInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 
 export type RoomLike = Room | (() => RoomLike);
 
@@ -153,6 +156,22 @@ export class Room<T = any> {
                         };
                     })
                 )
+                .concat(
+                    npcsAtLocation
+                        .map((npc) => ({
+                            npc,
+                            store: npc.store?.(this) ?? null,
+                        }))
+                        .map(({ npc, store }) => {
+                            return !store
+                                ? null
+                                : {
+                                      code: `shop-at-${npc.id}`,
+                                      text: `${store.openShopText}`,
+                                  };
+                        })
+                        .filter((x) => x !== null)
+                )
                 .concat(this.getTravelOptions(this).filter((x) => x !== null))
                 .concat(
                     this.inventoryAccess
@@ -169,16 +188,17 @@ export class Room<T = any> {
 
                 if (this.inventoryAccess && code === 'character-menu') {
                     return characterMenu(this);
-                }
-
-                if (code.startsWith('talk-to-')) {
+                } else if (code.startsWith('talk-to-')) {
                     const npc = npcsAtLocation.find((n) => code === `talk-to-${n.id}`);
                     if (npc) {
                         return npc.getConversation(this);
                     }
-                }
-
-                if (isTravelOption(code)) {
+                } else if (code.startsWith('shop-at-')) {
+                    const store = npcsAtLocation.find((n) => code === `shop-at-${n.id}`)?.store?.(this);
+                    if (store) {
+                        return shop(this, this, store);
+                    }
+                } else if (isTravelOption(code)) {
                     const traveled = this.travel(code);
                     if (traveled) return traveled;
                 }
@@ -253,4 +273,46 @@ export class Room<T = any> {
         if (typeof room === 'function') return Room.resolve(room());
         return room;
     }
+}
+
+function shop(root: Room, backTo: RoomLike, store: Store) {
+    const shopText = store.shopText(root);
+    const buyOptions = store.getItemsToBuy();
+    const sellOptions = store.getItemsToSell();
+
+    return choiceRoom(
+        (typeof shopText === 'string' ? [shopText] : shopText).filter((x) => x !== null).join('\n\n'),
+        [
+            buyOptions.length
+                ? {
+                      code: 'buy',
+                      text: 'Buy',
+                  }
+                : null,
+            sellOptions.length
+                ? {
+                      code: 'sell',
+                      text: 'Sell',
+                  }
+                : null,
+            {
+                code: 'leave',
+                text: store.leaveStoreText,
+            },
+        ],
+        (choice, rm) => {
+            if (choice === 'leave') {
+                return backTo;
+            } else if (choice === 'buy' || choice === 'sell') {
+                return shopInventoryRoom(
+                    rm,
+                    choice === 'buy' ? `The following items are available for purchase.` : `You can sell the following items.`,
+                    store,
+                    choice
+                );
+            }
+
+            return rm;
+        }
+    );
 }

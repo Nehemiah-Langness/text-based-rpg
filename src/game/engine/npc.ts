@@ -2,12 +2,14 @@ import { Room, type RoomLike } from './room';
 import { NpcList } from '../npcs/npc-list';
 import { DialogueTree } from './dialogue-tree';
 import type { Dialogue } from './dialogue';
+import type { Store } from './store';
 
-export class Npc<TSpecialRemarks extends string = string> {
+export class Npc<TSpecialRemarks extends string = string, TStore = Store | null> {
     coordinates: { y: string; x: number } | undefined;
     mapId: string | undefined;
+    met = false;
+    store?: (room: Room) => TStore;
     protected currentRemark = 0;
-    public met = false;
 
     save() {
         return {
@@ -105,5 +107,10 @@ export class Npc<TSpecialRemarks extends string = string> {
     meet() {
         this.met = true;
         return this;
+    }
+
+    hasStore<T>(store: (room: Room) => T) {
+        this.store = (rm) => store(rm) as unknown as TStore;
+        return this as Npc<TSpecialRemarks, T>;
     }
 }

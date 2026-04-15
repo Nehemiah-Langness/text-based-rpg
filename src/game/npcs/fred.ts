@@ -1,9 +1,11 @@
 import { Npc } from '../engine/npc';
+import { Store } from '../engine/store';
 import { Inventory } from '../inventory';
 import { addToInventory } from '../inventory/add-to-inventory';
 import { Player } from '../player';
 import { Quests } from '../quests';
 import { FredsFish } from '../rooms/mermaid-city/freds-fish';
+import { RoomNames } from '../rooms/names';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Names } from './npc-names';
@@ -170,4 +172,14 @@ export const Fred = new Npc(
     }
 )
     .meet()
-    .move(FredsFish);
+    .move(FredsFish)
+    .hasStore((rm) =>
+        rm.name === RoomNames.mermaidCity.freds
+            ? new Store(Inventory, (item) => item.category === 'food', {
+                  leaveStoreText: 'Get up from your table',
+                  openShopText: 'Sit down and order some food',
+                  priceModifier: 1.15,
+                  shopText: () => `Fred swims up to your table, "What can I get for you?" he says with an impatient grunt.`,
+              })
+            : null
+    );

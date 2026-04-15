@@ -1,6 +1,7 @@
 import { DialogueTree } from '../engine/dialogue-tree';
 import { Quests } from '../quests';
 import { Skills } from '../skills';
+import { FredsFish } from './mermaid-city/freds-fish';
 import { MassWreckage } from './open-ocean/mass-wreckage';
 
 export default () => {
@@ -8,6 +9,6 @@ export default () => {
     MassWreckage.visited = true;
     MassWreckage.state.piecesFound = 3;
     return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'find-crown-piece-3', { shouldStartQuest: true })]).getRoom(
-        MassWreckage
+        FredsFish
     );
 };
