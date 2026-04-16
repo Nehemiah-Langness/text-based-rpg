@@ -6,7 +6,6 @@ export const Inventory = new InventorySystem({
         category: 'currency',
         name: 'Coral Shard',
         description: 'The main currency among mermaids.',
-        count: 1444
     }),
     polishedShellFragment: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
@@ -224,7 +223,6 @@ export const Inventory = new InventorySystem({
         vendor: {
             value: 26,
         },
-        count: 2,
     }),
     kelpNoodleBowl: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -242,7 +240,6 @@ export const Inventory = new InventorySystem({
         vendor: {
             value: 48,
         },
-        count: 1,
     }),
     coralFruitMedley: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -402,6 +399,48 @@ export const Inventory = new InventorySystem({
         },
         vendor: {
             value: 367,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Sharkskin Breastplate',
+        description: '',
+        equippable: {
+            subCategory: 'breastplate' as const,
+            defense: 2,
+        },
+        vendor: {
+            value: 84,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    sharkskinHelmetEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Sharkskin Helmet',
+        description: '',
+        equippable: {
+            subCategory: 'helmet' as const,
+            defense: 1,
+        },
+        vendor: {
+            value: 67,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    sharkskinArmsEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Sharkskin Gauntlets',
+        description: '',
+        equippable: {
+            subCategory: 'arm' as const,
+            defense: 1,
+        },
+        vendor: {
+            value: 67,
             wontBuy: true,
             max: 1,
         },
