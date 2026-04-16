@@ -6,6 +6,7 @@ export const Inventory = new InventorySystem({
         category: 'currency',
         name: 'Coral Shard',
         description: 'The main currency among mermaids.',
+        count: 1444
     }),
     polishedShellFragment: InventorySystem.createInventoryItem<'trinket'>({
         category: 'trinket',
@@ -361,6 +362,48 @@ export const Inventory = new InventorySystem({
         description: "Apply it before a fight.  You'll feel the difference.",
         equippable: {
             defense: 5,
+        },
+    }),
+    healthBreastplateEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Health (Chest Armor)',
+        description: 'An enchantment that makes you more resilient in battle.',
+        equippable: {
+            subCategory: 'breastplate' as const,
+            health: 40,
+        },
+        vendor: {
+            value: 523,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    healthHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Health (Head Armor)',
+        description: 'An enchantment that makes you more resilient in battle.',
+        equippable: {
+            subCategory: 'helmet' as const,
+            health: 30,
+        },
+        vendor: {
+            value: 367,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    healthArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Health (Arm Armor)',
+        description: 'An enchantment that makes you more resilient in battle.',
+        equippable: {
+            subCategory: 'arm' as const,
+            health: 30,
+        },
+        vendor: {
+            value: 367,
+            wontBuy: true,
+            max: 1,
         },
     }),
 });

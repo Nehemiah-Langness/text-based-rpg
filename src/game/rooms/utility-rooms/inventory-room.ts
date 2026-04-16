@@ -14,12 +14,12 @@ import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
 export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, mode: 'buy' | 'sell', continueText = 'Done'): RoomLike {
     const currency = Inventory.get('coralShard');
 
-    const items = mode === 'buy' ? store.getItemsToSell() : store.getItemsToBuy();
+    const items = () => (mode === 'buy' ? store.getItemsToSell() : store.getItemsToBuy());
 
     return choiceRoom(
         `${text}\n\nYou currently have ${currency.count} coral shards.`,
         [
-            ...items.map(({ item, price, itemKey }) => {
+            ...items().map(({ item, price, itemKey }) => {
                 return {
                     text: `View ${item.name} (${price} coral shards)`,
                     code: itemKey,
@@ -34,29 +34,33 @@ export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, 
             if (code === 'back') {
                 return backTo;
             } else {
-                const selectedItem = items.find((item) => item.itemKey === code);
+                const selectedItem = items().find((item) => item.itemKey === code);
                 if (selectedItem) {
                     return choiceRoom(
                         () => {
-                            const selectedItem = items.find((item) => item.itemKey === code);
+                            const selectedItem = items().find((item) => item.itemKey === code);
                             if (!selectedItem) return `This item is longer available to ${mode}.`;
                             return (
                                 getItemDescription(selectedItem.item) +
                                 `\n\n${mode === 'buy' ? 'Costs ' : 'Sells for '}${selectedItem.price} coral shards.${mode === 'sell' ? `\n\nYou have ${selectedItem.item.count}.` : ''}`
                             );
                         },
-                        () => [
-                            (mode === 'buy' && Inventory.items.coralShard.count >= selectedItem.price) || selectedItem.item.count > 0
-                                ? {
-                                      code: 'transaction',
-                                      text: mode === 'buy' ? 'Buy' : 'Sell',
-                                  }
-                                : null,
-                            {
-                                code: 'back',
-                                text: 'Back',
-                            },
-                        ],
+                        () => {
+                            const selectedItem = items().find((item) => item.itemKey === code);
+                            return [
+                                selectedItem &&
+                                ((mode === 'buy' && Inventory.items.coralShard.count >= selectedItem.price) || selectedItem.item.count > 0)
+                                    ? {
+                                          code: 'transaction',
+                                          text: mode === 'buy' ? 'Buy' : 'Sell',
+                                      }
+                                    : null,
+                                {
+                                    code: 'back',
+                                    text: 'Back',
+                                },
+                            ];
+                        },
                         (transactionCode, transactionRoom) => {
                             if (transactionCode === 'back') {
                                 return shopInventoryRoom(backTo, text, store, mode, continueText);
@@ -129,6 +133,10 @@ function getItemDescription(item: InventoryItemMeta) {
     return [
         `${item.name}\n${item.description}`,
         item.equippable?.defense ? `Adds ${item.equippable.defense} defense when equipped.` : null,
+        item.equippable?.health ? `Adds ${item.equippable.health} max health when equipped.` : null,
+        item.equippable?.speed ? `Adds ${item.equippable.speed} speed when equipped.` : null,
+        item.equippable?.stamina ? `Adds ${item.equippable.stamina} stamina when equipped.` : null,
+        item.equippable?.strength ? `Adds ${item.equippable.strength} strength when equipped.` : null,
         item.consumable?.health
             ? `Heals ${item.consumable.health} health point${item.consumable.health === 1 ? '' : 's'} when consumed.`
             : null,
@@ -159,11 +167,11 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             if (item.equipped) {
                 item.equipped = false;
             } else {
-                success = Inventory.equip(code).equipped;
+                success = Inventory.equip(code, Player).equipped;
             }
 
             if (success) {
-                return resultRoom(nextScreen, `You ${item.equipped ? 'equip' : 'unequip'} your ${code}`, undefined, Mood.menu);
+                return resultRoom(nextScreen, `You ${item.equipped ? 'equip' : 'unequip'} your ${item.name}`, undefined, Mood.menu);
             }
             return null;
         };

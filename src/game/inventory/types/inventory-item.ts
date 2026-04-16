@@ -12,6 +12,7 @@ export interface InventoryItemMeta<TCategory = string> {
         wontBuy?: boolean;
         wontSell?: boolean;
         value: number;
+        max?: number;
     };
     description?: string;
     pluralSuffix?: string;
@@ -27,5 +28,9 @@ export interface InventoryItemMeta<TCategory = string> {
     equippable?: {
         subCategory?: string;
         defense?: number;
+        health?: number;
+        stamina?: number;
+        strength?: number;
+        speed?: number;
     };
 }

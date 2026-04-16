@@ -1,14 +1,10 @@
 import { DialogueTree } from '../engine/dialogue-tree';
 import { Quests } from '../quests';
 import { Skills } from '../skills';
-import { FredsFish } from './mermaid-city/freds-fish';
-import { MassWreckage } from './open-ocean/mass-wreckage';
+import { Shops } from './mermaid-city/shops';
 
 export default () => {
     Skills.levelSkill('tailKick', 2);
-    MassWreckage.visited = true;
-    MassWreckage.state.piecesFound = 3;
-    return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'find-crown-piece-3', { shouldStartQuest: true })]).getRoom(
-        FredsFish
-    );
+    Shops.visited = true;
+    return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'find-crown-piece-3', { shouldStartQuest: true })]).getRoom(Shops);
 };

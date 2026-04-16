@@ -1,4 +1,5 @@
-import { Npc } from '../engine/npc';
+import { Npc, type GenericNpc } from '../engine/npc';
+import type { Room, RoomLike } from '../engine/room';
 import { addToInventory } from '../inventory/add-to-inventory';
 import { Quests } from '../quests';
 import { Apartment } from '../rooms/mermaid-city/apartment';
@@ -29,19 +30,33 @@ export const Nerissa = new Npc(
         `"Try not to die. It would really mess with my routine."`,
         `"Do you want something for muscle soreness? Or confidence? I've been experimenting."`,
     ],
-    {
-        startSeaCucumber: (npc, rm) => {
-            return [
-                `${npc.getName(rm)[Names.FirstName]} is hunched over a small coral table, carefully mixing a pale green paste. She glances up as you enter, eyes lighting up.
+    (npc, rm, remark?: 'startSeaCucumber' | 'seaCucumberHelp' | 'finishSeaCucumber') => {
+        const seaCucumberProgress = Quests.getStage('seaCucumber');
+
+        if (remark === 'startSeaCucumber' || seaCucumberProgress === null) {
+            return startSeaCucumber(npc, rm);
+        } else if (remark === 'seaCucumberHelp' || seaCucumberProgress === 'find-sea-cucumber') {
+            return seaCucumberHelp();
+        } else if (remark === 'finishSeaCucumber' || seaCucumberProgress === 'return-sea-cucumber') {
+            return finishSeaCucumber(npc, rm);
+        }
+
+        return null;
+    }
+).move(Apartment);
+
+const startSeaCucumber = (npc: GenericNpc, room: Room) => () => {
+    return [
+        `${npc.getName(room)[Names.FirstName]} is hunched over a small coral table, carefully mixing a pale green paste. She glances up as you enter, eyes lighting up.
                 
 "Oh - perfect timing! I was just thinking about you."`,
-                `"I'm working on a new formula for a scale cream! Sea-salt base with a binding agent from a very specific subspecies of sea cucumber.", she explains.
+        `"I'm working on a new formula for a scale cream! Sea-salt base with a binding agent from a very specific subspecies of sea cucumber.", she explains.
 
 She gestures to a small, empty vial.
 
 "The problem is... I don't have the cucumber."
 `,
-                `"And I don't need just any sea cucumber - I need the striped reef variant. They only grow along the deeper edges of the coral reef."
+        `"And I don't need just any sea cucumber - I need the striped reef variant. They only grow along the deeper edges of the coral reef."
 
 She leans in slightly.
 
@@ -49,33 +64,35 @@ She leans in slightly.
 
 A small pause.
 
-${npc.getName(rm)[Names.FirstName]} continues, "I'd go myself, but I'm in the middle of stabilizing this mixture - and you're already heading out, right?"`,
-                `She glances down at her tail, brushing a hand lightly over her scales.
+${npc.getName(room)[Names.FirstName]} continues, "I'd go myself, but I'm in the middle of stabilizing this mixture - and you're already heading out, right?"`,
+        `She glances down at her tail, brushing a hand lightly over her scales.
 
-"If this cream works," ${npc.getName(rm)[Names.FirstName]} explains, "it means stronger scales, faster recovery... protection against things that don't give second chances."
+"If this cream works," ${npc.getName(room)[Names.FirstName]} explains, "it means stronger scales, faster recovery... protection against things that don't give second chances."
 
 She looks back up at you, softer now.
 
 "If I can make enough of it... it might help you out there, too."`,
-                (nxtRm) => Quests.start(nxtRm, 'seaCucumber'),
-            ];
-        },
-        seaCucumberHelp: () => {
-            return [`"Having trouble finding that sea cucumber?  It's supposed to be more common the deeper in the coral reef you go."`];
-        },
-        finishSeaCucumber: (npc, rm) => {
-            return [
-                `${npc.getName(rm)[Names.FirstName]} looks up the moment you enter, immediately noticing what you're holding.
+        (nxtRm: RoomLike) => Quests.start(nxtRm, 'seaCucumber'),
+    ];
+};
+
+const seaCucumberHelp = () => () => {
+    return [`"Having trouble finding that sea cucumber?  It's supposed to be more common the deeper in the coral reef you go."`];
+};
+
+const finishSeaCucumber = (npc: GenericNpc, room: Room) => () => {
+    return [
+        `${npc.getName(room)[Names.FirstName]} looks up the moment you enter, immediately noticing what you're holding.
             
 "Wait - is that? You actually found one!"`,
-                `She gently takes the sea cucumber, already moving back to her workspace. Her hands work quickly and precisely - grinding, mixing, blending the ingredients into a smooth, shimmering cream.
+        `She gently takes the sea cucumber, already moving back to her workspace. Her hands work quickly and precisely - grinding, mixing, blending the ingredients into a smooth, shimmering cream.
 
 You watch as the mixture shifts color slightly, settling into a soft, iridescent sheen.
 
 After a moment, she turns back to you, holding a small sealed container.
 
 "Here."`,
-                `"This is a stabilized version of the cream. Not as strong as what I'll refine later... but it should help."
+        `"This is a stabilized version of the cream. Not as strong as what I'll refine later... but it should help."
 
 She presses it into your hand.
 
@@ -84,27 +101,12 @@ She presses it into your hand.
 A small smile.
 
 `,
-                `"And... thank you. Really."`,
-                (nxtRm) =>
-                    addToInventory(
-                        'seaCucumberCream',
-                        () => Quests.finish(nxtRm, 'seaCucumber'),
-                        `${npc.getName(rm)[Names.FirstName]} hands you a bottle of her special cream.`
-                    ),
-            ];
-        },
-    },
-    () => {
-        const seaCucumberProgress = Quests.getStage('seaCucumber');
-
-        if (seaCucumberProgress === null) {
-            return 'startSeaCucumber';
-        } else if (seaCucumberProgress === 'find-sea-cucumber') {
-            return 'seaCucumberHelp';
-        } else if (seaCucumberProgress === 'return-sea-cucumber') {
-            return 'finishSeaCucumber';
-        }
-
-        return null;
-    }
-).move(Apartment);
+        `"And... thank you. Really."`,
+        (nxtRm: RoomLike) =>
+            addToInventory(
+                'seaCucumberCream',
+                () => Quests.finish(nxtRm, 'seaCucumber'),
+                `${npc.getName(room)[Names.FirstName]} hands you a bottle of her special cream.`
+            ),
+    ];
+};

@@ -10,6 +10,7 @@ import { Compass } from '../compass';
 import type { Store } from './store';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
 import { shopInventoryRoom } from '../rooms/utility-rooms/inventory-room';
+import type { GenericNpc } from './npc';
 
 export type RoomLike = Room | (() => RoomLike);
 
@@ -149,12 +150,14 @@ export class Room<T = any> {
         return {
             options: roomOptions.options
                 .concat(
-                    npcsAtLocation.map((npc) => {
-                        return {
-                            code: `talk-to-${npc.id}`,
-                            text: `Talk to ${npc.getName(this)[Names.FullName]}${npc.hasSpecialRemark(this) ? ' (!)' : ''}`,
-                        };
-                    })
+                    npcsAtLocation
+                        .filter((npc) => npc.canConverse())
+                        .map((npc) => {
+                            return {
+                                code: `talk-to-${npc.id}`,
+                                text: `Talk to ${npc.getName(this)[Names.FullName]}${npc.hasSpecialRemark(this) ? ' (!)' : ''}`,
+                            };
+                        })
                 )
                 .concat(
                     npcsAtLocation
@@ -190,13 +193,14 @@ export class Room<T = any> {
                     return characterMenu(this);
                 } else if (code.startsWith('talk-to-')) {
                     const npc = npcsAtLocation.find((n) => code === `talk-to-${n.id}`);
-                    if (npc) {
+                    if (npc && npc.canConverse()) {
                         return npc.getConversation(this);
                     }
                 } else if (code.startsWith('shop-at-')) {
-                    const store = npcsAtLocation.find((n) => code === `shop-at-${n.id}`)?.store?.(this);
-                    if (store) {
-                        return shop(this, this, store);
+                    const npc = npcsAtLocation.find((n) => code === `shop-at-${n.id}`);
+                    const store = npc?.store?.(this);
+                    if (npc && store) {
+                        return shop(this, this, store, npc);
                     }
                 } else if (isTravelOption(code)) {
                     const traveled = this.travel(code);
@@ -275,21 +279,25 @@ export class Room<T = any> {
     }
 }
 
-function shop(root: Room, backTo: RoomLike, store: Store) {
-    const shopText = store.shopText(root);
-    const buyOptions = store.getItemsToBuy();
-    const sellOptions = store.getItemsToSell();
+function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
+    const shopText = store.getShopText(root);
 
     return choiceRoom(
-        (typeof shopText === 'string' ? [shopText] : shopText).filter((x) => x !== null).join('\n\n'),
+        shopText,
         [
-            buyOptions.length
+            store.canConverse()
+                ? {
+                      code: 'talk',
+                      text: 'Talk',
+                  }
+                : null,
+            store.getItemsToSell().length
                 ? {
                       code: 'buy',
                       text: 'Buy',
                   }
                 : null,
-            sellOptions.length
+             store.getItemsToBuy().length
                 ? {
                       code: 'sell',
                       text: 'Sell',
@@ -303,6 +311,8 @@ function shop(root: Room, backTo: RoomLike, store: Store) {
         (choice, rm) => {
             if (choice === 'leave') {
                 return backTo;
+            } else if (choice === 'talk') {
+                return store.getConversation(npc, rm);
             } else if (choice === 'buy' || choice === 'sell') {
                 return shopInventoryRoom(
                     rm,

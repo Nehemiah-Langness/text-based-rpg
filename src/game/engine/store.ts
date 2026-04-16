@@ -1,6 +1,9 @@
 import type { InventoryItem, InventoryItemMeta } from '../inventory/types/inventory-item';
 import type { Category } from './category';
+import type { Dialogue } from './dialogue';
+import { DialogueTree } from './dialogue-tree';
 import type { InventoryConstraint, InventorySystem } from './inventory-system';
+import type { GenericNpc } from './npc';
 import type { Room } from './room';
 
 export class Store<T extends InventoryConstraint<T> = Record<string, InventoryItem<Category<string>>>> {
@@ -9,7 +12,10 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
     private priceModifier: number;
     openShopText: string;
     leaveStoreText: string;
-    shopText: (room: Room) => string | (string | null)[];
+    private shopText: (room: Room) => string | string[];
+    private conversations: ((npc: GenericNpc, room: Room) => Dialogue[]) | null;
+    private currentShopRemark = 0;
+    private currentConversationRemark = 0;
 
     constructor(
         inventory: InventorySystem<T>,
@@ -19,6 +25,7 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
             openShopText: string;
             leaveStoreText: string;
             shopText: (room: Room) => string | string[];
+            conversations?: (npc: GenericNpc, room: Room) => Dialogue[];
         }
     ) {
         this.inventory = inventory;
@@ -27,11 +34,36 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
         this.openShopText = settings.openShopText;
         this.shopText = settings.shopText;
         this.leaveStoreText = settings.leaveStoreText;
+        this.conversations = settings.conversations ?? null;
+    }
+
+    public canConverse() {
+        return this.conversations !== null;
+    }
+
+    public getConversation(npc: GenericNpc, room: Room) {
+        if (!this.conversations) return room;
+
+        const dialogues = this.conversations(npc, room);
+        const current = this.currentConversationRemark % dialogues.length;
+        this.currentConversationRemark = (this.currentConversationRemark + 1) % dialogues.length;
+
+        return new DialogueTree(dialogues[current]).getRoom(room);
+    }
+
+    public getShopText(room: Room) {
+        const text = this.shopText(room);
+        if (typeof text === 'string') return text;
+
+        const current = this.currentShopRemark % text.length;
+        this.currentShopRemark = (this.currentShopRemark + 1) % text.length;
+
+        return text[current];
     }
 
     public getItemsToSell() {
         return this.inventory
-            .list((item) => !!item.vendor && !item.vendor.wontSell)
+            .list((item) => !!item.vendor && !item.vendor.wontSell && (typeof item.vendor.max === 'undefined' || item.count < item.vendor.max))
             .filter(({ item }) => this.filter(item))
             .map(({ item, key }) => ({
                 itemKey: key,

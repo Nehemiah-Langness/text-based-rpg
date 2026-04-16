@@ -1,4 +1,3 @@
-import type { Npc } from "../engine/npc";
+import type { GenericNpc } from "../engine/npc";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const NpcList: Npc<any, any>[] = [];
+export const NpcList: GenericNpc[] = [];

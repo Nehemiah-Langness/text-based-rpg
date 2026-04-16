@@ -55,7 +55,7 @@ export function characterMenu(backTo: Room) {
                                 `${Player.valor} valor`,
                                 `${Player.truthfulness - 50} honesty`
                             )}`
-                        )}.`,
+                        )}.\n\nYou have a max health of ${Player.health.max} and a maximum stamina of ${Player.stamina.max}.`,
                     ].filter((x) => x !== null && typeof x !== 'undefined'),
                     undefined,
                     Mood.menu
