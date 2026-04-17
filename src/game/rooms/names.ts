@@ -16,6 +16,7 @@ export const RoomNames = {
         shipwreck: 'shipwreck',
         kelpForest: 'kelp-forest',
         massWreckage: 'mass-wreckage',
+        bloodfinTerritory: 'bloodfin-territory'
     },
 };
 export const MapNames = {

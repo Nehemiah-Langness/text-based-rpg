@@ -1,3 +1,4 @@
+import { lootRoom } from '../combat/loot-room';
 import { Npc, type GenericNpc } from '../engine/npc';
 import type { Room, RoomLike } from '../engine/room';
 import { Store } from '../engine/store';
@@ -170,17 +171,19 @@ const supplyCrateTurnIn = (npc: GenericNpc, room: Room) => () => [
                     ]);
 
                     const loot = lootTable.roll();
-                    loot.forEach(({ count, item }) => {
-                        Inventory.add(item, count);
-                    });
 
-                    return resultRoom(questCompletion, [
-                        `You quickly stash away several items from the top of the crate before returning it to Fred.  You pocket:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`,
-                        Player.addTruth(-10),
-                        `"Figures", says ${npc.getName(room)[Names.FirstName]}, "several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."
+                    return lootRoom(
+                        () =>
+                            resultRoom(questCompletion, [
+                                `\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`,
+                                Player.addTruth(-10),
+                                `"Figures", says ${npc.getName(room)[Names.FirstName]}, "several things are missing from the crate.  Must have gotten picked off by the sharks while it sat out by the shipwreck."
                                     
 "Still, Here's a little something for your trouble."`,
-                    ]);
+                            ]),
+                        `You quickly stash away several items from the top of the crate before returning it to Fred.  You pocket:`,
+                        loot
+                    );
                 }
 
                 return choiceRoom;

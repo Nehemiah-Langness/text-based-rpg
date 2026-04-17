@@ -2,12 +2,13 @@ import { rollDice } from '../dice';
 import type { Skill } from '../engine/skill-set';
 
 export function resolveAttackRoll({ level, strength, penalty }: { strength: number; level: number; penalty: number }) {
-    const effectiveLevel = Math.max(0, level - penalty);
-    const levelScaling = strength * (effectiveLevel - 1);
+    const effectiveLevel = Math.max(1, level - penalty);
+    const effectiveStrength = Math.max(0, strength - penalty * 2);
+    const levelScaling = effectiveStrength * (effectiveLevel - 1);
 
-    const maxAttack = strength + levelScaling;
+    const maxAttack = Math.max(1, effectiveStrength + levelScaling);
     const minAttack = 1 + levelScaling;
-    const attackRolled = rollDice(strength) + levelScaling;
+    const attackRolled = rollDice(effectiveStrength) + levelScaling;
 
     return {
         effectiveLevel,
@@ -21,10 +22,12 @@ export function resolveAttack(
     { level, strength, penalty }: { strength: number; level: number; penalty: number },
     defense: { armor: number; dodge: number }
 ) {
+    const criticalFail = 1 + penalty;
+    const criticalSuccess = 20 + penalty;
     const critical = rollDice(Math.max(1, Math.floor(20 / (penalty + 1))));
 
     const stunned: NonNullable<Skill['modifiers']> =
-        critical === 1
+        critical === criticalFail
             ? [
                   {
                       duration: 1,
@@ -40,10 +43,10 @@ export function resolveAttack(
     });
 
     const attackRoll =
-        critical === 1
+        critical === criticalFail
             ? 0
-            : critical === 20
-              ? Math.max(Math.ceil(maxAttack / 2), attackRolled) * 3
+            : critical === criticalSuccess
+              ? Math.max(Math.ceil(maxAttack * 2 / 3), attackRolled) * 3
               : effectiveLevel > 0
                 ? strength < 1
                     ? 0
@@ -57,7 +60,7 @@ export function resolveAttack(
         attack: attackRoll,
         defense: defense.armor,
         damage: dodgedAttack ? 0 : Math.max(0, attackRoll - defense.armor),
-        critical: critical === 1 ? ('fail' as const) : critical === 20 ? ('success' as const) : null,
+        critical: critical === criticalFail ? ('fail' as const) : critical === criticalSuccess ? ('success' as const) : null,
         attackerModifiers: stunned,
     };
 }

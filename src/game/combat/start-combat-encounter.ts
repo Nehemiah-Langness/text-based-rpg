@@ -4,7 +4,7 @@ import { EnemyEntity } from '../engine/enemy-entity';
 import type { Enemy } from './enemy';
 import { combatEncounter } from './combat-encounter';
 import { type Skill } from '../engine/skill-set';
-import { SkillSet } from "../engine/skill-set";
+import { SkillSet } from '../engine/skill-set';
 
 export function startCombatEncounter(
     backTo: RoomLike,
@@ -49,6 +49,11 @@ export function startCombatEncounter(
                     strength: e.strength,
                 })
         ),
-        variants
+        {
+            ...variants,
+            damageDealt: 0,
+            damageReceived: 0,
+            valorDamageThreshold: Player.health.max,
+        }
     );
 }

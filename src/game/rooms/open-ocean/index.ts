@@ -6,4 +6,5 @@ import './mass-wreckage';
 import './sacred-gardens';
 import './shipwreck';
 import './wastelands';
+import './bloodfin-territory';
 

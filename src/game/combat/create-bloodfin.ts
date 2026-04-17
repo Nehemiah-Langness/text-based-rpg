@@ -1,0 +1,118 @@
+import type { Enemy } from './enemy';
+
+export function createBloodfin(level: number): Enemy {
+    return {
+        level,
+        defense: 1,
+        speed: 10,
+        effects: [],
+        genericName: 'a Bloodfin Clan shark',
+        specificName: 'The Bloodfin shark',
+        health: 20,
+        stamina: 50,
+        strength: 0,
+        moves: [
+            {
+                name: 'Savage Bite',
+                actionDescription: 'does a direct, brutal bite',
+                attack: 4,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 20,
+                xp: -100000,
+            },
+            {
+                name: 'Rending Charge',
+                actionDescription: 'surges forward in a straight-line attack',
+                attack: 3,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 16,
+                xp: -100000,
+            },
+            {
+                name: 'Fin Slash',
+                actionDescription: 'quickly swipes his sharpened fins',
+                attack: 2,
+                coolDown: 0,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 8,
+                xp: -100000,
+            },
+            {
+                name: 'Disorienting Feint',
+                actionDescription: 'makes a fake-out movement, followed by a quick strike',
+                attack: 1,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'distract',
+                    },
+                ],
+                stamina: 10,
+                xp: -100000,
+            },
+            {
+                name: 'Tail Whip',
+                actionDescription: 'sweeps his tail',
+                attack: 1,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'distract',
+                    },
+                ],
+                stamina: 10,
+                xp: -100000,
+            },
+            {
+                name: 'Crushing Lunge',
+                actionDescription: 'lunges into a heavy-bodied slam',
+                attack: 2,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 14,
+                xp: -100000,
+            },
+            {
+                name: 'Jaw Clamp',
+                actionDescription: 'locks his teeth into you and throws you away',
+                attack: 4,
+                coolDown: 4,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 19,
+                xp: -100000,
+            },
+        ],
+    };
+}

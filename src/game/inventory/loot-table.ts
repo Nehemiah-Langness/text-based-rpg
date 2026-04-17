@@ -29,21 +29,24 @@ export class LootTable<TInventory> {
         });
     }
 
-    roll() {
+    roll(times = 1) {
         return Object.entries(
-            this.rolls
-                .map((roll) => {
-                    const rolledItem = roll[rollDice(roll.length) - 1];
-                    if (!rolledItem) return null;
-                    const count = Math.min(
-                        rolledItem.number.max,
-                        rollDice(rolledItem.number.max - rolledItem.number.min) + rolledItem.number.min
-                    );
-                    return {
-                        item: rolledItem.item,
-                        count,
-                    };
-                })
+            new Array(times)
+                .fill(0)
+                .flatMap(() =>
+                    this.rolls.map((roll) => {
+                        const rolledItem = roll[rollDice(roll.length) - 1];
+                        if (!rolledItem) return null;
+                        const count = Math.min(
+                            rolledItem.number.max,
+                            rollDice(rolledItem.number.max - rolledItem.number.min) + rolledItem.number.min
+                        );
+                        return {
+                            item: rolledItem.item,
+                            count,
+                        };
+                    })
+                )
                 .filter((x) => x !== null)
                 .reduce(
                     (c, n) => ({

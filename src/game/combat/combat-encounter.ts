@@ -14,34 +14,37 @@ import { oxfordComma } from '../utility-functions/oxford-comma';
 import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 import type { Skill } from '../engine/skill-set';
 
-export function combatEncounter(
-    backTo: RoomLike,
-    enemies: EnemyEntity[],
-    variants?: {
-        nonLethal?: boolean;
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-    }
-): RoomLike {
-    const { onComplete, onFailure } = variants ?? {};
-    const completedRoom = () => onComplete?.(backTo) ?? resultRoom(backTo, 'All enemies have been defeated.', undefined, Mood.battle);
-    const failedRoom = () => onFailure?.(backTo) ?? resultRoom(() => Player.die(backTo), 'You have been defeated.', undefined, Mood.battle);
+type CombatState = {
+    nonLethal?: boolean;
+    onComplete?: (rm: RoomLike) => RoomLike;
+    onFailure?: (rm: RoomLike) => RoomLike;
+    damageDealt: number;
+    damageReceived: number;
+    valorDamageThreshold: number;
+};
 
-    if (enemies.length === 0) return completedRoom();
+export function combatEncounter(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatState): RoomLike {
+    const { onComplete, onFailure } = variants ?? {};
+    const completedRoom = (rm: RoomLike) => onComplete?.(rm) ?? resultRoom(rm, 'All enemies have been defeated.', undefined, Mood.battle);
+    const failedRoom = () => onFailure?.(backTo) ?? resultRoom(() => Player.die(backTo), 'You have been defeated.', undefined, Mood.battle);
+    console.log('variants', variants);
+    if (enemies.length === 0) {
+        const valor = variants.nonLethal ? 0 : Math.floor((variants.damageDealt + variants.damageReceived) / variants.valorDamageThreshold);
+        return completedRoom(() =>
+            resultRoom(
+                backTo,
+                [valor > 0 ? Player.addValor(valor) : null].filter((x) => x !== null),
+                undefined,
+                Mood.battle
+            )
+        );
+    }
     if (Player.health.current <= 0) return failedRoom();
 
     return roundStart(backTo, enemies, variants);
 }
 
-function roundStart(
-    backTo: RoomLike,
-    enemies: EnemyEntity[],
-    variants?: {
-        nonLethal?: boolean;
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-    }
-) {
+function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatState) {
     const { effects, skills } = Player.coolDown();
 
     const staminaRegeneration = Player.energize(
@@ -96,15 +99,7 @@ function roundStart(
     );
 }
 
-function playerTurn(
-    backTo: RoomLike,
-    enemies: EnemyEntity[],
-    variants?: {
-        nonLethal?: boolean;
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-    }
-) {
+function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatState) {
     const { nonLethal = false } = variants ?? {};
     const currentEnemy = enemies[0];
 
@@ -130,7 +125,7 @@ function playerTurn(
             penalty: modifiers.distract ? 1 : 0,
         });
 
-        if (maxAttack === 0) return '';
+        if (maxAttack === 0) return '(no damage)';
         if (minAttack === maxAttack) return `(${maxAttack} damage)`;
         return `(${minAttack}-${maxAttack} damage)`;
     };
@@ -154,7 +149,7 @@ function playerTurn(
                   .concat(
                       {
                           code: 'dodge',
-                          text: `Dodge attack - ${oxfordComma(...[{ effect: 'alert' as const }].map((x) => `applies ${x.effect}`))}`,
+                          text: `Dodge attack (no damage) ${oxfordComma(...[{ effect: 'alert' as const }].map((x) => `applies ${x.effect}, +10 stamina`))}`,
                       },
                       {
                           code: 'flee',
@@ -194,6 +189,8 @@ function playerTurn(
                 Player.addModifier(...resolvedAttack.attackerModifiers);
 
                 currentEnemy.health.current = Math.max(0, currentEnemy.health.current - resolvedAttack.damage);
+                variants.damageDealt += resolvedAttack.damage;
+
                 if (!resolvedAttack.dodged) currentEnemy.addModifier(...(skill.modifiers ?? []));
 
                 return resultRoom(
@@ -201,7 +198,7 @@ function playerTurn(
                     [
                         resolvedAttack.critical === 'fail'
                             ? `You failed to ${skill.actionDescription}.`
-                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)': ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
+                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                         resolvedAttack.attackerModifiers.length
                             ? `You have been ${oxfordComma(
                                   ...resolvedAttack.attackerModifiers.map(
@@ -251,16 +248,7 @@ function playerTurn(
     ).withColor(Mood.battle);
 }
 
-function enemyTurn(
-    backTo: RoomLike,
-    enemies: EnemyEntity[],
-    variants: {
-        nonLethal?: boolean;
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-        flee?: boolean;
-    } = {}
-) {
+function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatState & { flee?: boolean }) {
     const currentEnemy = enemies[0];
     if (currentEnemy.health.current === 0) {
         return resultRoom(
@@ -269,6 +257,9 @@ function enemyTurn(
                     nonLethal: variants?.nonLethal,
                     onComplete: variants.onComplete,
                     onFailure: variants.onFailure,
+                    damageDealt: variants.damageDealt,
+                    damageReceived: variants.damageReceived,
+                    valorDamageThreshold: variants.valorDamageThreshold,
                 }),
             `${currentEnemy.specificName} has been defeated.`,
             undefined,
@@ -336,19 +327,7 @@ function enemyTurn(
     );
 }
 
-function enemyAttack(
-    backTo: RoomLike,
-    enemies: EnemyEntity[],
-    {
-        flee,
-        ...variants
-    }: {
-        nonLethal?: boolean;
-        onComplete?: (rm: RoomLike) => RoomLike;
-        onFailure?: (rm: RoomLike) => RoomLike;
-        flee?: boolean;
-    } = {}
-) {
+function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...variants }: CombatState & { flee?: boolean }) {
     const currentEnemy = enemies[0];
     const nextPhase = () =>
         flee
@@ -357,6 +336,9 @@ function enemyAttack(
                   nonLethal: variants?.nonLethal,
                   onComplete: variants.onComplete,
                   onFailure: variants.onFailure,
+                  damageDealt: variants.damageDealt,
+                  damageReceived: variants.damageReceived,
+                  valorDamageThreshold: variants.valorDamageThreshold,
               });
 
     const modifiers = currentEnemy.getModifiers();
@@ -395,6 +377,7 @@ function enemyAttack(
         currentEnemy.addModifier(...resolvedAttack.attackerModifiers);
 
         Player.health.current = Math.max(0, Player.health.current - resolvedAttack.damage);
+        variants.damageReceived += resolvedAttack.damage;
         if (!resolvedAttack.dodged) Player.addModifier(...(skill.modifiers ?? []));
 
         return resultRoom(
@@ -402,7 +385,7 @@ function enemyAttack(
             [
                 resolvedAttack.critical === 'fail'
                     ? `${currentEnemy.specificName} failed to perform a ${skill.name}.`
-                    : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)': ''}${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
+                    : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                 resolvedAttack.attackerModifiers.length
                     ? `${currentEnemy.specificName} has been ${oxfordComma(
                           ...resolvedAttack.attackerModifiers.map(

@@ -7,195 +7,11 @@ import { resultRoom } from '../utility-rooms/result-room';
 import { OpenOceanMap } from './map';
 import { startSearchRoom } from '../../search/start-search-room';
 import { Mood } from '../moods/mood';
-import type { Enemy } from '../../combat/enemy';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
 import { Player } from '../../player';
-import { Inventory } from '../../inventory';
-
-function createBloodfin(level: number): Enemy {
-    return {
-        level,
-        defense: 1,
-        speed: 10,
-        effects: [],
-        genericName: 'a Bloodfin Clan shark',
-        specificName: 'The Bloodfin shark',
-        health: 20,
-        stamina: 50,
-        strength: 0,
-        moves: [
-            {
-                name: 'Savage Bite',
-                actionDescription: 'does a direct, brutal bite',
-                attack: 4,
-                coolDown: 2,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                stamina: 20,
-                xp: -100000,
-            },
-            {
-                name: 'Rending Charge',
-                actionDescription: 'surges forward in a straight-line attack',
-                attack: 3,
-                coolDown: 2,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                stamina: 16,
-                xp: -100000,
-            },
-            {
-                name: 'Fin Slash',
-                actionDescription: 'quickly swipes his sharpened fins',
-                attack: 2,
-                coolDown: 0,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                stamina: 8,
-                xp: -100000,
-            },
-            {
-                name: 'Disorienting Feint',
-                actionDescription: 'makes a fake-out movement, followed by a quick strike',
-                attack: 1,
-                coolDown: 2,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                modifiers: [
-                    {
-                        duration: 1,
-                        effect: 'distract',
-                    },
-                ],
-                stamina: 10,
-                xp: -100000,
-            },
-            {
-                name: 'Tail Whip',
-                actionDescription: 'sweeps his tail',
-                attack: 1,
-                coolDown: 2,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                modifiers: [
-                    {
-                        duration: 1,
-                        effect: 'distract',
-                    },
-                ],
-                stamina: 10,
-                xp: -100000,
-            },
-            {
-                name: 'Crushing Lunge',
-                actionDescription: 'lunges into a heavy-bodied slam',
-                attack: 2,
-                coolDown: 2,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                modifiers: [
-                    {
-                        duration: 1,
-                        effect: 'stun',
-                    },
-                ],
-                stamina: 14,
-                xp: -100000,
-            },
-            {
-                name: 'Jaw Clamp',
-                actionDescription: 'locks his teeth into you and throws you away',
-                attack: 4,
-                coolDown: 4,
-                coolDownCompleteText: '',
-                inCoolDown: 0,
-                level,
-                modifiers: [
-                    {
-                        duration: 1,
-                        effect: 'stun',
-                    },
-                ],
-                stamina: 19,
-                xp: -100000,
-            },
-        ],
-    };
-}
-
-function withValueInRange(range: { min: number; max: number }) {
-    return ({ item }: ReturnType<typeof Inventory.getCategory>[number]) =>
-        (item.vendor?.value ?? 0) >= range.min && (item.vendor?.value ?? 0) <= range.max;
-}
-
-const bloodFinLootTable = Inventory.createLootTable([
-    Inventory.getCategory('trinket')
-        .filter(
-            withValueInRange({
-                min: 10,
-                max: 50,
-            })
-        )
-        .map(({ key }) => ({
-            chance: 1,
-            item: key,
-            number: 3,
-        })),
-    Inventory.getCategory('trinket')
-        .filter(
-            withValueInRange({
-                min: 30,
-                max: 99,
-            })
-        )
-        .map(({ key }) => ({
-            chance: 1,
-            item: key,
-            number: 2,
-        })),
-    Inventory.getCategory('trinket')
-        .filter(
-            withValueInRange({
-                min: 100,
-                max: 200,
-            })
-        )
-        .map(({ key }) => ({
-            chance: 1,
-            item: key,
-            number: 1,
-        })),
-    Inventory.getCategory('food')
-        .filter(
-            withValueInRange({
-                min: 15,
-                max: 50,
-            })
-        )
-        .map(({ key }) => ({
-            chance: 1,
-            item: key,
-            number: 1,
-        })),
-    Inventory.getCategory('food')
-        .filter(
-            withValueInRange({
-                min: 15,
-                max: 50,
-            })
-        )
-        .map(({ key }) => ({
-            chance: 1,
-            item: key,
-            number: 1,
-        })),
-]);
+import { createBloodfin } from '../../combat/create-bloodfin';
+import { bloodFinLootTable } from '../../combat/bloodfin-loot-table';
+import { lootRoom } from '../../combat/loot-room';
 
 export const MassWreckage = new Room(
     {
@@ -236,18 +52,10 @@ export const MassWreckage = new Room(
                     startCombatEncounter(backTo, [createBloodfin(3), createBloodfin(3), createBloodfin(3)], {
                         onComplete: (rm) => {
                             const loot = bloodFinLootTable.roll();
-                            loot.forEach(({ count, item }) => {
-                                Inventory.add(item, count);
-                            });
-
                             return resultRoom(
                                 () =>
                                     Quests.progress(
-                                        () =>
-                                            resultRoom(
-                                                rm,
-                                                `You rummage through the area and pick up:\n\n${loot.map(({ item, count }) => `${Inventory.get(item).name} (x${count})`).join('\n')}`
-                                            ),
+                                        () => lootRoom(rm, `You rummage through the area and pick up:`, loot),
                                         'mainQuest',
                                         'fight-for-crown'
                                     ),
