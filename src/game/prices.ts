@@ -11,10 +11,10 @@ export const Prices = new PriceTable({
     effectLow: 11,
     effectMed: 18,
     effectHigh: 26,
-    defense: 12,
+    defense: 146,
     combatAdvantage: 6,
     quest: 120,
     trinketBase: 57,
     trinketVariance: 3,
-    armor: 56,
+    armor: 62,
 });

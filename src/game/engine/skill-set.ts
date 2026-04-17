@@ -35,11 +35,26 @@ export class SkillSet<
     }
 
     save() {
-        return this.skills;
+        return (Object.entries(this.skills) as [keyof TSkills, Skill][]).reduce(
+            (current, next) => {
+                return Object.assign(current, {
+                    [next[0]]: {
+                        level: next[1].level,
+                        xp: next[1].xp,
+                    },
+                });
+            },
+            {} as Record<keyof TSkills, { level: number; xp: number }>
+        );
     }
 
-    load(data: Partial<TSkills>) {
-        Object.assign(this.skills, data);
+    load(data: Partial<ReturnType<typeof this.save>>) {
+        (Object.entries(data) as [keyof TSkills, { level: number; xp: number }][]).forEach(([item, value]) => {
+            if (this.skills[item]) {
+                this.skills[item].level = value.level ?? this.skills[item].level;
+                this.skills[item].xp = value.xp ?? this.skills[item].xp;
+            }
+        });
     }
 
     private skillList(): [keyof TSkills, Skill][] {

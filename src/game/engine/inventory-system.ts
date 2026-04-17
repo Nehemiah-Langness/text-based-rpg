@@ -17,11 +17,26 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
     }
 
     save() {
-        return this.items;
+        return (Object.entries(this.items) as [keyof TInventory, InventoryItem<Category<TInventory>>][]).reduce(
+            (current, next) => {
+                return Object.assign(current, {
+                    [next[0]]: {
+                        count: next[1].count,
+                        equipped: next[1].equipped,
+                    },
+                });
+            },
+            {} as Record<keyof TInventory, { count: number; equipped: boolean }>
+        );
     }
 
-    load(data: Partial<TInventory>) {
-        Object.assign(this.items, data);
+    load(data: Partial<ReturnType<typeof this.save>>) {
+        (Object.entries(data) as [keyof TInventory, { count: number; equipped: boolean }][]).forEach(([item, value]) => {
+            if (this.items[item]) {
+                this.items[item].count = value.count ?? this.items[item].count;
+                this.items[item].equipped = value.equipped ?? this.items[item].equipped;
+            }
+        });
     }
 
     add(key: keyof TInventory, amount: number) {

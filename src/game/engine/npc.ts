@@ -7,11 +7,11 @@ import type { Store } from './store';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GenericNpc = Npc<any, any>;
 export class Npc<TStore = Store | null, TSpecialRemark extends string = string> {
+    
+
     coordinates: { y: string; x: number } | undefined;
     mapId: string | undefined;
     met = false;
-    store?: (room: Room) => TStore;
-    inStore = false;
     protected currentRemark = 0;
 
     save() {
@@ -35,6 +35,8 @@ export class Npc<TStore = Store | null, TSpecialRemark extends string = string> 
 
     id: string;
     name: readonly [string, string, string] | ((npc: Npc<TStore>, room?: Room) => readonly [string, string, string]);
+    store?: (room: Room) => TStore;
+    inStore = false;
     protected remarks: (string | ((npc: Npc<TStore, TSpecialRemark>, room: Room) => string | false | (string | null)[]))[] | null;
     protected specialRemark: ((npc: Npc<TStore, TSpecialRemark>, room: Room, key?: TSpecialRemark) => (() => Dialogue) | null) | null;
 

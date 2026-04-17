@@ -5,7 +5,7 @@ import { Player } from './player';
 import { Quests } from './quests';
 import { Map } from './engine/map';
 import { Room } from './engine/room';
-import { Stats } from './stats';
+import type { Npc } from './engine/npc';
 
 export function saveGame(currentRoom: Room) {
     localStorage.setItem(
@@ -20,7 +20,6 @@ export function saveGame(currentRoom: Room) {
             },
             quests: Quests.save(),
             npcs: NpcList.map((x) => x.save()),
-            stats: Stats,
         })
     );
 }
@@ -30,7 +29,7 @@ export function loadGame() {
         const savedState = localStorage.getItem('saved-game');
         if (!savedState) return false;
 
-        const { inventory, maps, player, location, quests, npcs, stats } = JSON.parse(savedState) as {
+        const { inventory, maps, player, location, quests, npcs } = JSON.parse(savedState) as {
             player?: ReturnType<typeof Player.save>;
             inventory?: ReturnType<typeof Inventory.save>;
             maps?: ReturnType<Map['saveMap']>[];
@@ -39,11 +38,9 @@ export function loadGame() {
                 coordinates: Room['coordinates'];
             };
             quests?: ReturnType<(typeof Quests)['save']>;
-            npcs?: { id: string; met: boolean; currentRemark: number }[];
-            stats?: typeof Stats;
+            npcs?: ReturnType<Npc['save']>[];
         };
 
-        Object.assign(Stats, stats);
         if (player) {
             Player.load(player);
         }

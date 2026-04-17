@@ -27,7 +27,7 @@ export function combatEncounter(backTo: RoomLike, enemies: EnemyEntity[], varian
     const { onComplete, onFailure } = variants ?? {};
     const completedRoom = (rm: RoomLike) => onComplete?.(rm) ?? resultRoom(rm, 'All enemies have been defeated.', undefined, Mood.battle);
     const failedRoom = () => onFailure?.(backTo) ?? resultRoom(() => Player.die(backTo), 'You have been defeated.', undefined, Mood.battle);
-    console.log('variants', variants);
+
     if (enemies.length === 0) {
         const valor = variants.nonLethal ? 0 : Math.floor((variants.damageDealt + variants.damageReceived) / variants.valorDamageThreshold);
         return completedRoom(() =>

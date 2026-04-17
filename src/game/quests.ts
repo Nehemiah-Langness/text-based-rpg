@@ -128,11 +128,28 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
     }
 
     save() {
-        return this.quests;
+        return (Object.entries(this.quests) as [keyof TQuests, QuestType<TQuests[keyof TQuests]['stages'][number]['id']>][]).reduce(
+            (current, next) => {
+                return Object.assign(current, {
+                    [next[0]]: {
+                        active: next[1].active,
+                        completed: next[1].completed,
+                        progress: next[1].progress,
+                    },
+                });
+            },
+            {} as Record<keyof TQuests, { active: boolean; completed: boolean; progress: number }>
+        );
     }
 
-    load(quests: TQuests) {
-        Object.assign(this.quests, quests);
+    load(data: Partial<ReturnType<typeof this.save>>) {
+        (Object.entries(data) as [keyof TQuests, { active: boolean; completed: boolean; progress: number }][]).forEach(([item, value]) => {
+            if (this.quests[item]) {
+                this.quests[item].active = value.active ?? this.quests[item].active;
+                this.quests[item].completed = value.completed ?? this.quests[item].completed;
+                this.quests[item].progress = value.progress ?? this.quests[item].progress;
+            }
+        });
     }
 }
 
