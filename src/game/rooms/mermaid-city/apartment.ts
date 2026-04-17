@@ -2,17 +2,15 @@ import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
 import { fullRest } from '../../full-rest';
 import type { InputOption } from '../../input-option';
-import { Nerissa } from '../../npcs/nerissa';
-import { Names } from '../../npcs/npc-names';
 import { RoomNames } from '../names';
 import { MermaidCityMap } from './map';
 
 export const Apartment = new Room(
     {},
-    (rm) =>
+    () =>
         `You drift lazily inside your apartment - admiring the view of the plaza outside your open window.
 
-Your roommate, ${Nerissa.getName(rm)[Names.FirstName]}, is nearby, as usual - focused on mixing something in a shallow coral bowl, completely absorbed in her work.
+Your roommate, Nerissa, is nearby, as usual - focused on mixing something in a shallow coral bowl, completely absorbed in her work.
 
 She glances up as you enter and smiles.`,
     (rm) => {

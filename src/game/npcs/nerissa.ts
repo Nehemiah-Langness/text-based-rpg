@@ -1,8 +1,11 @@
 import { Npc, type GenericNpc } from '../engine/npc';
 import type { Room, RoomLike } from '../engine/room';
 import { addToInventory } from '../inventory/add-to-inventory';
+import { Player } from '../player';
 import { Quests } from '../quests';
 import { Apartment } from '../rooms/mermaid-city/apartment';
+import { choiceRoom } from '../rooms/utility-rooms/choice-room';
+import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Names } from './npc-names';
 
 export const Nerissa = new Npc(
@@ -81,18 +84,23 @@ const seaCucumberHelp = () => () => {
 };
 
 const finishSeaCucumber = (npc: GenericNpc, room: Room) => () => {
-    return [
-        `${npc.getName(room)[Names.FirstName]} looks up the moment you enter, immediately noticing what you're holding.
-            
-"Wait - is that? You actually found one!"`,
-        `She gently takes the sea cucumber, already moving back to her workspace. Her hands work quickly and precisely - grinding, mixing, blending the ingredients into a smooth, shimmering cream.
+    const endScene = (nxtRm: RoomLike) =>
+        resultRoom(
+            () =>
+                addToInventory(
+                    'seaCucumberCream',
+                    () => Quests.finish(nxtRm, 'seaCucumber'),
+                    `${npc.getName(room)[Names.FirstName]} hands you a bottle of her special cream.`
+                ),
+            [
+                `She gently takes the sea cucumber, already moving back to her workspace. Her hands work quickly and precisely - grinding, mixing, blending the ingredients into a smooth, shimmering cream.
 
 You watch as the mixture shifts color slightly, settling into a soft, iridescent sheen.
 
 After a moment, she turns back to you, holding a small sealed container.
 
 "Here."`,
-        `"This is a stabilized version of the cream. Not as strong as what I'll refine later... but it should help."
+                `"This is a stabilized version of the cream. Not as strong as what I'll refine later... but it should help."
 
 She presses it into your hand.
 
@@ -101,12 +109,40 @@ She presses it into your hand.
 A small smile.
 
 `,
-        `"And... thank you. Really."`,
-        (nxtRm: RoomLike) =>
-            addToInventory(
-                'seaCucumberCream',
-                () => Quests.finish(nxtRm, 'seaCucumber'),
-                `${npc.getName(room)[Names.FirstName]} hands you a bottle of her special cream.`
+                `"And... thank you. Really."`,
+            ]
+        );
+
+    return [
+        `${npc.getName(room)[Names.FirstName]} looks up the moment you enter, immediately noticing what you're holding.
+            
+"Wait - is that? You actually found one!"`,
+        (next: RoomLike) =>
+            choiceRoom(
+                '"I hope it wasn\'t too much trouble for you."',
+                [
+                    {
+                        code: 'lie',
+                        text: '"It actually cost me quite a bit, and I would like to be paid back. (Lie)',
+                    },
+                    {
+                        code: 'truth',
+                        text: '"It wasn\'t too much trouble at all." (Truth)',
+                    },
+                ],
+                (choice, rm) => {
+                    if (choice === 'lie') {
+                        return addToInventory(
+                            'coralShard',
+                            () => resultRoom(() => endScene(next), Player.addTruth(-5)),
+                            `"I'm so sorry for all your trouble," ${npc.getName(room)[Names.FirstName]} says sadly. "Here, maybe this will help"\n\n${npc.getName(room)[Names.FirstName]} hands you 150 coral shards.`,
+                            150
+                        );
+                    } else if (choice === 'truth') {
+                        return resultRoom(() => endScene(next), Player.addTruth(5));
+                    }
+                    return rm;
+                }
             ),
     ];
 };
