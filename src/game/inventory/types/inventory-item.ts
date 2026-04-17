@@ -30,6 +30,7 @@ export interface InventoryItemMeta<TCategory = string> {
         requirement?: {
             category: string;
             subCategory?: string;
+            type: 'has' | 'equipped';
         };
         defense?: number;
         health?: number;

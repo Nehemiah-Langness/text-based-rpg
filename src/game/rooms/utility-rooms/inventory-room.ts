@@ -132,6 +132,10 @@ export function inventoryRoom(
 function getItemDescription(item: InventoryItemMeta) {
     return [
         `${item.name}\n${item.description}`,
+        item.category === 'armor' ? `Armor for your ${item.equippable?.subCategory ?? 'body'}.` : null,
+        item.equippable?.requirement
+            ? `Requires ${item.equippable.requirement.type === 'has' ? 'you have atleast one' : 'equipped'} ${item.equippable.requirement.subCategory ? `${item.equippable.requirement.subCategory}` : ''} ${item.equippable.requirement.category}.`
+            : null,
         item.equippable?.defense ? `Adds ${item.equippable.defense} defense when equipped.` : null,
         item.equippable?.health ? `Adds ${item.equippable.health} max health when equipped.` : null,
         item.equippable?.speed ? `Adds ${item.equippable.speed} speed when equipped.` : null,
@@ -165,7 +169,7 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             let success = true;
             const item = Inventory.get(code);
             if (item.equipped) {
-                item.equipped = false;
+                success = !Inventory.unEquip(code, Player).equipped;
             } else {
                 success = Inventory.equip(code, Player).equipped;
             }
@@ -173,7 +177,12 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             if (success) {
                 return resultRoom(nextScreen, `You ${item.equipped ? 'equip' : 'unequip'} your ${item.name}`, undefined, Mood.menu);
             }
-            return null;
+            return resultRoom(
+                nextScreen,
+                `You are unable to ${!item.equipped ? 'equip' : 'unequip'} your ${item.name}`,
+                undefined,
+                Mood.menu
+            );
         };
 
         return choiceRoom(

@@ -344,11 +344,12 @@ export const Inventory = new InventorySystem({
         name: 'Increased Health (Chest Armor)',
         description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
         equippable: {
-            subCategory: 'breastplate' as const,
+            subCategory: 'chest' as const,
             health: 40,
             requirement: {
                 category: 'armor',
-                subCategory: 'breastplate',
+                subCategory: 'chest',
+                type: 'equipped',
             },
         },
         vendor: {
@@ -361,11 +362,12 @@ export const Inventory = new InventorySystem({
         name: 'Increased Health (Head Armor)',
         description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
         equippable: {
-            subCategory: 'helmet' as const,
+            subCategory: 'head' as const,
             health: 30,
             requirement: {
                 category: 'armor',
-                subCategory: 'helmet',
+                subCategory: 'head',
+                type: 'equipped',
             },
         },
         vendor: {
@@ -384,6 +386,7 @@ export const Inventory = new InventorySystem({
             requirement: {
                 category: 'armor',
                 subCategory: 'arm',
+                type: 'equipped',
             },
         },
         vendor: {
@@ -396,34 +399,40 @@ export const Inventory = new InventorySystem({
         name: 'Increased Stamina (Chest Armor)',
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
-            subCategory: 'breastplate' as const,
+            subCategory: 'chest' as const,
             stamina: 50,
             requirement: {
                 category: 'armor',
-                subCategory: 'breastplate',
+                subCategory: 'chest',
+                type: 'equipped',
             },
         },
         vendor: {
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     staminaHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
         name: 'Increased Stamina (Head Armor)',
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
-            subCategory: 'helmet' as const,
+            subCategory: 'head' as const,
             stamina: 25,
             requirement: {
                 category: 'armor',
-                subCategory: 'helmet',
+                subCategory: 'head',
+                type: 'equipped',
             },
         },
         vendor: {
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     staminaArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
@@ -435,38 +444,45 @@ export const Inventory = new InventorySystem({
             requirement: {
                 category: 'armor',
                 subCategory: 'arm',
+                type: 'equipped',
             },
         },
         vendor: {
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Sharkskin Breastplate',
         description: '',
         equippable: {
-            subCategory: 'breastplate' as const,
+            subCategory: 'chest' as const,
             defense: 2,
         },
         vendor: {
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     sharkskinHelmetEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Sharkskin Helmet',
         description: '',
         equippable: {
-            subCategory: 'helmet' as const,
+            subCategory: 'head' as const,
             defense: 1,
         },
         vendor: {
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     sharkskinArmsEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
@@ -480,13 +496,15 @@ export const Inventory = new InventorySystem({
             wontBuy: true,
             max: 1,
         },
+        count: 1,
+        equipped: true,
     }),
     shellBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Turtle Shell Breastplate',
         description: '',
         equippable: {
-            subCategory: 'breastplate' as const,
+            subCategory: 'chest' as const,
             defense: 6,
         },
         vendor: {
@@ -499,7 +517,7 @@ export const Inventory = new InventorySystem({
         name: 'Turtle Shell Helmet',
         description: '',
         equippable: {
-            subCategory: 'helmet' as const,
+            subCategory: 'head' as const,
             defense: 3,
         },
         vendor: {
@@ -525,7 +543,7 @@ export const Inventory = new InventorySystem({
         name: 'Woven Coral Breastplate',
         description: '',
         equippable: {
-            subCategory: 'breastplate' as const,
+            subCategory: 'chest' as const,
             defense: 10,
         },
         vendor: {
@@ -538,7 +556,7 @@ export const Inventory = new InventorySystem({
         name: 'Woven Coral Helmet',
         description: '',
         equippable: {
-            subCategory: 'helmet' as const,
+            subCategory: 'head' as const,
             defense: 7,
         },
         vendor: {

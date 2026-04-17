@@ -8,7 +8,8 @@ import { Mood } from '../rooms/moods/mood';
 export class PlayerEntity<
     T extends {
         [key in keyof T]: Skill;
-    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = any,
 > extends Entity<T> {
     valor: number;
     truthfulness: number;

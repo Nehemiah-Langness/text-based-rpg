@@ -1,6 +1,5 @@
 import type { Category } from './category';
 import type { InventoryItem, InventoryItemMeta } from '../inventory/types/inventory-item';
-import type { Entity } from './entity';
 import { LootTable, type LootTableRolls } from '../inventory/loot-table';
 import type { PlayerEntity } from './player-entity';
 import { Prices } from '../prices';
@@ -38,11 +37,32 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
         return this.list((item) => item.category === category);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    equip(key: keyof TInventory, entity: PlayerEntity<any>) {
+    areEquippableConstraintsMet(item: InventoryItem<Category<TInventory>>) {
+        if (!item.equippable) return false;
+        const requirements = item.equippable.requirement;
+        if (!requirements) return true;
+
+        return this.list(
+            (item) =>
+                item.category === requirements.category &&
+                (!requirements.subCategory || requirements.subCategory === item.equippable?.subCategory)
+        ).some(({ item }) => item.count > 0 && (requirements.type === 'has' || item.equipped));
+    }
+
+    private validateEquipment(entity: PlayerEntity) {
+        const unequippedItems: InventoryItem<Category<TInventory>>[] = [];
+        this.list((item) => item.equipped).forEach(({ item, key }) => {
+            if (!this.areEquippableConstraintsMet(item)) {
+                unequippedItems.push(this.unEquip(key, entity));
+            }
+        });
+        return unequippedItems;
+    }
+
+    equip(key: keyof TInventory, entity: PlayerEntity) {
         const item = this.get(key);
-        if (item.equippable) {
-            this.unEquipCategory(item.category, item.equippable.subCategory, entity);
+        if (this.areEquippableConstraintsMet(item)) {
+            this.unEquipCategory(item.category, item.equippable?.subCategory, entity);
             if (!item.equipped) {
                 item.equipped = true;
 
@@ -63,11 +83,12 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
             }
         }
 
+        this.validateEquipment(entity);
+
         return item;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    consume(key: keyof TInventory, entity: Entity<any>) {
+    consume(key: keyof TInventory, entity: PlayerEntity) {
         const item = this.get(key);
         if (item.consumable) {
             if (item.count > 0) {
@@ -91,31 +112,39 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
         return {};
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    unEquipCategory(category: Category<TInventory>, subCategory: undefined | string, entity: PlayerEntity<any>) {
+    unEquip(key: keyof TInventory, entity: PlayerEntity) {
+        const item = this.get(key);
+        if (item.equipped) {
+            item.equipped = false;
+
+            if (item.equippable?.health) {
+                entity.health.max -= item.equippable.health;
+                entity.health.current = Math.max(0, entity.health.current - item.equippable.health);
+            }
+            if (item.equippable?.speed) {
+                entity.speed -= item.equippable.speed;
+            }
+            if (item.equippable?.strength) {
+                entity.strength -= item.equippable.strength;
+            }
+            if (item.equippable?.stamina) {
+                entity.stamina.max -= item.equippable.stamina;
+                entity.stamina.current = Math.max(0, entity.stamina.current - item.equippable.stamina);
+            }
+        }
+
+        this.validateEquipment(entity);
+
+        return item;
+    }
+
+    unEquipCategory(category: Category<TInventory>, subCategory: undefined | string, entity: PlayerEntity) {
         this.list()
             .filter(
                 (x) => x.item.equippable && x.item.category === category && (!subCategory || x.item.equippable?.subCategory === subCategory)
             )
             .forEach((x) => {
-                if (x.item.equipped) {
-                    x.item.equipped = false;
-
-                    if (x.item.equippable?.health) {
-                        entity.health.max -= x.item.equippable.health;
-                        entity.health.current = Math.max(0, entity.health.current - x.item.equippable.health);
-                    }
-                    if (x.item.equippable?.speed) {
-                        entity.speed -= x.item.equippable.speed;
-                    }
-                    if (x.item.equippable?.strength) {
-                        entity.strength -= x.item.equippable.strength;
-                    }
-                    if (x.item.equippable?.stamina) {
-                        entity.stamina.max -= x.item.equippable.stamina;
-                        entity.stamina.current = Math.max(0, entity.stamina.current - x.item.equippable.stamina);
-                    }
-                }
+                this.unEquip(x.key, entity);
             });
     }
 
