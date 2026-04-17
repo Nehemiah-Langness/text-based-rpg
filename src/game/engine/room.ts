@@ -7,10 +7,8 @@ import { characterMenu } from '../rooms/utility-rooms/character-menu';
 import { Names } from '../npcs/npc-names';
 import { getPath } from './path-finding/get-path';
 import { Compass } from '../compass';
-import type { Store } from './store';
-import { choiceRoom } from '../rooms/utility-rooms/choice-room';
-import { shopInventoryRoom } from '../rooms/utility-rooms/inventory-room';
-import type { GenericNpc } from './npc';
+import { shop } from './shop';
+import { compare } from '../../helpers/compare';
 
 export type RoomLike = Room | (() => RoomLike);
 
@@ -152,6 +150,7 @@ export class Room<T = any> {
                 .concat(
                     npcsAtLocation
                         .filter((npc) => npc.canConverse() && !npc.inStore)
+                        .sort(compare((x) => x.getName(this)[Names.FullName]))
                         .map((npc) => {
                             return {
                                 code: `talk-to-${npc.id}`,
@@ -174,6 +173,7 @@ export class Room<T = any> {
                                   };
                         })
                         .filter((x) => x !== null)
+                        .sort(compare((x) => x.text))
                 )
                 .concat(this.getTravelOptions(this).filter((x) => x !== null))
                 .concat(
@@ -277,52 +277,4 @@ export class Room<T = any> {
         if (typeof room === 'function') return Room.resolve(room());
         return room;
     }
-}
-
-function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
-    const shopText = store.getShopText(root);
-
-    return choiceRoom(
-        shopText,
-        [
-            npc.canConverse() && npc.inStore
-                ? {
-                      code: 'talk',
-                      text: `Talk to ${npc.getName(root)[Names.FullName]}`,
-                  }
-                : null,
-            store.getItemsToSell().length
-                ? {
-                      code: 'buy',
-                      text: 'Buy',
-                  }
-                : null,
-            store.getItemsToBuy().length
-                ? {
-                      code: 'sell',
-                      text: 'Sell',
-                  }
-                : null,
-            {
-                code: 'leave',
-                text: store.leaveStoreText,
-            },
-        ],
-        (choice, rm) => {
-            if (choice === 'leave') {
-                return backTo;
-            } else if (choice === 'talk') {
-                return npc.getConversation(rm);
-            } else if (choice === 'buy' || choice === 'sell') {
-                return shopInventoryRoom(
-                    rm,
-                    choice === 'buy' ? `The following items are available for purchase.` : `You can sell the following items.`,
-                    store,
-                    choice
-                );
-            }
-
-            return rm;
-        }
-    );
 }

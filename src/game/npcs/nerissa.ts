@@ -2,6 +2,7 @@ import { Npc, type GenericNpc } from '../engine/npc';
 import type { Room, RoomLike } from '../engine/room';
 import { addToInventory } from '../inventory/add-to-inventory';
 import { Player } from '../player';
+import { Prices } from '../prices';
 import { Quests } from '../quests';
 import { Apartment } from '../rooms/mermaid-city/apartment';
 import { choiceRoom } from '../rooms/utility-rooms/choice-room';
@@ -132,11 +133,12 @@ A small smile.
                 ],
                 (choice, rm) => {
                     if (choice === 'lie') {
+                        const price = Prices.get('quest', 0.8);
                         return addToInventory(
                             'coralShard',
                             () => resultRoom(() => endScene(next), Player.addTruth(-5)),
-                            `"I'm so sorry for all your trouble," ${npc.getName(room)[Names.FirstName]} says sadly. "Here, maybe this will help"\n\n${npc.getName(room)[Names.FirstName]} hands you 150 coral shards.`,
-                            150
+                            `"I'm so sorry for all your trouble," ${npc.getName(room)[Names.FirstName]} says sadly. "Here, maybe this will help"\n\n${npc.getName(room)[Names.FirstName]} hands you ${price} coral shards.`,
+                            price
                         );
                     } else if (choice === 'truth') {
                         return resultRoom(() => endScene(next), Player.addTruth(5));

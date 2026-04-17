@@ -10,6 +10,7 @@ import { modifierToPastTenseVerb } from '../../utility-functions/modifier-to-pas
 import { choiceRoom } from './choice-room';
 import type { Store } from '../../engine/store';
 import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
+import { compare } from '../../../helpers/compare';
 
 export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, mode: 'buy' | 'sell', continueText = 'Done'): RoomLike {
     const currency = Inventory.get('coralShard');
@@ -19,12 +20,14 @@ export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, 
     return choiceRoom(
         `${text}\n\nYou currently have ${currency.count} coral shards.`,
         [
-            ...items().map(({ item, price, itemKey }) => {
-                return {
-                    text: `View ${item.name} (${price} coral shards)`,
-                    code: itemKey,
-                };
-            }),
+            ...items()
+                .sort(compare((x) => x.price))
+                .map(({ item, price, itemKey }) => {
+                    return {
+                        text: `View ${item.name} (${price} coral shards)`,
+                        code: itemKey,
+                    };
+                }),
             {
                 code: 'back',
                 text: continueText,

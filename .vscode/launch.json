@@ -9,7 +9,9 @@
       "webRoot": "${workspaceFolder}/src",
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*"
-      }
+      },
+      "preLaunchTask": "Vite",
+      "postDebugTask": "Cleanup"
     }
   ]
 }

@@ -41,7 +41,7 @@ export const Arinel = new Npc(
     .move(Shops)
     .hasStore(
         () =>
-            new Store(Inventory, (x) => x.category === 'enchantment', {
+            new Store(Inventory, (x) => x.category === 'enchantment' || x.category === 'potion', {
                 leaveStoreText: 'Leave',
                 openShopText: "Enter Arinel's Enchanting",
                 priceModifier: 1.5,

@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "dev",
+            "label": "Vite",
+            "detail": "Run the Vite dev server",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "^([^\\s].*)\\((\\d+|\\d+,\\d+|\\d+,\\d+,\\d+,\\d+)\\):\\s+(error|warning|info)\\s+(.*)$",
+                    "file": 1,
+                    "location": 2,
+                    "severity": 3,
+                    "message": 4
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*ready in \\d*.*",
+                    "endsPattern": "^.*Local:.*"
+                }
+            }
+        },
+        {
+            "label": "Cleanup",
+            "type": "shell",
+            "command": "echo ${input:terminate}",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "terminate",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "Vite"
+        }
+    ]
+}

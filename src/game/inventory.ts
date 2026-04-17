@@ -218,12 +218,12 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    kelpNoodleBowl: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    kelpNoodleBowl: InventorySystem.createInventoryItem({
+        category: 'food' as const,
         name: 'Kelp Noodle Bowl',
         description: 'Put the kelp in the bowl and call it a noodle.',
         consumable: {
-            stamina: 45,
+            stamina: 20,
             effects: [
                 {
                     effect: 'stamina-regen-low',
@@ -233,22 +233,22 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    coralFruitMedley: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    coralFruitMedley: InventorySystem.createInventoryItem({
+        category: 'food' as const,
         name: 'Coral Fruit Medley',
         description: 'For the balanced diet.',
         consumable: {
-            stamina: 30,
-            health: 30,
+            health: 25,
+            stamina: 25,
         },
         vendor: {},
     }),
-    herbalBroth: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    herbalBroth: InventorySystem.createInventoryItem({
+        category: 'food' as const,
         name: 'Herbal Broth',
         description: 'Herbal remedies for the non-herbal tragedies.',
         consumable: {
-            health: 40,
+            health: 5,
             effects: [
                 {
                     effect: 'health-regen-low',
@@ -258,8 +258,8 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    grilledSharkFillet: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    grilledSharkFillet: InventorySystem.createInventoryItem({
+        category: 'food-fine' as const,
         name: 'Grilled Shark Fillet',
         description: 'Big food from a bigger fish.',
         consumable: {
@@ -268,8 +268,38 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    abyssalStew: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    searedAbyssalFillet: InventorySystem.createInventoryItem({
+        category: 'food-fine' as const,
+        name: 'Seared Abyssal Fillet',
+        description: 'A fine fish fillet, seared to perfection and served with a kelp salad.',
+        consumable: {
+            health: 75,
+            effects: [
+                {
+                    duration: 5,
+                    effect: 'strength',
+                },
+            ],
+        },
+        vendor: {},
+    }),
+    pearlGlazedKelpWrap: InventorySystem.createInventoryItem({
+        category: 'food-fine' as const,
+        name: 'Pearl Glazed Kelp Wrap',
+        description: 'The finest wrap for the finest mermaid.',
+        consumable: {
+            stamina: 75,
+            effects: [
+                {
+                    duration: 5,
+                    effect: 'speed',
+                },
+            ],
+        },
+        vendor: {},
+    }),
+    abyssalStew: InventorySystem.createInventoryItem({
+        category: 'food-fine' as const,
         name: 'Abyssal Stew',
         description: "Stew darker than Velmora's ink.  And hopefully does not contain Velmora's ink.",
         consumable: {
@@ -283,8 +313,8 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    goldenReefPlatter: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    goldenReefPlatter: InventorySystem.createInventoryItem({
+        category: 'food-fine' as const,
         name: 'Golden Reef Platter',
         description: "Stew darker than Velmora's ink.  And hopefully does not contain Velmora's ink.",
         consumable: {
@@ -293,8 +323,8 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    deepCurrentElixir: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    deepCurrentElixir: InventorySystem.createInventoryItem({
+        category: 'potion' as const,
         name: 'Deep Current Elixir',
         description: 'An elixir that grants you the speed of the deepest currents.',
         consumable: {
@@ -312,8 +342,8 @@ export const Inventory = new InventorySystem({
         },
         vendor: {},
     }),
-    bloomTonic: InventorySystem.createInventoryItem<'food'>({
-        category: 'food',
+    bloomTonic: InventorySystem.createInventoryItem({
+        category: 'potion' as const,
         name: 'Bloom Tonic',
         description: 'Tonic that packs a punch.',
         consumable: {
@@ -411,8 +441,6 @@ export const Inventory = new InventorySystem({
             wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     staminaHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
@@ -431,8 +459,6 @@ export const Inventory = new InventorySystem({
             wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     staminaArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
@@ -451,8 +477,6 @@ export const Inventory = new InventorySystem({
             wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
@@ -463,11 +487,8 @@ export const Inventory = new InventorySystem({
             defense: 2,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     sharkskinHelmetEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
@@ -478,11 +499,8 @@ export const Inventory = new InventorySystem({
             defense: 1,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     sharkskinArmsEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
@@ -493,11 +511,8 @@ export const Inventory = new InventorySystem({
             defense: 1,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
-        count: 1,
-        equipped: true,
     }),
     shellBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
@@ -508,7 +523,6 @@ export const Inventory = new InventorySystem({
             defense: 6,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),
@@ -521,7 +535,6 @@ export const Inventory = new InventorySystem({
             defense: 3,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),
@@ -534,7 +547,6 @@ export const Inventory = new InventorySystem({
             defense: 3,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),
@@ -547,7 +559,6 @@ export const Inventory = new InventorySystem({
             defense: 10,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),
@@ -560,7 +571,6 @@ export const Inventory = new InventorySystem({
             defense: 7,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),
@@ -573,7 +583,6 @@ export const Inventory = new InventorySystem({
             defense: 6,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
     }),

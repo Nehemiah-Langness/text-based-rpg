@@ -4,6 +4,7 @@ import { Store } from '../engine/store';
 import { Inventory } from '../inventory';
 import { addToInventory } from '../inventory/add-to-inventory';
 import { Player } from '../player';
+import { Prices } from '../prices';
 import { Quests } from '../quests';
 import { FredsFish } from '../rooms/mermaid-city/freds-fish';
 import { RoomNames } from '../rooms/names';
@@ -82,8 +83,19 @@ const supplyCrateTurnIn = (npc: GenericNpc, room: Room) => () => [
                 },
             ],
             (code, choiceRoom) => {
+                const reward = Prices.get('quest', 1);
+
                 const questCompletion = () =>
-                    addToInventory('coralShard', Quests.finish(rm, 'fredsSupplyRun'), 'Fred hands you a handful of Coral Shards.', 100);
+                    resultRoom(
+                        () =>
+                            addToInventory(
+                                'coralShard',
+                                Quests.finish(rm, 'fredsSupplyRun'),
+                                `You receive ${reward} coral shards.`,
+                                reward
+                            ),
+                        'Fred hands you a handful of coral shards.'
+                    );
 
                 if (code === 'truth') {
                     return resultRoom(questCompletion, [

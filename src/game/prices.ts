@@ -7,7 +7,7 @@ export const Prices = new PriceTable({
     maxStamina: 3,
     speed: 9,
     strength: 6,
-    enchantment: 132,
+    enchantment: 672,
     effectLow: 11,
     effectMed: 18,
     effectHigh: 26,

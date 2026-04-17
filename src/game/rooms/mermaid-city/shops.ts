@@ -44,7 +44,7 @@ export const Shops = new Room(
 const OnEnterDescription = [
     `The water brightens as you drift into the shopping district, the steady quiet of the city giving way to a lively, flowing bustle.
 
-Curved walkways of pale stone weave between open-front shops carved into the surrounding structures, their entrances framed with colorful coral and hanging strands of sea silk. Lanterns of soft gold and blue light sway gently overhead, reflecting off polished shells and glass displays filled with trinkets, tools, and shimmering fabrics that ripple with every passing current.`,
+Curved walkways of pale stone weave between open-front shops carved into the surrounding structures and stores selling every ware imaginable.`,
     `Merchants call out to passersby, their voices blending into a constant, rhythmic murmur. A jeweler carefully sets a pearl into a delicate band. Nearby, a vendor arranges bundles of dried kelp and rare sea herbs. Schools of tiny fish dart between stalls, flashing like living decorations.
 
 To the north, the warm, familiar glow of Fred's Fish Fry cuts through the cooler tones of the district, its worn exterior standing apart from the more refined shops.

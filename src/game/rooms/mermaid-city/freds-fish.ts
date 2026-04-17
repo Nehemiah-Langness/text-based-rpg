@@ -1,7 +1,12 @@
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
 import type { InputOption } from '../../input-option';
+import { addToInventory } from '../../inventory/add-to-inventory';
+import { Player } from '../../player';
+import { Prices } from '../../prices';
+import { staminaToDescription } from '../../utility-functions/stamina-to-description';
 import { RoomNames } from '../names';
+import { resultRoom } from '../utility-rooms/result-room';
 import { MermaidCityMap } from './map';
 
 export const FredsFish = new Room(
@@ -10,9 +15,29 @@ export const FredsFish = new Room(
     (rm) => {
         const options: InputOption[] = [];
 
+        if (Player.stamina.current > 60) {
+            options.push({
+                code: 'work-shift',
+                text: 'Work your shift',
+            });
+        }
+
         return {
             options,
-            select: () => {
+            select: (code) => {
+                if (code === 'work-shift') {
+                    if (Player.stamina.current <= 60) {
+                        return resultRoom(rm, `You are too tired to work a shift right now.`);
+                    }
+                    Player.stamina.current -= 60;
+                    const moneyEarned = Prices.get('quest', 0.4);
+                    return addToInventory(
+                        'coralShard',
+                        rm,
+                        `You work your shift at Fred's Fish Fry and earn ${moneyEarned} coral shards.  You are ${staminaToDescription(Player.stamina.current / Player.stamina.max)}.`
+                    );
+                }
+
                 return rm;
             },
         };
