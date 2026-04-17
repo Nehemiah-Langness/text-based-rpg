@@ -1,5 +1,29 @@
 import type { InventoryKey as BaseInventoryKey } from './engine/category';
 import { InventorySystem } from './engine/inventory-system';
+import { Prices } from './prices';
+
+function createTrinket({
+    level,
+    variance,
+    ...passThrough
+}: Parameters<typeof InventorySystem.createInventoryItem<'trinket'>>[0] & { level: number; variance: number }) {
+    return InventorySystem.createInventoryItem<'trinket'>({
+        ...passThrough,
+        vendor: {
+            ...passThrough.vendor,
+            value: Prices.getCombination([
+                {
+                    amount: level,
+                    category: 'trinketBase',
+                },
+                {
+                    amount: variance,
+                    category: 'trinketVariance',
+                },
+            ]),
+        },
+    });
+}
 
 export const Inventory = new InventorySystem({
     coralShard: InventorySystem.createInventoryItem<'currency'>({
@@ -7,165 +31,145 @@ export const Inventory = new InventorySystem({
         name: 'Coral Shard',
         description: 'The main currency among mermaids.',
     }),
-    polishedShellFragment: InventorySystem.createInventoryItem<'trinket'>({
+    polishedShellFragment: createTrinket({
         category: 'trinket',
         name: 'Polished Shell Fragment',
         description: 'A smooth, decorative shell piece.',
-        vendor: {
-            value: 5,
-        },
+        level: 0.5,
+        variance: 1,
     }),
-    crackedPearl: InventorySystem.createInventoryItem<'trinket'>({
+    crackedPearl: createTrinket({
         category: 'trinket',
         name: 'Cracked Pearl',
         description: 'Slightly flawed but still valuable.',
-        vendor: {
-            value: 7,
-        },
+        level: 0.5,
+        variance: 2,
     }),
-    coralCharm: InventorySystem.createInventoryItem<'trinket'>({
+    coralCharm: createTrinket({
         category: 'trinket',
         name: 'Coral Charm',
         description: 'Simple carved coral pendant.',
-        vendor: {
-            value: 10,
-        },
+        level: 0.5,
+        variance: 3,
     }),
-    barnacleCoveredCoin: InventorySystem.createInventoryItem<'trinket'>({
+    barnacleCoveredCoin: createTrinket({
         category: 'trinket',
         name: 'Barnacle-Covered Coin',
         description: 'Currency from a lost surface ship.',
-        vendor: {
-            value: 13,
-        },
+        level: 0.5,
+        variance: 4,
     }),
-    wornFinRing: InventorySystem.createInventoryItem<'trinket'>({
+    wornFinRing: createTrinket({
         category: 'trinket',
         name: 'Worn Fin Ring',
         description: 'Old jewelry with faded engravings.',
-        vendor: {
-            value: 16,
-        },
+        level: 0.5,
+        variance: 5,
     }),
-    luminousPearl: InventorySystem.createInventoryItem<'trinket'>({
+    luminousPearl: createTrinket({
         category: 'trinket',
         name: 'Luminous Pearl',
         description: 'Emits a soft glow.',
-        vendor: {
-            value: 53,
-        },
+        level: 1,
+        variance: 2,
     }),
-    glassBottleMessage: InventorySystem.createInventoryItem<'trinket'>({
+    glassBottleMessage: createTrinket({
         category: 'trinket',
         name: 'Glass Bottle Message',
         description: 'Contains partial, cryptic writing.',
-        vendor: {
-            value: 57,
-        },
+        level: 1,
+        variance: 3,
     }),
-    engravedCoralIdol: InventorySystem.createInventoryItem<'trinket'>({
+    engravedCoralIdol: createTrinket({
         category: 'trinket',
         name: 'Engraved Coral Idol',
         description: 'Depicts an unknown ocean figure.',
-        vendor: {
-            value: 62,
-        },
+        level: 1,
+        variance: 5,
     }),
-    silverTideBracelet: InventorySystem.createInventoryItem<'trinket'>({
+    silverTideBracelet: createTrinket({
         category: 'trinket',
         name: 'Silver Tide Bracelet',
         description: 'Atlantean-crafted jewelry.',
-        vendor: {
-            value: 65,
-        },
+        level: 1,
+        variance: 7,
     }),
-    oldNavigationCompass: InventorySystem.createInventoryItem<'trinket'>({
+    oldNavigationCompass: createTrinket({
         category: 'trinket',
         name: 'Old Navigation Compass',
         description: 'Rusted, but intriguing.',
-        vendor: {
-            value: 72,
-        },
+        level: 1,
+        variance: 9,
     }),
-    sharkToothTotem: InventorySystem.createInventoryItem<'trinket'>({
+    sharkToothTotem: createTrinket({
         category: 'trinket',
         name: 'Shark Tooth Totem',
         description: 'Tribal artifact, valued by collectors.',
-        vendor: {
-            value: 127,
-        },
+        level: 2,
+        variance: 5,
     }),
-    dolphinCrestMedallion: InventorySystem.createInventoryItem<'trinket'>({
+    dolphinCrestMedallion: createTrinket({
         category: 'trinket',
         name: 'Dolphin Crest Medallion',
         description: 'Symbol of high rank.',
-        vendor: {
-            value: 142,
-        },
+        level: 7,
+        variance: 5,
     }),
-    ancientAtlanteanSigil: InventorySystem.createInventoryItem<'trinket'>({
+    ancientAtlanteanSigil: createTrinket({
         category: 'trinket',
         name: 'Ancient Atlantean Sigil',
         description: 'Mark of old authority.',
-        vendor: {
-            value: 164,
-        },
+        level: 2,
+        variance: 10,
     }),
-    tridentFragment: InventorySystem.createInventoryItem<'trinket'>({
+    tridentFragment: createTrinket({
         category: 'trinket',
         name: 'Trident Fragment',
         description: 'Broken shard from a ceremonial weapon.',
-        vendor: {
-            value: 173,
-        },
+        level: 2,
+        variance: 13,
     }),
-    velmorasInkVial: InventorySystem.createInventoryItem<'trinket'>({
+    velmorasInkVial: createTrinket({
         category: 'trinket',
         name: "Velmora's Ink Vial",
         description: 'Still faintly swirling with dark energy.',
-        vendor: {
-            value: 192,
-        },
+        level: 2,
+        variance: 16,
     }),
-    sealedOrderRelic: InventorySystem.createInventoryItem<'trinket'>({
+    sealedOrderRelic: createTrinket({
         category: 'trinket',
         name: 'Silent Order Relic',
         description: 'Marked with symbols of the Silent Order.',
-        vendor: {
-            value: 463,
-        },
+        level: 4,
+        variance: 5,
     }),
-    echoPearl: InventorySystem.createInventoryItem<'trinket'>({
+    echoPearl: createTrinket({
         category: 'trinket',
         name: 'Echo Pearl',
         description: 'Replays faint voices when held.',
-        vendor: {
-            value: 485,
-        },
+        level: 4,
+        variance: 7,
     }),
-    abyssalCoreShard: InventorySystem.createInventoryItem<'trinket'>({
+    abyssalCoreShard: createTrinket({
         category: 'trinket',
         name: 'Abyssal Core Shard',
         description: 'Pulses with deep-sea energy.',
-        vendor: {
-            value: 489,
-        },
+        level: 4,
+        variance: 13,
     }),
-    forgottenCrownPiece: InventorySystem.createInventoryItem<'trinket'>({
+    forgottenCrownPiece: createTrinket({
         category: 'trinket',
         name: 'Forgotten Crown Piece',
         description: "Fragment of a lost ruler's crown.",
-        vendor: {
-            value: 512,
-        },
+        level: 4,
+        variance: 21,
     }),
-    inkSeersBrokenLens: InventorySystem.createInventoryItem<'trinket'>({
+    inkSeersBrokenLens: createTrinket({
         category: 'trinket',
         name: "Ink-Seer's Broken Lens",
         description: 'Once used by Velmora to "see truth".',
-        vendor: {
-            value: 531,
-        },
+        level: 4,
+        variance: 25,
     }),
     friedReefFish: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -174,9 +178,7 @@ export const Inventory = new InventorySystem({
         consumable: {
             health: 5,
         },
-        vendor: {
-            value: 6,
-        },
+        vendor: {},
     }),
     kelpWrap: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -185,9 +187,7 @@ export const Inventory = new InventorySystem({
         consumable: {
             stamina: 10,
         },
-        vendor: {
-            value: 13,
-        },
+        vendor: {},
     }),
     seaBerries: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -197,9 +197,7 @@ export const Inventory = new InventorySystem({
             stamina: 10,
             health: 5,
         },
-        vendor: {
-            value: 17,
-        },
+        vendor: {},
     }),
     saltedMinnowStrips: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -208,9 +206,7 @@ export const Inventory = new InventorySystem({
         consumable: {
             stamina: 15,
         },
-        vendor: {
-            value: 16,
-        },
+        vendor: {},
     }),
     spicedFishPlatter: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -220,9 +216,7 @@ export const Inventory = new InventorySystem({
             health: 20,
             stamina: 10,
         },
-        vendor: {
-            value: 26,
-        },
+        vendor: {},
     }),
     kelpNoodleBowl: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -237,9 +231,7 @@ export const Inventory = new InventorySystem({
                 },
             ],
         },
-        vendor: {
-            value: 48,
-        },
+        vendor: {},
     }),
     coralFruitMedley: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -249,9 +241,7 @@ export const Inventory = new InventorySystem({
             stamina: 30,
             health: 30,
         },
-        vendor: {
-            value: 65,
-        },
+        vendor: {},
     }),
     herbalBroth: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -266,9 +256,7 @@ export const Inventory = new InventorySystem({
                 },
             ],
         },
-        vendor: {
-            value: 48,
-        },
+        vendor: {},
     }),
     grilledSharkFillet: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -278,9 +266,7 @@ export const Inventory = new InventorySystem({
             stamina: 40,
             health: 75,
         },
-        vendor: {
-            value: 125,
-        },
+        vendor: {},
     }),
     abyssalStew: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -295,9 +281,7 @@ export const Inventory = new InventorySystem({
                 },
             ],
         },
-        vendor: {
-            value: 90,
-        },
+        vendor: {},
     }),
     goldenReefPlatter: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -307,9 +291,7 @@ export const Inventory = new InventorySystem({
             health: 80,
             stamina: 80,
         },
-        vendor: {
-            value: 194,
-        },
+        vendor: {},
     }),
     deepCurrentElixir: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -328,9 +310,7 @@ export const Inventory = new InventorySystem({
                 },
             ],
         },
-        vendor: {
-            value: 194,
-        },
+        vendor: {},
     }),
     bloomTonic: InventorySystem.createInventoryItem<'food'>({
         category: 'food',
@@ -349,9 +329,7 @@ export const Inventory = new InventorySystem({
                 },
             ],
         },
-        vendor: {
-            value: 194,
-        },
+        vendor: {},
     }),
     seaCucumberCream: InventorySystem.createInventoryItem<'ointment'>({
         category: 'ointment',
@@ -364,13 +342,16 @@ export const Inventory = new InventorySystem({
     healthBreastplateEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
         name: 'Increased Health (Chest Armor)',
-        description: 'An enchantment that makes you more resilient in battle.',
+        description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
         equippable: {
             subCategory: 'breastplate' as const,
             health: 40,
+            requirement: {
+                category: 'armor',
+                subCategory: 'breastplate',
+            },
         },
         vendor: {
-            value: 523,
             wontBuy: true,
             max: 1,
         },
@@ -378,13 +359,16 @@ export const Inventory = new InventorySystem({
     healthHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
         name: 'Increased Health (Head Armor)',
-        description: 'An enchantment that makes you more resilient in battle.',
+        description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
         equippable: {
             subCategory: 'helmet' as const,
             health: 30,
+            requirement: {
+                category: 'armor',
+                subCategory: 'helmet',
+            },
         },
         vendor: {
-            value: 367,
             wontBuy: true,
             max: 1,
         },
@@ -392,13 +376,68 @@ export const Inventory = new InventorySystem({
     healthArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
         name: 'Increased Health (Arm Armor)',
-        description: 'An enchantment that makes you more resilient in battle.',
+        description:
+            'A small red gem emitting a faint glow.  It can be attached to arm or hand armor to make you more resilient in battle.',
         equippable: {
             subCategory: 'arm' as const,
             health: 30,
+            requirement: {
+                category: 'armor',
+                subCategory: 'arm',
+            },
         },
         vendor: {
-            value: 367,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    staminaBreastplateEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Stamina (Chest Armor)',
+        description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
+        equippable: {
+            subCategory: 'breastplate' as const,
+            stamina: 50,
+            requirement: {
+                category: 'armor',
+                subCategory: 'breastplate',
+            },
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    staminaHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Stamina (Head Armor)',
+        description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
+        equippable: {
+            subCategory: 'helmet' as const,
+            stamina: 25,
+            requirement: {
+                category: 'armor',
+                subCategory: 'helmet',
+            },
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    staminaArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
+        category: 'enchantment',
+        name: 'Increased Stamina (Arm Armor)',
+        description: 'A small green gem emitting a faint glow.  It can be attached to arm or hand armor to keep you energized in battle.',
+        equippable: {
+            subCategory: 'arm' as const,
+            stamina: 25,
+            requirement: {
+                category: 'armor',
+                subCategory: 'arm',
+            },
+        },
+        vendor: {
             wontBuy: true,
             max: 1,
         },
@@ -412,7 +451,6 @@ export const Inventory = new InventorySystem({
             defense: 2,
         },
         vendor: {
-            value: 84,
             wontBuy: true,
             max: 1,
         },
@@ -426,7 +464,6 @@ export const Inventory = new InventorySystem({
             defense: 1,
         },
         vendor: {
-            value: 67,
             wontBuy: true,
             max: 1,
         },
@@ -440,7 +477,84 @@ export const Inventory = new InventorySystem({
             defense: 1,
         },
         vendor: {
-            value: 67,
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    shellBreastplateEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Turtle Shell Breastplate',
+        description: '',
+        equippable: {
+            subCategory: 'breastplate' as const,
+            defense: 6,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    shellHelmetEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Turtle Shell Helmet',
+        description: '',
+        equippable: {
+            subCategory: 'helmet' as const,
+            defense: 3,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    shellArmsEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Turtle Shell Gauntlets',
+        description: '',
+        equippable: {
+            subCategory: 'arm' as const,
+            defense: 3,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    coralBreastplateEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Woven Coral Breastplate',
+        description: '',
+        equippable: {
+            subCategory: 'breastplate' as const,
+            defense: 10,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    coralHelmetEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Woven Coral Helmet',
+        description: '',
+        equippable: {
+            subCategory: 'helmet' as const,
+            defense: 7,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
+    coralArmsEnchantment: InventorySystem.createInventoryItem({
+        category: 'armor' as const,
+        name: 'Woven Coral Gauntlets',
+        description: '',
+        equippable: {
+            subCategory: 'arm' as const,
+            defense: 6,
+        },
+        vendor: {
             wontBuy: true,
             max: 1,
         },

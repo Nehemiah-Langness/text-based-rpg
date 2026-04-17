@@ -3,6 +3,8 @@ import type { InventoryItem, InventoryItemMeta } from '../inventory/types/invent
 import type { Entity } from './entity';
 import { LootTable, type LootTableRolls } from '../inventory/loot-table';
 import type { PlayerEntity } from './player-entity';
+import { Prices } from '../prices';
+import type { SkillModifier } from './skill-set';
 
 export type InventoryConstraint<TInventory> = {
     [key in keyof TInventory]: InventoryItem<Category<TInventory>>;
@@ -117,12 +119,126 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
             });
     }
 
-    static createInventoryItem<T>(meta: InventoryItemMeta<T> & Partial<InventoryItem<T>>): InventoryItem<T> {
+    static createInventoryItem<T>(
+        meta: Omit<InventoryItemMeta<T>, 'vendor'> & { vendor?: Partial<InventoryItemMeta<T>['vendor']> } & Partial<{
+                count: number;
+                equipped: boolean;
+            }>
+    ): InventoryItem<T> {
         return {
             count: 0,
             equipped: false,
             ...meta,
+            vendor: meta.vendor
+                ? {
+                      ...meta.vendor,
+                      value: meta.vendor.value ?? this.calculatePrice(meta),
+                  }
+                : undefined,
         };
+    }
+
+    private static calculatePrice<T>(item: Omit<InventoryItemMeta<T>, 'vendor'>) {
+        return Prices.getCombination([
+            item.category === 'enchantment'
+                ? {
+                      amount: 1,
+                      category: 'enchantment' as const,
+                  }
+                : null,
+            item.category === 'armor'
+                ? {
+                      amount: 1,
+                      category: 'armor' as const,
+                  }
+                : null,
+            item.consumable?.health
+                ? {
+                      amount: item.consumable.health,
+                      category: 'health' as const,
+                  }
+                : null,
+            item.consumable?.stamina
+                ? {
+                      amount: item.consumable.stamina,
+                      category: 'stamina' as const,
+                  }
+                : null,
+            ...(item.consumable?.effects?.flatMap((effect) => [
+                {
+                    amount: effect.duration,
+                    category: (['health-regen-low', 'stamina-regen-low'] as SkillModifier[]).includes(effect.effect)
+                        ? ('effectLow' as const)
+                        : (
+                                [
+                                    'alert',
+                                    'distract',
+                                    'health-regen-med',
+                                    'speed',
+                                    'stamina-regen-med',
+                                    'strength',
+                                    'stun',
+                                ] as SkillModifier[]
+                            ).includes(effect.effect)
+                          ? ('effectMed' as const)
+                          : (['health-regen-high', 'stamina-regen-high'] as SkillModifier[]).includes(effect.effect)
+                            ? ('effectHigh' as const)
+                            : ('effectHigh' as const),
+                },
+                {
+                    amount: ['health-regen-low', 'stamina-regen-low'].includes(effect.effect)
+                        ? 5
+                        : ['alert', 'distract', 'health-regen-med', 'speed', 'stamina-regen-med', 'strength', 'stun'].includes(
+                                effect.effect
+                            )
+                          ? 10
+                          : ['health-regen-high', 'stamina-regen-high'].includes(effect.effect)
+                            ? 20
+                            : 20,
+                    category: (['health-regen-low', 'health-regen-med', 'health-regen-high'] as SkillModifier[]).includes(effect.effect)
+                        ? ('health' as const)
+                        : (['stamina-regen-low', 'stamina-regen-med', 'stamina-regen-high'] as SkillModifier[]).includes(effect.effect)
+                          ? ('stamina' as const)
+                          : (['alert', 'distract', 'stun'] as SkillModifier[]).includes(effect.effect)
+                            ? ('combatAdvantage' as const)
+                            : (['speed'] as SkillModifier[]).includes(effect.effect)
+                              ? ('speed' as const)
+                              : (['strength'] as SkillModifier[]).includes(effect.effect)
+                                ? ('strength' as const)
+                                : ('effectLow' as const),
+                },
+            ]) ?? []),
+            item.equippable?.defense
+                ? {
+                      amount: item.equippable.defense,
+                      category: 'defense',
+                  }
+                : null,
+            item.equippable?.health
+                ? {
+                      amount: item.equippable.health,
+                      category: 'maxHealth',
+                  }
+                : null,
+            item.equippable?.speed
+                ? {
+                      amount: item.equippable.speed,
+                      category: 'speed',
+                  }
+                : null,
+            item.equippable?.stamina
+                ? {
+                      amount: item.equippable.stamina,
+                      category: 'maxStamina',
+                  }
+                : null,
+            item.equippable?.strength
+                ? {
+                      amount: item.equippable.strength,
+                      category: 'strength',
+                  }
+                : null,
+        ]);
     }
 
     list(filter?: (item: InventoryItem<Category<TInventory>>) => boolean) {

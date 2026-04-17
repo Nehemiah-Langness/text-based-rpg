@@ -5,12 +5,13 @@ import type { Dialogue } from './dialogue';
 import type { Store } from './store';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type GenericNpc = Npc<any, any>
+export type GenericNpc = Npc<any, any>;
 export class Npc<TStore = Store | null, TSpecialRemark extends string = string> {
     coordinates: { y: string; x: number } | undefined;
     mapId: string | undefined;
     met = false;
     store?: (room: Room) => TStore;
+    inStore = false;
     protected currentRemark = 0;
 
     save() {
@@ -111,8 +112,9 @@ export class Npc<TStore = Store | null, TSpecialRemark extends string = string> 
         return this;
     }
 
-    hasStore<T>(store: (room: Room) => T) {
+    hasStore<T>(store: (room: Room) => T, inStore = false) {
         this.store = (rm) => store(rm) as unknown as TStore;
+        this.inStore = inStore;
         return this as unknown as Npc<T, TSpecialRemark>;
     }
 }

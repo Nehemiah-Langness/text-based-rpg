@@ -151,7 +151,7 @@ export class Room<T = any> {
             options: roomOptions.options
                 .concat(
                     npcsAtLocation
-                        .filter((npc) => npc.canConverse())
+                        .filter((npc) => npc.canConverse() && !npc.inStore)
                         .map((npc) => {
                             return {
                                 code: `talk-to-${npc.id}`,
@@ -285,10 +285,10 @@ function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
     return choiceRoom(
         shopText,
         [
-            store.canConverse()
+            npc.canConverse() && npc.inStore
                 ? {
                       code: 'talk',
-                      text: 'Talk',
+                      text: `Talk to ${npc.getName(root)[Names.FullName]}`,
                   }
                 : null,
             store.getItemsToSell().length
@@ -297,7 +297,7 @@ function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
                       text: 'Buy',
                   }
                 : null,
-             store.getItemsToBuy().length
+            store.getItemsToBuy().length
                 ? {
                       code: 'sell',
                       text: 'Sell',
@@ -312,7 +312,7 @@ function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
             if (choice === 'leave') {
                 return backTo;
             } else if (choice === 'talk') {
-                return store.getConversation(npc, rm);
+                return npc.getConversation(rm);
             } else if (choice === 'buy' || choice === 'sell') {
                 return shopInventoryRoom(
                     rm,
