@@ -17,6 +17,21 @@ export const Skills = new SkillSet({
         ],
         stamina: 2,
     }),
+    starfishThrowDiminished: SkillSet.createSkill({
+        name: 'Throw Wiggles',
+        actionDescription: 'throw Wiggles, your best starfish friend in the whole world,',
+        attack: 6,
+        level: 0,
+        coolDown: 2,
+        coolDownCompleteText: 'Wiggles has swam back to you.',
+        modifiers: [
+            {
+                effect: 'distract',
+                duration: 1,
+            },
+        ],
+        stamina: 2,
+    }),
     tailKick: SkillSet.createSkill({
         name: 'Tail Kick',
         actionDescription: 'do a tail kick',

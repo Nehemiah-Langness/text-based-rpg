@@ -70,23 +70,26 @@ Something small... stuck.`
                                         return rm;
                                     }
 
-                                    const finishQuest = () =>
+                                    const finishQuest = (skill: 'starfishThrowDiminished' | 'starfishThrow') =>
                                         resultRoom(
                                             () => Quests.finish(rm, 'freeWiggles'),
-                                            [Player.skillSet.levelSkill('starfishThrow')].filter((x) => x !== null)
+                                            [Player.skillSet.levelSkill(skill)].filter((x) => x !== null)
                                         );
 
                                     if (investigateChoice === 'careful') {
                                         return resultRoom(
-                                            finishQuest,
+                                            () => finishQuest('starfishThrow'),
                                             `You free the small starfish who wiggles quickly to your side.  He is apparently very grateful as he latches to your side.\n\nYou decide to name him "Wiggles".`
                                         );
                                     } else if (investigateChoice === 'quickly') {
                                         Player.skillSet.skills.starfishThrow.attack -= 2;
-                                        return resultRoom(finishQuest, [
-                                            `You forcefully tear the kelp apart around the small starfish, but in doing so, you hurt one of the arms of the starfish.\n\nThough injured, the small starfish wiggles quickly to your side.  He is apparently very grateful as he latches to your side.\n\nYou decide to name him "Wiggles".`,
-                                            Player.addValor(1),
-                                        ]);
+                                        return resultRoom(
+                                            () => finishQuest('starfishThrowDiminished'),
+                                            [
+                                                `You forcefully tear the kelp apart around the small starfish, but in doing so, you hurt one of the arms of the starfish.\n\nThough injured, the small starfish wiggles quickly to your side.  He is apparently very grateful as he latches to your side.\n\nYou decide to name him "Wiggles".`,
+                                                Player.addValor(1),
+                                            ]
+                                        );
                                     }
 
                                     return investigateRoom;

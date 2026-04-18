@@ -5,7 +5,7 @@ import { choiceRoom } from './utility-rooms/choice-room';
 import { resultRoom } from './utility-rooms/result-room';
 import { OpeningRoom } from './story/opening-room';
 import { Mood } from './moods/mood';
-import debug from './debug';
+import debug from '../../debug';
 
 const Debug: RoomLike | undefined = import.meta.env.DEV ? debug : undefined;
 
