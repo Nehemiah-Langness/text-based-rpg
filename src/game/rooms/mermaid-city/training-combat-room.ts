@@ -5,17 +5,18 @@ import { Thalor } from '../../npcs/thalor';
 import { GuardHall } from './guard-hall';
 import { resultRoom } from '../utility-rooms/result-room';
 import { Player } from '../../player';
+import { Mood } from '../moods/mood';
 
 export function trainingCombatRoom(): RoomLike {
     return startCombatEncounter(
         GuardHall,
         [
             {
-                level: 1,
-                defense: 0,
+                level: Player.skillSet.getSkills(true).reduce((c, n) => Math.max(c, n.skill.level), 1),
+                defense: 1,
                 speed: 30,
                 effects: [],
-                health: Player.health.max,
+                health: Player.skillSet.getSkills(true).reduce((c, n) => c + n.skill.level * 10, 10),
                 stamina: 100,
                 strength: 0,
                 moves: [
@@ -36,7 +37,13 @@ export function trainingCombatRoom(): RoomLike {
                         xp: -100000,
                     },
                     ...Object.entries(Player.skillSet.skills)
-                        .filter(([name, x]) => x.level > 0 && (name as keyof typeof Player.skillSet.skills) !== 'starfishThrow')
+                        .filter(
+                            ([name, x]) =>
+                                x.level > 0 &&
+                                !(['starfishThrow', 'starfishThrowDiminished'] as (keyof typeof Player.skillSet.skills)[]).includes(
+                                    name as keyof typeof Player.skillSet.skills
+                                )
+                        )
                         .map(([, x]) => ({ ...x, xp: -100000 })),
                 ],
                 specificName: Thalor.getName()[Names.FirstName],
@@ -45,7 +52,8 @@ export function trainingCombatRoom(): RoomLike {
         ],
         {
             nonLethal: true,
-            onComplete: (rm) => resultRoom(rm, `You have finished training with ${Thalor.getName()[Names.FirstName]}.`),
+            onComplete: (rm) => resultRoom(rm, `You have finished training with ${Thalor.getName()[Names.FirstName]}.`, undefined, Mood.battle),
+            onFailure: (rm) => resultRoom(rm, `You are forced to yield to ${Thalor.getName()[Names.FirstName]}.`, undefined, Mood.dead),
         }
     );
 }

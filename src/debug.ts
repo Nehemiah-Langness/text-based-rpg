@@ -1,6 +1,6 @@
 import { Skills } from './game/skills';
-import { BloodfinTerritory } from './game/rooms/open-ocean/bloodfin-territory';
 import { Inventory } from './game/inventory';
+import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
@@ -9,6 +9,6 @@ export default () => {
     Inventory.add('sharkskinArmsEnchantment', 1);
     Inventory.add('sharkskinBreastplateEnchantment', 1);
     Inventory.add('sharkskinHelmetEnchantment', 1);
-    return BloodfinTerritory;
+    return GuardHall;
     //return new DialogueTree([(rm) => Quests.progress(rm, 'seaCucumber', 'find-sea-cucumber', { shouldStartQuest: true })]).getRoom(FredsFish);
 };

@@ -35,7 +35,7 @@ export function combatEncounter(backTo: RoomLike, enemies: EnemyEntity[], varian
                 backTo,
                 [valor > 0 ? Player.addValor(valor) : null].filter((x) => x !== null),
                 undefined,
-                Mood.battle
+                Mood.questComplete
             )
         );
     }
@@ -81,8 +81,7 @@ function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
             .reduce((c, n) => c + n, 0)
     );
 
-    const updates = effects
-        .map((x) => `You are no longer ${modifierToPastTenseVerb(x)}.`)
+    const updates = [effects.length ? `You are no longer ${oxfordComma(...effects.map(modifierToPastTenseVerb))}.` : null]
         .concat(skills)
         .filter((x) => x)
         .join('\n\n');
@@ -90,8 +89,14 @@ function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
     return resultRoom(
         () => playerTurn(backTo, enemies, variants),
         [
-            healthRegeneration ? `You regenerate ${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}.` : null,
-            staminaRegeneration ? `You regenerate ${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.` : null,
+            healthRegeneration || staminaRegeneration
+                ? `You regenerate ${oxfordComma(
+                      ...[
+                          healthRegeneration ? `${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}` : null,
+                          staminaRegeneration ? `${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.` : null,
+                      ]
+                  )}.`
+                : null,
             updates ? updates : null,
         ].filter((x) => x !== null),
         undefined,
@@ -209,7 +214,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                                   )
                               )}.`
                             : null,
-                        !resolvedAttack.dodged && skill.modifiers?.length
+                        !resolvedAttack.dodged && skill.modifiers?.length && currentEnemy.health.current > 0
                             ? `${currentEnemy.specificName} has been ${oxfordComma(
                                   ...skill.modifiers.map(
                                       (modifier) =>
@@ -234,10 +239,9 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
 
                 return resultRoom(
                     nextPhase,
-                    [
-                        `You are ${modifierToPastTenseVerb(effect)}.`,
-                        staminaGained > 0 ? `You have gained ${staminaGained} stamina.` : null,
-                    ].filter((x) => x !== null),
+                    `You ${oxfordComma(
+                        ...[`are ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `have gained ${staminaGained} stamina.` : null]
+                    )}.`,
                     undefined,
                     Mood.battle
                 );
@@ -261,7 +265,7 @@ function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSta
                     damageReceived: variants.damageReceived,
                     valorDamageThreshold: variants.valorDamageThreshold,
                 }),
-            `${currentEnemy.specificName} has been defeated.`,
+            `${currentEnemy.specificName} ${variants.nonLethal ? `yields` : `has been defeated`}.`,
             undefined,
             Mood.battle
         );
@@ -314,11 +318,13 @@ function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSta
     return resultRoom(
         nextPhase,
         [
-            healthRegeneration
-                ? `${currentEnemy.specificName} regenerates ${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}.`
-                : null,
-            staminaRegeneration
-                ? `${currentEnemy.specificName} regenerates ${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.`
+            healthRegeneration || staminaRegeneration
+                ? `${currentEnemy.specificName} regenerates ${oxfordComma(
+                      ...[
+                          healthRegeneration ? `${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}` : null,
+                          staminaRegeneration ? `${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.` : null,
+                      ]
+                  )}.`
                 : null,
             updates ? updates : null,
         ].filter((x) => x !== null),
@@ -396,7 +402,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
                           )
                       )}.`
                     : null,
-                !resolvedAttack.dodged && skill.modifiers?.length
+                !resolvedAttack.dodged && skill.modifiers?.length && Player.health.current > 0
                     ? `You have been ${oxfordComma(
                           ...skill.modifiers.map(
                               (modifier) =>
@@ -419,8 +425,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
             nextPhase,
             [
                 `${currentEnemy.specificName} readies for your attack.`,
-                `${currentEnemy.specificName} is ${modifierToPastTenseVerb(effect)}.`,
-                staminaGained > 0 ? `${currentEnemy.specificName} has gained ${staminaGained} stamina.` : null,
+                `${currentEnemy.specificName} ${oxfordComma(...[`is ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `${currentEnemy.specificName} has gained ${staminaGained} stamina.` : null])}`,
             ].filter((x) => x !== null),
             undefined,
             Mood.battle

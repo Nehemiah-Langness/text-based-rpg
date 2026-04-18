@@ -73,9 +73,9 @@ export class SkillSet<
         return null;
     }
 
-    getSkills() {
+    getSkills(all = false) {
         return this.skillList()
-            .filter(([, skill]) => skill.level > 0 && skill.inCoolDown === 0)
+            .filter(([, skill]) => skill.level > 0 && (all || skill.inCoolDown === 0))
             .map(([name, skill]) => {
                 return {
                     name,
