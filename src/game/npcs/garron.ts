@@ -8,15 +8,20 @@ import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { dialogueRoom } from '../rooms/utility-rooms/dialogue-room';
 import { Names } from './npc-names';
 
-const shopDescription = `The steady clang of metal echoes softly through Reefguard Armory, the sound carrying with a weight that feels grounded and real.
+const firstEntrance = [
+    `The steady clang of metal echoes softly through Reefguard Armory, the sound carrying with a weight that feels grounded and real.
 
-Racks of armor line the walls, neatly arranged by type: sharkskin hide, reinforced shell guards, woven coral plating.
+Racks of armor line the walls, neatly arranged by type: sharkskin hide, reinforced shell guards, woven coral plating.`,
+    `Near the back, a large grindstone turns slowly, its rhythmic motion the only movement in the otherwise disciplined space. 
 
-Near the back, a large grindstone turns slowly, its rhythmic motion the only movement in the otherwise disciplined space. Garron Reefguard stands beside it, inspecting a piece of armor with a critical eye.
+Garron Reefguard stands beside it, inspecting a piece of armor with a critical eye.`,
+];
 
-He doesn't look up immediately.
+const shopDescription = `The steady clang of metal echoes softly through Reefguard Armory.
 
-Then, without turning - `;
+Garron Reefguard stands beside a large grindstone in the back.
+
+`;
 
 export const Garron = new Npc(
     'garron',
@@ -41,6 +46,7 @@ export const Garron = new Npc(
                 leaveStoreText: 'Leave',
                 openShopText: 'Enter Reefguard Armory',
                 priceModifier: 1.5,
+                firstEntrance: firstEntrance,
                 shopText: () => [
                     `${shopDescription}"Let's see what you're working with... and what you're lacking."`,
                     `${shopDescription}"If Thalor sent you, I'll make sure you're properly equipped."`,
@@ -100,7 +106,7 @@ const turnInRing: SpecialRemark = (npc, root) => () => {
 
 "You found one," he says, stepping forward.
 
-The tension in the room shifts. For the first time since you recovered the crown, it feels like progress—like something broken might finally be made whole.`,
+The tension in the room shifts. For the first time since you recovered the crown, it feels like progress - like something broken might finally be made whole.`,
         `${npc.getName(root)[Names.FirstName]} takes the ring from you and disappears in the back room with it and the crown fragments.  
 
 The steady rhythm of hammer against metal fills the armory as burst of colors in every hue light the walls with every pound.`,
@@ -117,5 +123,3 @@ ${npc.getName(root)[Names.FirstName]} hands you the Abyssal Crown and the Ring o
         (rm) => Quests.progress(rm, 'mainQuest', 'fix-crown'),
     ];
 };
-
-

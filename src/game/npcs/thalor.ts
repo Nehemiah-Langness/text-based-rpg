@@ -145,25 +145,23 @@ const turnInCrownFragments: SpecialRemark = (npc, room) => () => {
                             [
                                 `${npc.getName(room)[Names.FirstName]} exhales slowly, some tension leaving his posture - but not all.
 
-“Then the stories were true... the Abyssal crown is real.”
+"Then the stories were true... the Abyssal crown is real."
 
 His gaze shifts briefly, thoughtful - calculating.
 
-“Broken, you say.”
+"Broken, you say."`,
+                                `He steps closer, his tone sharpening again.
 
-He steps closer, his tone sharpening again.
-
-“That may be a blessing. A whole crown in the wrong hands would be... catastrophic.”
+"That may be a blessing. A whole crown in the wrong hands would be... catastrophic."
 
 A pause.
 
-Thalor: “But if it can be restored, it can still serve its purpose.”
+"But if it can be restored, it can still serve its purpose."`,
+                                `He gestures slightly toward the city.
 
-He gestures slightly toward the city.
+"Take it to Garron Reefguard at Reefguard Armory. If anyone in this city can stabilize something like that, it's him."
 
-Thalor: “Take it to Garron Reefguard. If anyone in this city can stabilize something like that, it's him.”
-
-Thalor: “Go. And be careful who sees what you're carrying.”`,
+"Go. And be careful who sees what you're carrying."`,
                             ]
                         ),
                     [`"Not yet."`]: (backTo) =>
