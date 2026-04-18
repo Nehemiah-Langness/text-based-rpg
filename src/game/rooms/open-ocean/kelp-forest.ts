@@ -82,7 +82,6 @@ Something small... stuck.`
                                             `You free the small starfish who wiggles quickly to your side.  He is apparently very grateful as he latches to your side.\n\nYou decide to name him "Wiggles".`
                                         );
                                     } else if (investigateChoice === 'quickly') {
-                                        Player.skillSet.skills.starfishThrow.attack -= 2;
                                         return resultRoom(
                                             () => finishQuest('starfishThrowDiminished'),
                                             [
