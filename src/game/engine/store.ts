@@ -10,6 +10,8 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
     openShopText: string;
     leaveStoreText: string;
     firstEntrance?: string | string[];
+    buyOptionText?: string;
+    sellOptionText?: string;
     private shopText: (room: Room) => string | string[];
     private currentShopRemark = 0;
 
@@ -21,7 +23,9 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
             openShopText: string;
             leaveStoreText: string;
             shopText: (room: Room) => string | string[];
-            firstEntrance?: | string[];
+            firstEntrance?: string[];
+            buyOptionText?: string;
+            sellOptionText?: string;
         }
     ) {
         this.inventory = inventory;
@@ -30,7 +34,9 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
         this.openShopText = settings.openShopText;
         this.shopText = settings.shopText;
         this.leaveStoreText = settings.leaveStoreText;
-        this.firstEntrance = settings.firstEntrance
+        this.firstEntrance = settings.firstEntrance;
+        this.buyOptionText = settings.buyOptionText;
+        this.sellOptionText = settings.sellOptionText;
     }
 
     public getShopText(room: Room) {

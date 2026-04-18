@@ -6,7 +6,7 @@ import type { GenericNpc } from './npc';
 import type { Room, RoomLike } from './room';
 import type { Store } from './store';
 
-export function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc) {
+export function shop(root: Room, leaveTo: RoomLike, store: Store, npc: GenericNpc) {
     const storeMenu = () => {
         const shopText = store.getShopText(root);
 
@@ -22,13 +22,13 @@ export function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc
                 store.getItemsToSell().length
                     ? {
                           code: 'buy',
-                          text: 'Buy',
+                          text: store.buyOptionText || 'Buy',
                       }
                     : null,
                 store.getItemsToBuy().length
                     ? {
                           code: 'sell',
-                          text: 'Sell',
+                          text: store.sellOptionText || 'Sell',
                       }
                     : null,
                 {
@@ -36,21 +36,21 @@ export function shop(root: Room, backTo: RoomLike, store: Store, npc: GenericNpc
                     text: store.leaveStoreText,
                 },
             ],
-            (choice, rm) => {
+            (choice, mainShopScreen) => {
                 if (choice === 'leave') {
-                    return backTo;
+                    return leaveTo;
                 } else if (choice === 'talk') {
-                    return npc.getConversation(rm);
+                    return npc.getConversation(mainShopScreen);
                 } else if (choice === 'buy' || choice === 'sell') {
                     return shopInventoryRoom(
-                        rm,
+                        mainShopScreen,
                         choice === 'buy' ? `The following items are available for purchase.` : `You can sell the following items.`,
                         store,
                         choice
                     );
                 }
 
-                return rm;
+                return mainShopScreen;
             }
         );
     };

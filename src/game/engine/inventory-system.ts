@@ -39,9 +39,12 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
         });
     }
 
-    add(key: keyof TInventory, amount: number) {
+    add(key: keyof TInventory, amount: number, player: PlayerEntity) {
         const item = this.get(key);
         item.count += amount;
+        if (item.count === 0 && item.equipped) {
+            this.unEquip(key, player);
+        }
     }
 
     get(key: keyof TInventory) {

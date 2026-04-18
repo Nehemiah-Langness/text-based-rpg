@@ -12,30 +12,39 @@ import type { Store } from '../../engine/store';
 import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
 import { compare } from '../../../helpers/compare';
 
-export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, mode: 'buy' | 'sell', continueText = 'Done'): RoomLike {
-    const currency = Inventory.get('coralShard');
-
+export function shopInventoryRoom(
+    mainShopScreen: RoomLike,
+    text: string,
+    store: Store,
+    mode: 'buy' | 'sell',
+    continueText = 'Done'
+): RoomLike {
     const items = () => (mode === 'buy' ? store.getItemsToSell() : store.getItemsToBuy());
 
     return choiceRoom(
-        `${text}\n\nYou currently have ${currency.count} coral shards.`,
-        [
-            ...items()
-                .sort(compare((x) => x.price))
-                .map(({ item, price, itemKey }) => {
-                    return {
-                        text: `View ${item.name} (${price} coral shards)`,
-                        code: itemKey,
-                    };
-                }),
-            {
-                code: 'back',
-                text: continueText,
-            },
-        ],
-        (code, rm) => {
+        () => {
+            const currency = Inventory.get('coralShard');
+            return `${text}\n\nYou currently have ${currency.count} coral shards.`;
+        },
+        () => {
+            return [
+                ...items()
+                    .sort(compare((x) => x.price))
+                    .map(({ item, price, itemKey }) => {
+                        return {
+                            text: `View ${item.name} ${mode === 'sell' ? `x${item.count} ` : ''}(${price} coral shards each) `,
+                            code: itemKey,
+                        };
+                    }),
+                {
+                    code: 'back',
+                    text: continueText,
+                },
+            ];
+        },
+        (code, itemListRoom) => {
             if (code === 'back') {
-                return backTo;
+                return mainShopScreen;
             } else {
                 const selectedItem = items().find((item) => item.itemKey === code);
                 if (selectedItem) {
@@ -50,12 +59,19 @@ export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, 
                         },
                         () => {
                             const selectedItem = items().find((item) => item.itemKey === code);
+                            const canBuy = selectedItem && Inventory.items.coralShard.count >= selectedItem.price;
+                            const canSell = selectedItem && selectedItem.item.count > 0;
                             return [
-                                selectedItem &&
-                                ((mode === 'buy' && Inventory.items.coralShard.count >= selectedItem.price) || selectedItem.item.count > 0)
+                                (mode === 'buy' && canBuy) || (mode === 'sell' && canSell)
                                     ? {
                                           code: 'transaction',
-                                          text: mode === 'buy' ? 'Buy' : 'Sell',
+                                          text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                      }
+                                    : null,
+                                mode === 'sell' && canSell && selectedItem.item.count > 1
+                                    ? {
+                                          code: 'sell-all',
+                                          text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
                                       }
                                     : null,
                                 {
@@ -66,21 +82,50 @@ export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, 
                         },
                         (transactionCode, transactionRoom) => {
                             if (transactionCode === 'back') {
-                                return shopInventoryRoom(backTo, text, store, mode, continueText);
+                                return shopInventoryRoom(mainShopScreen, text, store, mode, continueText);
                             } else if (transactionCode === 'transaction') {
                                 if (mode === 'buy') {
                                     if (Inventory.items.coralShard.count >= selectedItem.price) {
-                                        Inventory.add(selectedItem.itemKey as InventoryKey, 1);
-                                        Inventory.add('coralShard', -selectedItem.price);
-                                        return resultRoom(transactionRoom, `You buy the ${selectedItem.item.name}.`, undefined, Mood.menu);
+                                        Inventory.add(selectedItem.itemKey as InventoryKey, 1, Player);
+                                        Inventory.add('coralShard', -selectedItem.price, Player);
+                                        const itemCheck = items().find((item) => item.itemKey === code);
+
+                                        return resultRoom(
+                                            itemCheck ? transactionRoom : itemListRoom,
+                                            `You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                            undefined,
+                                            Mood.menu
+                                        );
                                     }
                                 } else {
                                     const toSell = Inventory.get(selectedItem.itemKey as InventoryKey);
                                     if (toSell.count > 0) {
-                                        Inventory.add(selectedItem.itemKey as InventoryKey, -1);
-                                        Inventory.add('coralShard', selectedItem.price);
-                                        return resultRoom(transactionRoom, `You sell the ${selectedItem.item.name}.`, undefined, Mood.menu);
+                                        Inventory.add(selectedItem.itemKey as InventoryKey, -1, Player);
+                                        Inventory.add('coralShard', selectedItem.price, Player);
+                                        const itemCheck = items().find((item) => item.itemKey === code);
+
+                                        return resultRoom(
+                                            itemCheck ? transactionRoom : itemListRoom,
+                                            `You sell the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                            undefined,
+                                            Mood.menu
+                                        );
                                     }
+                                }
+                            } else if (transactionCode === 'sell-all') {
+                                const toSell = Inventory.get(selectedItem.itemKey as InventoryKey);
+                                const count = toSell.count;
+                                if (count > 0) {
+                                    Inventory.add(selectedItem.itemKey as InventoryKey, -count, Player);
+                                    Inventory.add('coralShard', selectedItem.price * count, Player);
+                                    const itemCheck = items().find((item) => item.itemKey === code);
+
+                                    return resultRoom(
+                                        itemCheck ? transactionRoom : itemListRoom,
+                                        `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${selectedItem.price * count} coral shards.`,
+                                        undefined,
+                                        Mood.menu
+                                    );
                                 }
                             }
 
@@ -90,7 +135,7 @@ export function shopInventoryRoom(backTo: RoomLike, text: string, store: Store, 
                 }
             }
 
-            return rm;
+            return itemListRoom;
         }
     ).withColor(Mood.menu);
 }
