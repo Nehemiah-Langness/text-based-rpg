@@ -149,7 +149,7 @@ export class Room<T = any> {
             options: roomOptions.options
                 .concat(
                     npcsAtLocation
-                        .filter((npc) => npc.canConverse() && !npc.inStore)
+                        .filter((npc) => npc.canConverse(this) && !npc.inStore)
                         .sort(compare((x) => x.getName(this)[Names.FullName]))
                         .map((npc) => {
                             return {
@@ -193,7 +193,7 @@ export class Room<T = any> {
                     return characterMenu(this);
                 } else if (code.startsWith('talk-to-')) {
                     const npc = npcsAtLocation.find((n) => code === `talk-to-${n.id}`);
-                    if (npc && npc.canConverse()) {
+                    if (npc && npc.canConverse(this)&& !npc.inStore) {
                         return npc.getConversation(this);
                     }
                 } else if (code.startsWith('shop-at-')) {

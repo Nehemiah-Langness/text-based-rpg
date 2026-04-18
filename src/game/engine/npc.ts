@@ -6,9 +6,8 @@ import type { Store } from './store';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GenericNpc = Npc<any, any>;
+export type SpecialRemark = (npc: GenericNpc, room: Room) => (() => Dialogue);
 export class Npc<TStore = Store | null, TSpecialRemark extends string = string> {
-    
-
     coordinates: { y: string; x: number } | undefined;
     mapId: string | undefined;
     met = false;
@@ -62,8 +61,8 @@ export class Npc<TStore = Store | null, TSpecialRemark extends string = string> 
         return typeof this.name === 'function' ? this.name(this, room) : this.name;
     }
 
-    canConverse() {
-        return this.remarks !== null;
+    canConverse(room: Room) {
+        return this.remarks !== null || this.hasSpecialRemark(room);
     }
 
     getConversation(room: Room, requestedConversation?: TSpecialRemark) {

@@ -41,10 +41,19 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
 
     add(key: keyof TInventory, amount: number, player: PlayerEntity) {
         const item = this.get(key);
+        const hadItem = item.count > 0;
         item.count += amount;
         if (item.count === 0 && item.equipped) {
             this.unEquip(key, player);
         }
+
+        if (!hadItem && item.count > 0) {
+            return item.onAdd?.() ?? null;
+        }
+        if (hadItem && item.count === 0) {
+            return item?.onRemove?.() ?? null;
+        }
+        return null;
     }
 
     get(key: keyof TInventory) {
@@ -193,7 +202,7 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
                       category: 'enchantment' as const,
                   }
                 : null,
-            item.category === 'armor'
+            item.category === 'armor' || item.category === 'enchanted-armor'
                 ? {
                       amount: 1,
                       category: 'armor' as const,

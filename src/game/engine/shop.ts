@@ -8,15 +8,13 @@ import type { Store } from './store';
 
 export function shop(root: Room, leaveTo: RoomLike, store: Store, npc: GenericNpc) {
     const storeMenu = () => {
-        const shopText = store.getShopText(root);
-
         return choiceRoom(
-            shopText,
-            [
-                npc.canConverse() && npc.inStore
+            () => store.getShopText(root),
+            () => [
+                npc.canConverse(root) && npc.inStore
                     ? {
                           code: 'talk',
-                          text: `Talk to ${npc.getName(root)[Names.FullName]}`,
+                          text: `Talk to ${npc.getName(root)[Names.FullName]}${npc.hasSpecialRemark(root) ? ' (!)' : ''}`,
                       }
                     : null,
                 store.getItemsToSell().length

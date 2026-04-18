@@ -196,8 +196,16 @@ export const Quests = new QuestsLog({
             stage: `Talk to Commander Thalor.`,
         },
         {
+            id: 'fix-crown-attempt' as const,
+            stage: `Talk to Garron.`,
+        },
+        {
+            id: 'get-requirement-to-fix-crown' as const,
+            stage: `Obtain a Ring of Protection.`,
+        },
+        {
             id: 'fix-crown' as const,
-            stage: `Talk to [Blacksmith].`,
+            stage: `Bring Garron the Ring of Protection.`,
         },
         {
             id: 'find-jewel-1' as const,

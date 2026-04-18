@@ -1,8 +1,8 @@
-import { Npc, type GenericNpc } from '../engine/npc';
-import type { Room, RoomLike } from '../engine/room';
+import { Npc, type SpecialRemark } from '../engine/npc';
 import { Factions } from '../factions';
 import { Quests } from '../quests';
 import { GuardHall } from '../rooms/mermaid-city/guard-hall';
+import { dialogueRoom } from '../rooms/utility-rooms/dialogue-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Skills } from '../skills';
 import { Names } from './npc-names';
@@ -16,17 +16,19 @@ export const Thalor = new Npc(
             return '';
         },
     ],
-    (npc, rm, remark?: 'firstClue' | 'learnBubbleBlast') => {
+    (npc, rm, remark?: 'firstClue' | 'learnBubbleBlast' | 'turnInCrownFragments') => {
         if (remark === 'firstClue' || Quests.getStage('mainQuest') === 'learn-first-clue-location') return firstClue(npc, rm);
         if (remark === 'learnBubbleBlast' || (Quests.checkStage('mainQuest', 'fight-for-crown') && Skills.skills.bubbleBlast.level === 0))
             return learnBubbleBlast(npc, rm);
+        if (remark === 'turnInCrownFragments' || Quests.getStage('mainQuest') === 'learn-how-to-fix-crown')
+            return turnInCrownFragments(npc, rm);
         return null;
     }
 )
     .meet()
     .move(GuardHall);
 
-const firstClue = (npc: GenericNpc, room: Room) => () => {
+const firstClue: SpecialRemark = (npc, room) => () => {
     Velmora.meet();
 
     return [
@@ -79,10 +81,10 @@ He steps aside, clearing the path toward the exit of the Guard Hall.
 A final glance.
 
 "Go to the reef. Find what ${Velmora.getName(room)[Names.FirstName]} left behind."`,
-        (rm: RoomLike) => Quests.progress(rm, 'mainQuest', 'learn-first-clue-location'),
+        (rm) => Quests.progress(rm, 'mainQuest', 'learn-first-clue-location'),
     ];
 };
-const learnBubbleBlast = (npc: GenericNpc, room: Room) => () => {
+const learnBubbleBlast: SpecialRemark = (npc, room) => () => {
     return [
         `${npc.getName(room)[Names.FullName]} watches you in silence for a long moment.
 
@@ -115,10 +117,66 @@ A brief pause.
         `He steps aside, giving you space.
 
 "Now show me you understand that."`,
-        (backTo: RoomLike) =>
+        (backTo) =>
             resultRoom(
                 backTo,
                 [Skills.levelSkill('bubbleBlast', 1)].filter((x) => x !== null)
+            ),
+    ];
+};
+
+const turnInCrownFragments: SpecialRemark = (npc, room) => () => {
+    return [
+        `${npc.getName(room)[Names.FirstName]} stands near the training grounds, arms folded as you approach. His gaze sharpens immediately, as if he already senses something has changed.
+        
+"You've been gone longer than expected."
+
+`,
+        (backTo) =>
+            dialogueRoom(
+                backTo,
+                `A brief pause. His eyes narrow slightly.
+
+"Tell me... did you find something?"`,
+                {
+                    [`"Yes. I found the Abyssal Crown... but it's broken."`]: (backTo) =>
+                        resultRoom(
+                            () => Quests.progress(backTo, 'mainQuest', 'learn-how-to-fix-crown'),
+                            [
+                                `${npc.getName(room)[Names.FirstName]} exhales slowly, some tension leaving his posture - but not all.
+
+“Then the stories were true... the Abyssal crown is real.”
+
+His gaze shifts briefly, thoughtful - calculating.
+
+“Broken, you say.”
+
+He steps closer, his tone sharpening again.
+
+“That may be a blessing. A whole crown in the wrong hands would be... catastrophic.”
+
+A pause.
+
+Thalor: “But if it can be restored, it can still serve its purpose.”
+
+He gestures slightly toward the city.
+
+Thalor: “Take it to Garron Reefguard. If anyone in this city can stabilize something like that, it's him.”
+
+Thalor: “Go. And be careful who sees what you're carrying.”`,
+                            ]
+                        ),
+                    [`"Not yet."`]: (backTo) =>
+                        resultRoom(backTo, [
+                            `${npc.getName(room)[Names.FirstName]} studies you for a moment longer than expected.
+
+"Then keep looking."
+
+A pause.
+
+"You're close. I can tell. Don't lose focus now."`,
+                        ]),
+                }
             ),
     ];
 };

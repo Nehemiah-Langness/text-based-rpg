@@ -478,6 +478,19 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
+    ringOfProtection: InventorySystem.createInventoryItem({
+        category: 'enchanted-armor' as const,
+        name: 'Ring of Protection',
+        description: 'A small ring emitting a steady hum of energy.',
+        equippable: {
+            subCategory: 'hand' as const,
+            defense: 3,
+        },
+        vendor: {
+            wontBuy: true,
+            max: 1,
+        },
+    }),
     sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Sharkskin Breastplate',

@@ -1,6 +1,6 @@
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import type { Dialogue } from './dialogue';
-import { Room, type RoomLike } from './room';
+import { type RoomLike } from './room';
 
 export class DialogueTree {
     private dialogue: (string | ((rm: RoomLike) => RoomLike))[];
@@ -11,7 +11,7 @@ export class DialogueTree {
         this.dialogue = statements.filter((x) => x !== null && typeof x !== 'undefined');
     }
 
-    getRoom(rm: Room) {
+    getRoom(rm: RoomLike) {
         return this.dialogue.reduceRight((c, n) => (typeof n === 'string' ? resultRoom(c, n) : n(c)), rm as RoomLike);
     }
 }

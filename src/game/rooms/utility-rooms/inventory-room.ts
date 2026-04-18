@@ -86,13 +86,15 @@ export function shopInventoryRoom(
                             } else if (transactionCode === 'transaction') {
                                 if (mode === 'buy') {
                                     if (Inventory.items.coralShard.count >= selectedItem.price) {
-                                        Inventory.add(selectedItem.itemKey as InventoryKey, 1, Player);
+                                        const onAdd = Inventory.add(selectedItem.itemKey as InventoryKey, 1, Player);
                                         Inventory.add('coralShard', -selectedItem.price, Player);
                                         const itemCheck = items().find((item) => item.itemKey === code);
 
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
-                                            `You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                            [`You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`, onAdd].filter(
+                                                (x) => x !== null
+                                            ),
                                             undefined,
                                             Mood.menu
                                         );
@@ -100,13 +102,16 @@ export function shopInventoryRoom(
                                 } else {
                                     const toSell = Inventory.get(selectedItem.itemKey as InventoryKey);
                                     if (toSell.count > 0) {
-                                        Inventory.add(selectedItem.itemKey as InventoryKey, -1, Player);
+                                        const onRemove = Inventory.add(selectedItem.itemKey as InventoryKey, -1, Player);
                                         Inventory.add('coralShard', selectedItem.price, Player);
                                         const itemCheck = items().find((item) => item.itemKey === code);
 
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
-                                            `You sell the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                            [
+                                                `You sell the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                                onRemove,
+                                            ].filter((x) => x !== null),
                                             undefined,
                                             Mood.menu
                                         );
@@ -116,13 +121,16 @@ export function shopInventoryRoom(
                                 const toSell = Inventory.get(selectedItem.itemKey as InventoryKey);
                                 const count = toSell.count;
                                 if (count > 0) {
-                                    Inventory.add(selectedItem.itemKey as InventoryKey, -count, Player);
+                                    const onRemove = Inventory.add(selectedItem.itemKey as InventoryKey, -count, Player);
                                     Inventory.add('coralShard', selectedItem.price * count, Player);
                                     const itemCheck = items().find((item) => item.itemKey === code);
 
                                     return resultRoom(
                                         itemCheck ? transactionRoom : itemListRoom,
-                                        `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${selectedItem.price * count} coral shards.`,
+                                        [
+                                            `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${selectedItem.price * count} coral shards.`,
+                                            onRemove,
+                                        ].filter((x) => x !== null),
                                         undefined,
                                         Mood.menu
                                     );
