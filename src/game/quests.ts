@@ -48,18 +48,17 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
     }
 
     progress<T extends keyof TQuests>(
-        backTo: RoomLike,
         quest: T,
         stage: number | TQuests[T]['stages'][number]['id'],
         restrictions?: { requiredStage?: number; shouldStartQuest: boolean }
-    ): RoomLike {
+    ): string[] | null {
         const { requiredStage = 0, shouldStartQuest = false } = restrictions ?? {};
 
         const questLog = this.getQuest(quest);
 
-        if (questLog.completed) return backTo;
+        if (questLog.completed) return null;
 
-        const questStarted = shouldStartQuest ? this.start(backTo, quest, stage) : null;
+        const questStarted = shouldStartQuest ? this.start(quest, stage) : null;
 
         const progress =
             typeof stage === 'number'
@@ -69,20 +68,16 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
         if (questLog.progress < progress && questLog.progress >= requiredStage) {
             questLog.progress = progress;
 
-            return (
-                questStarted ??
-                (questLog.active
-                    ? resultRoom(backTo, [
-                          `You have progressed the quest "${questLog.name}".`,
-                          `Your next task is ${questLog.stages[questLog.progress].stage}`,
-                      ])
-                    : backTo)
-            );
+            const progressedLanguage = questLog.active
+                ? [`You have progressed the quest "${questLog.name}".`, `Your next task is ${questLog.stages[questLog.progress].stage}`]
+                : null;
+
+            return questStarted ?? progressedLanguage;
         }
-        return questStarted ?? backTo;
+        return questStarted;
     }
 
-    start<T extends keyof TQuests>(backTo: RoomLike, quest: T, stage?: number | TQuests[T]['stages'][number]['id']) {
+    start<T extends keyof TQuests>(quest: T, stage?: number | TQuests[T]['stages'][number]['id']): string[] | null {
         const questLog = this.getQuest(quest);
 
         const progress =
@@ -94,12 +89,9 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
 
         if (!questLog.active && !questLog.completed) {
             questLog.active = true;
-            return resultRoom(backTo, [
-                `You have started the quest "${questLog.name}".`,
-                `Your next task is ${questLog.stages[progress].stage}`,
-            ]);
+            return [`You have started the quest "${questLog.name}".`, `Your next task is ${questLog.stages[progress].stage}`];
         }
-        return backTo;
+        return null;
     }
 
     finish<T extends keyof TQuests>(backTo: RoomLike, quest: T) {

@@ -47,7 +47,7 @@ Something small... stuck.`
             options,
             select: (option) => {
                 const helpWiggles = () =>
-                    Quests.start(
+                    resultRoom(
                         () =>
                             choiceRoom(
                                 `The small starfish struggles in the kelp strands close by.`,
@@ -94,7 +94,7 @@ Something small... stuck.`
                                     return investigateRoom;
                                 }
                             ),
-                        'freeWiggles'
+                        Quests.start('freeWiggles')
                     );
 
                 if (option === 'investigate') {

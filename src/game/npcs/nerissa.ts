@@ -76,7 +76,7 @@ ${npc.getName(room)[Names.FirstName]} continues, "I'd go myself, but I'm in the 
 She looks back up at you, softer now.
 
 "If I can make enough of it... it might help you out there, too."`,
-        (nxtRm: RoomLike) => Quests.start(nxtRm, 'seaCucumber'),
+        (nxtRm: RoomLike) => resultRoom(nxtRm, Quests.start('seaCucumber')),
     ];
 };
 

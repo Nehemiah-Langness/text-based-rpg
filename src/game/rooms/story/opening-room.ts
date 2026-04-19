@@ -6,7 +6,7 @@ import { Mood } from '../moods/mood';
 import { resultRoom } from '../utility-rooms/result-room';
 
 export const OpeningRoom = resultRoom(() => {
-    return Quests.start(MermaidPlaza, 'mainQuest');
+    return resultRoom(MermaidPlaza, Quests.start('mainQuest'));
 }, [
     `The water is still and heavy, as if the ocean itself is holding its breath.
     

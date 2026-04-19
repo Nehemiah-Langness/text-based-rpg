@@ -64,9 +64,12 @@ const supplyCrateStart = () => () => [
 
 "You head that way, keep an eye out. I don't like losing inventory."`,
     (rm: RoomLike) =>
-        Quests.progress(rm, 'fredsSupplyRun', 'travel-shipwreck', {
-            shouldStartQuest: true,
-        }),
+        resultRoom(
+            rm,
+            Quests.progress('fredsSupplyRun', 'travel-shipwreck', {
+                shouldStartQuest: true,
+            })
+        ),
 ];
 
 const supplyCrateTurnIn = (npc: GenericNpc, room: Room) => () => [

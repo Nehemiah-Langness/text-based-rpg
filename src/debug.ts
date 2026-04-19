@@ -3,7 +3,6 @@ import { Inventory } from './game/inventory';
 import { Shops } from './game/rooms/mermaid-city/shops';
 import { Player } from './game/player';
 import { Quests } from './game/quests';
-import { DialogueTree } from './game/engine/dialogue-tree';
 import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
 
 export default () => {
@@ -15,5 +14,6 @@ export default () => {
     Inventory.add('coralShard', 3000, Player);
     Shops.visited = true;
     GuardHall.visited = true;
-    return new DialogueTree([(rm) => Quests.progress(rm, 'mainQuest', 'fix-crown-attempt', { shouldStartQuest: true })]).getRoom(Shops);
+    Quests.progress('mainQuest', 'fix-crown-attempt', { shouldStartQuest: true })
+    return Shops;
 };

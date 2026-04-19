@@ -2,22 +2,23 @@ import { Room, type RoomLike } from '../../engine/room';
 
 export function resultRoom(
     backTo: Room,
-    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
+    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> } | null,
     continueText?: string,
     color?: Room['roomColor']
 ): Room;
 export function resultRoom(
     backTo: RoomLike,
-    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
+    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> } | null,
     continueText?: string,
     color?: Room['roomColor']
 ): RoomLike;
 export function resultRoom(
     backTo: RoomLike,
-    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> },
+    text: string | (string | { text: string; color: Required<Room['roomColor']> })[] | { text: string; color: Required<Room['roomColor']> } | null,
     continueText = 'Continue',
     color?: Room['roomColor']
 ): RoomLike {
+    if (text === null) return backTo;
     if (!Array.isArray(text)) {
         const roomText = typeof text === 'string' ? text : text.text;
         const roomColor = typeof text === 'string' ? undefined : text.color;
