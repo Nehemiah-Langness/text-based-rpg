@@ -18,11 +18,11 @@ function createShark(difficulty = 1): Enemy {
         effects:
             difficulty > 1
                 ? [
-                      {
-                          duration: 1,
-                          effect: 'alert',
-                      },
-                  ]
+                    {
+                        duration: 1,
+                        effect: 'alert',
+                    },
+                ]
                 : [],
         genericName: 'a shark',
         specificName: 'The shark',
@@ -93,7 +93,7 @@ export const Shipwreck = new Room(
                     startCombatEncounter(rm, [createShark(difficulty), createShark(difficulty)], {
                         onComplete: (rm) => {
                             return resultRoom(
-                                () => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'),
+                                () => resultRoom(rm, Quests.progress('fredsSupplyRun', 'fight-or-sneak')),
                                 ['You have picked up the chest.', applyValor ? Player.addValor(1) : null].filter((x) => x !== null)
                             );
                         },
@@ -107,7 +107,7 @@ export const Shipwreck = new Room(
                         playerStart: { x: 3, y: 5 },
                         target: { x: 2, y: 1 },
                         onComplete: (rm) =>
-                            resultRoom(() => Quests.progress(rm, 'fredsSupplyRun', 'fight-or-sneak'), 'You have picked up the chest.'),
+                            resultRoom(() => resultRoom(rm, Quests.progress('fredsSupplyRun', 'fight-or-sneak')), 'You have picked up the chest.'),
                         onFailure: (rm) => resultRoom(() => combat(rm, 1.2, false), 'You have been spotted.'),
                     });
                 } else if (code === 'fight-for-crate') {
@@ -142,7 +142,7 @@ export const Shipwreck = new Room(
         const dialogue = new DialogueTree([
             ...(!rm.visited ? OnEnterDescription : []),
             Quests.getStage('fredsSupplyRun') === 'travel-shipwreck'
-                ? (backTo) => Quests.progress(backTo, 'fredsSupplyRun', 'travel-shipwreck')
+                ? (backTo) => resultRoom(backTo, Quests.progress('fredsSupplyRun', 'travel-shipwreck'))
                 : null,
         ]);
 

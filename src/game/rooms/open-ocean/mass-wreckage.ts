@@ -54,11 +54,11 @@ export const MassWreckage = new Room(
                             const loot = bloodFinLootTable.roll();
                             return resultRoom(
                                 () =>
-                                    Quests.progress(
-                                        () => lootRoom(rm, `You rummage through the area and pick up:`, loot),
-                                        'mainQuest',
-                                        'fight-for-crown'
-                                    ),
+                                    resultRoom(() => lootRoom(rm, `You rummage through the area and pick up:`, loot),
+                                        Quests.progress(
+                                            'mainQuest',
+                                            'fight-for-crown'
+                                        )),
                                 [
                                     `The last Bloodfin jerks once - then goes still.
 
@@ -103,7 +103,7 @@ And somewhere beyond it... the path forward.`,
                             if (mainWreckage.state.piecesFound === 0) {
                                 mainWreckage.state.piecesFound += 1;
                                 return resultRoom(
-                                    () => Quests.progress(rm, 'mainQuest', 'find-crown-piece-1'),
+                                    () => resultRoom(rm, Quests.progress('mainQuest', 'find-crown-piece-1')),
                                     [
                                         `You find a fragment of gold, giving off a low, resonant hum.  It looks to be a part of a crown.  There should be more fragments to find in order to have the full crown.`,
                                     ],
@@ -113,7 +113,7 @@ And somewhere beyond it... the path forward.`,
                             } else if (mainWreckage.state.piecesFound === 1) {
                                 mainWreckage.state.piecesFound += 1;
                                 return resultRoom(
-                                    () => Quests.progress(rm, 'mainQuest', 'find-crown-piece-2'),
+                                    () => resultRoom(rm, Quests.progress('mainQuest', 'find-crown-piece-2')),
                                     [
                                         `You find a second fragment of gold similar to the first, also giving off a low, resonant hum.  Aligning their jagged sides together, it looks like you have one more fragment left to find.`,
                                     ],
@@ -123,7 +123,7 @@ And somewhere beyond it... the path forward.`,
                             } else if (mainWreckage.state.piecesFound === 2) {
                                 mainWreckage.state.piecesFound += 1;
                                 return resultRoom(
-                                    () => Quests.progress(bloodfinCombat(rm), 'mainQuest', 'find-crown-piece-3'),
+                                    () => resultRoom(bloodfinCombat(rm), Quests.progress('mainQuest', 'find-crown-piece-3')),
                                     [
                                         `You find a third fragment and match it up with the other two fragments you found.`,
                                         `A low vibration spreads through the water around you, subtle but undeniable, as though the ocean itself has noticed what you've done. The crown feels heavier now - not in weight, but in presence. Powerful. Dangerous. Important.
@@ -194,7 +194,7 @@ Before you can even react, one of the sharks charges past you and swipes the cro
         const dialogue = new DialogueTree([
             ...(!rm.visited ? OnEnterDescription : []),
             Quests.getStage('mainQuest') === 'follow-compass-to-crown'
-                ? (backTo) => Quests.progress(backTo, 'mainQuest', 'follow-compass-to-crown')
+                ? (backTo) => resultRoom(backTo, Quests.progress('mainQuest', 'follow-compass-to-crown'))
                 : null,
         ]);
 

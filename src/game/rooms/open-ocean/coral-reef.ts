@@ -36,7 +36,7 @@ export const CoralReef = new Room(
                         maxAttempts: 10,
                         onComplete: (nxtRm) =>
                             resultRoom(
-                                () => VelmoraJournalEntryOne(() => Quests.progress(nxtRm, 'mainQuest', 'find-hermit-home')),
+                                () => VelmoraJournalEntryOne(() => resultRoom(nxtRm, Quests.progress('mainQuest', 'find-hermit-home'))),
                                 'You found an old compass in a tattered pouch alongside a journal.',
                                 'Read journal',
                                 Mood.miniGame

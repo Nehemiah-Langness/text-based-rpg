@@ -31,7 +31,7 @@ export const DeepCoralReef = new Room(
                         playerStart: { x: 2, y: 2 },
                         onComplete: (rm) =>
                             resultRoom(
-                                () => Quests.progress(rm, 'seaCucumber', 'find-sea-cucumber'),
+                                () => resultRoom(rm, Quests.progress('seaCucumber', 'find-sea-cucumber')),
                                 `You found a striped reef cucumber.`,
                                 undefined,
                                 Mood.miniGame

@@ -82,17 +82,16 @@ const turnInCrown: SpecialRemark = (npc, root) => () => {
                                 [Inventory.items.ringOfProtection.count > 0 ? '"I actually already have one!"' : '"Where do I find one?"']:
                                     (rm) =>
                                         Inventory.items.ringOfProtection.count > 0
-                                            ? Quests.progress(
-                                                  new DialogueTree(turnInRing(npc, root)()).getRoom(rm),
-                                                  'mainQuest',
-                                                  'fix-crown-attempt'
-                                              )
+                                            ? resultRoom(() => new DialogueTree(turnInRing(npc, root)()).getRoom(rm), Quests.progress(
+                                                'mainQuest',
+                                                'fix-crown-attempt'
+                                            ))
                                             : resultRoom(
-                                                  () => Quests.progress(rm, 'mainQuest', 'fix-crown-attempt'),
-                                                  `"There's only one place in the city I'd trust for that."
+                                                () => resultRoom(rm, Quests.progress('mainQuest', 'fix-crown-attempt')),
+                                                `"There's only one place in the city I'd trust for that."
                                 
 "Go see Arinel Wavebind. Her shop - Arinel's Enchanting. If anyone has a ring strong enough to handle this... it's her."`
-                                              ),
+                                            ),
                             }
                         ),
                 }
@@ -120,6 +119,6 @@ The steady rhythm of hammer against metal fills the armory as burst of colors in
 
 ${npc.getName(root)[Names.FirstName]} hands you the Abyssal Crown and the Ring of Protection.`,
         `You feel a strong vibration coming from your pouch as you hold the crown. You pull out your compass, which is spinning increasingly faster before it abruptly stops and settles, likely pointing to the next piece of your puzzle.`,
-        (rm) => Quests.progress(rm, 'mainQuest', 'fix-crown'),
+        (rm) => resultRoom(rm, Quests.progress('mainQuest', 'fix-crown')),
     ];
 };

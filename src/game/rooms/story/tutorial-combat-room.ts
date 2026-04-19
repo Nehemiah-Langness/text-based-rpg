@@ -44,7 +44,7 @@ export function tutorialCombatRoom(): RoomLike {
             nonLethal: true,
             onComplete: (rm) =>
                 resultRoom(
-                    () => Quests.progress(rm, 'mainQuest', 'train-tail-kick'),
+                    () => resultRoom(rm, Quests.progress('mainQuest', 'train-tail-kick')),
                     `You have finished training with ${Thalor.getName()[Names.FirstName]}.`
                 ),
         }

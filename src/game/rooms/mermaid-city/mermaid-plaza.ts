@@ -6,6 +6,7 @@ import { Thalor } from '../../npcs/thalor';
 import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { Scene1 } from '../story/scene-1-follow-thalor';
+import { resultRoom } from '../utility-rooms/result-room';
 import { MermaidCityMap } from './map';
 
 export const MermaidPlaza = new Room(
@@ -25,7 +26,7 @@ export const MermaidPlaza = new Room(
             options,
             select: (code) => {
                 if (code === 'go-to-training') {
-                    return Quests.progress(Scene1, 'mainQuest', 'go-to-training');
+                    return resultRoom(Scene1, Quests.progress('mainQuest', 'go-to-training'));
                 }
 
                 return rm;
@@ -37,9 +38,9 @@ export const MermaidPlaza = new Room(
             Quests.getStage('mainQuest') === 'go-to-training'
                 ? null
                 : {
-                      code: 'travel-north',
-                      text: 'Go north to the guild hall',
-                  },
+                    code: 'travel-north',
+                    text: 'Go north to the guild hall',
+                },
             {
                 code: 'travel-east',
                 text: 'Go east to your apartment',

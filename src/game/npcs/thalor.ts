@@ -39,8 +39,7 @@ const firstClue: SpecialRemark = (npc, room) => () => {
 He stops, facing you directly.
 
 "The last Chosen made a discovery before her death."`,
-        `"A hermit. An outcast who lived beyond the reef - ${Velmora.getName(room)[Names.FirstName]}, known as ${
-            Velmora.getName(room)[Names.NickName]
+        `"A hermit. An outcast who lived beyond the reef - ${Velmora.getName(room)[Names.FirstName]}, known as ${Velmora.getName(room)[Names.NickName]
         }."
 
 The name lingers in the water between you.
@@ -56,8 +55,7 @@ The words feel heavy. Intentional.
 
 ${npc.getName(room)[Names.FirstName]} turns, gesturing outward, toward the distant wilds beyond the city.
 
-"${
-            Velmora.getName(room)[Names.FirstName]
+"${Velmora.getName(room)[Names.FirstName]
         }'s dwelling was destroyed long ago. Tectonic shifts... deep collapses. The reef swallowed most of it."`,
         `He looks back at you.
 
@@ -81,7 +79,7 @@ He steps aside, clearing the path toward the exit of the Guard Hall.
 A final glance.
 
 "Go to the reef. Find what ${Velmora.getName(room)[Names.FirstName]} left behind."`,
-        (rm) => Quests.progress(rm, 'mainQuest', 'learn-first-clue-location'),
+        (rm) => resultRoom(rm, Quests.progress('mainQuest', 'learn-first-clue-location')),
     ];
 };
 const learnBubbleBlast: SpecialRemark = (npc, room) => () => {
@@ -141,7 +139,7 @@ const turnInCrownFragments: SpecialRemark = (npc, room) => () => {
                 {
                     [`"Yes. I found the Abyssal Crown... but it's broken."`]: (backTo) =>
                         resultRoom(
-                            () => Quests.progress(backTo, 'mainQuest', 'learn-how-to-fix-crown'),
+                            () => resultRoom(backTo, Quests.progress('mainQuest', 'learn-how-to-fix-crown')),
                             [
                                 `${npc.getName(room)[Names.FirstName]} exhales slowly, some tension leaving his posture - but not all.
 
