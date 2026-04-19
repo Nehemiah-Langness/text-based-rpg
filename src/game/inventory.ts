@@ -504,6 +504,54 @@ export const Inventory = new InventorySystem({
             return null;
         }
     }),
+    ringOfLongevity: InventorySystem.createInventoryItem({
+        category: 'enchanted-armor' as const,
+        name: 'Ring of Longevity',
+        description: 'A small ring emitting a steady hum of energy.',
+        equippable: {
+            subCategory: 'hand' as const,
+            health: 10
+        },
+        vendor: {
+            max: 1,
+        },
+    }),
+    ringOfSpeed: InventorySystem.createInventoryItem({
+        category: 'enchanted-armor' as const,
+        name: 'Ring of Swiftness',
+        description: 'A small ring emitting a steady hum of energy.',
+        equippable: {
+            subCategory: 'hand' as const,
+            speed: 30
+        },
+        vendor: {
+            max: 1,
+        },
+    }),
+    ringOfStrength: InventorySystem.createInventoryItem({
+        category: 'enchanted-armor' as const,
+        name: 'Ring of Strength',
+        description: 'A small ring emitting a steady hum of energy.',
+        equippable: {
+            subCategory: 'hand' as const,
+            strength: 1
+        },
+        vendor: {
+            max: 1,
+        },
+    }),
+    ringOfEnergy: InventorySystem.createInventoryItem({
+        category: 'enchanted-armor' as const,
+        name: 'Ring of Energy',
+        description: 'A small ring emitting a steady hum of energy.',
+        equippable: {
+            subCategory: 'hand' as const,
+            stamina: 30
+        },
+        vendor: {
+            max: 1,
+        },
+    }),
     sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Sharkskin Breastplate',
@@ -540,7 +588,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    shellBreastplateEnchantment: InventorySystem.createInventoryItem({
+    shellBreastplateArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Turtle Shell Breastplate',
         description: '',
@@ -552,7 +600,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    shellHelmetEnchantment: InventorySystem.createInventoryItem({
+    shellHelmetArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Turtle Shell Helmet',
         description: '',
@@ -564,7 +612,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    shellArmsEnchantment: InventorySystem.createInventoryItem({
+    shellArmsArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Turtle Shell Gauntlets',
         description: '',
@@ -576,7 +624,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    coralBreastplateEnchantment: InventorySystem.createInventoryItem({
+    coralBreastplateArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Woven Coral Breastplate',
         description: '',
@@ -588,7 +636,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    coralHelmetEnchantment: InventorySystem.createInventoryItem({
+    coralHelmetArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Woven Coral Helmet',
         description: '',
@@ -600,7 +648,7 @@ export const Inventory = new InventorySystem({
             max: 1,
         },
     }),
-    coralArmsEnchantment: InventorySystem.createInventoryItem({
+    coralArmsArmor: InventorySystem.createInventoryItem({
         category: 'armor' as const,
         name: 'Woven Coral Gauntlets',
         description: '',
