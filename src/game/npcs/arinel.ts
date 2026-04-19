@@ -4,15 +4,7 @@ import { Inventory } from '../inventory';
 import { Shops } from '../rooms/mermaid-city/shops';
 import { Names } from './npc-names';
 
-const shopDescription = `Soft light ripples through the chamber of Arinel's Enchanting. The walls curve inward in smooth Atlantean arcs, but here they are etched with intricate symbols that shimmer faintly, shifting as currents pass over them.
-
-At the center of the room stands Arinel Wavebind, hands hovering over a piece of armor as currents spiral gently around her fingers.
-
-She pauses.
-
-Then looks up.
-
-`;
+const shopDescription = ``;
 
 export const Arinel = new Npc(
     'arinel',
@@ -50,6 +42,14 @@ export const Arinel = new Npc(
                     `${shopDescription}"Some enchantments bite back. Choose carefully."`,
                     `${shopDescription}"The ocean flows through all things. I simply... guide it."`,
                     `${shopDescription}"You carry armor... but not yet power. Let us see what your armor could become."`,
+                ],
+                firstEntrance: [
+                    `Soft light ripples through the chamber of Arinel's Enchanting. The walls curve inward in smooth Atlantean arcs, but here they are etched with intricate symbols that shimmer faintly, shifting as currents pass over them.`,
+                    `At the center of the room stands Arinel Wavebind, hands hovering over a piece of armor as currents spiral gently around her fingers.
+
+She pauses.
+
+Then looks up.`,
                 ],
             }),
         true

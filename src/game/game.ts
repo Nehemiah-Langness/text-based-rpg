@@ -6,6 +6,7 @@ import { Quests } from './quests';
 import { Map } from './engine/map';
 import { Room } from './engine/room';
 import type { Npc } from './engine/npc';
+import { MapService } from './engine/map-service';
 
 export function saveGame(currentRoom: Room) {
     localStorage.setItem(
@@ -65,9 +66,8 @@ export function loadGame() {
             }
         });
 
-        const savedMap = MapList.find((m) => m.id === location?.map);
-        if (savedMap && location?.coordinates) {
-            return savedMap.cells[location.coordinates.y][location.coordinates.x] ?? null;
+        if (location && location.coordinates) {
+            return MapService.getRoom(location.map, location.coordinates);
         }
 
         return null;
@@ -76,3 +76,5 @@ export function loadGame() {
         return false;
     }
 }
+
+

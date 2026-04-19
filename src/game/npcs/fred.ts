@@ -50,7 +50,16 @@ export const Fred = new Npc(
                   leaveStoreText: 'Get up from your table',
                   openShopText: 'Sit down and order some food',
                   priceModifier: 1.15,
-                  shopText: () => `Fred swims up to your table, "What can I get for you?" he says with an impatient grunt.`,
+                  shopText: () => [
+                      `"Are you eating something or just here for the view?"`,
+                      `"Any day now, kid."`,
+                      `"Feel free to go in the back and make it yourself."`,
+                  ],
+                  firstEntrance: [
+                      `You swim over to your favorite corner booth and take a seat.  It's not long before Fred swims up to your table.
+                    
+"What can I get for you?" he says with an impatient grunt.`,
+                  ],
               })
             : null
     );
