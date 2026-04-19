@@ -38,6 +38,6 @@ export interface InventoryItemMeta<TCategory = string> {
         strength?: number;
         speed?: number;
     };
-    onAdd?: () => string | null;
-    onRemove?: () => string | null;
+    onAdd?: () => string | string[] | null;
+    onRemove?: () => string | string[] | null;
 }

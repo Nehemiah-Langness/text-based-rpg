@@ -1,6 +1,7 @@
 import type { InventoryKey as BaseInventoryKey } from './engine/category';
 import { InventorySystem } from './engine/inventory-system';
 import { Prices } from './prices';
+import { Quests } from './quests';
 
 function createTrinket({
     level,
@@ -10,6 +11,7 @@ function createTrinket({
     return InventorySystem.createInventoryItem<'trinket'>({
         ...passThrough,
         vendor: {
+            wontSell: true,
             ...passThrough.vendor,
             value: Prices.getCombination([
                 {
@@ -487,9 +489,20 @@ export const Inventory = new InventorySystem({
             defense: 3,
         },
         vendor: {
-            wontBuy: true,
             max: 1,
         },
+        onAdd: () => {
+            if (Quests.getStage('mainQuest') === 'get-requirement-to-fix-crown') {
+                return Quests.progress('mainQuest', 'get-requirement-to-fix-crown')
+            }
+            return null;
+        },
+        onRemove: () => {
+            if (Quests.getStage('mainQuest') === 'fix-crown') {
+                return Quests.revertTo('mainQuest', 'get-requirement-to-fix-crown')
+            }
+            return null;
+        }
     }),
     sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
         category: 'armor' as const,

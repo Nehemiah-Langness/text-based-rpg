@@ -1,4 +1,5 @@
 import type { InventoryItem, InventoryItemMeta } from '../inventory/types/inventory-item';
+import { Player } from '../player';
 import type { Category } from './category';
 import type { InventoryConstraint, InventorySystem } from './inventory-system';
 import type { Room } from './room';
@@ -49,7 +50,11 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
         return text[current];
     }
 
-    public getItemsToSell() {
+    private getPriceModifier() {
+        return Math.max(1.01, this.priceModifier - (Player.valor / 100))
+    }
+
+    public getItemsPlayerCanBuy() {
         return this.inventory
             .list(
                 (item) => !!item.vendor && !item.vendor.wontSell && (typeof item.vendor.max === 'undefined' || item.count < item.vendor.max)
@@ -58,18 +63,18 @@ export class Store<T extends InventoryConstraint<T> = Record<string, InventoryIt
             .map(({ item, key }) => ({
                 itemKey: key,
                 item: item,
-                price: Math.ceil((item.vendor?.value ?? 0) * this.priceModifier),
+                price: Math.ceil((item.vendor?.value ?? 0) * this.getPriceModifier()),
             }));
     }
 
-    public getItemsToBuy() {
+    public getItemsPlayerCanSell() {
         return this.inventory
             .list((item) => !!item.vendor && !item.vendor.wontBuy && item.count > 0)
             .filter(({ item }) => this.filter(item))
             .map(({ item, key }) => ({
                 itemKey: key,
                 item: item,
-                price: Math.floor((item.vendor?.value ?? 0) / this.priceModifier),
+                price: Math.floor((item.vendor?.value ?? 0) / this.getPriceModifier()),
             }));
     }
 }

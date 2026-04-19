@@ -77,6 +77,31 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
         return questStarted;
     }
 
+    revertTo<T extends keyof TQuests>(
+        quest: T,
+        stage: number | TQuests[T]['stages'][number]['id']
+    ): string[] | null {
+        const questLog = this.getQuest(quest);
+
+        if (questLog.completed) return null;
+
+        const progress =
+            typeof stage === 'number'
+                ? stage
+                : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]);
+
+        if (questLog.progress > progress) {
+            questLog.progress = progress;
+
+            const progressedLanguage = questLog.active
+                ? [`You have fallen back in the quest "${questLog.name}".`, `Your next task is ${questLog.stages[questLog.progress].stage}`]
+                : null;
+
+            return progressedLanguage;
+        }
+        return null;
+    }
+
     start<T extends keyof TQuests>(quest: T, stage?: number | TQuests[T]['stages'][number]['id']): string[] | null {
         const questLog = this.getQuest(quest);
 
@@ -84,8 +109,8 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
             typeof stage === 'undefined'
                 ? 0
                 : typeof stage === 'number'
-                  ? stage
-                  : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
+                    ? stage
+                    : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
 
         if (!questLog.active && !questLog.completed) {
             questLog.active = true;

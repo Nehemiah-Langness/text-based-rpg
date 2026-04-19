@@ -17,13 +17,13 @@ export function shop(root: Room, leaveTo: RoomLike, store: Store, npc: GenericNp
                           text: `Talk to ${npc.getName(root)[Names.FullName]}${npc.hasSpecialRemark(root) ? ' (!)' : ''}`,
                       }
                     : null,
-                store.getItemsToSell().length
+                store.getItemsPlayerCanBuy().length
                     ? {
                           code: 'buy',
                           text: store.buyOptionText || 'Buy',
                       }
                     : null,
-                store.getItemsToBuy().length
+                store.getItemsPlayerCanSell().length
                     ? {
                           code: 'sell',
                           text: store.sellOptionText || 'Sell',

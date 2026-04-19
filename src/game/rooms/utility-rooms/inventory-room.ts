@@ -19,7 +19,7 @@ export function shopInventoryRoom(
     mode: 'buy' | 'sell',
     continueText = 'Done'
 ): RoomLike {
-    const items = () => (mode === 'buy' ? store.getItemsToSell() : store.getItemsToBuy());
+    const items = () => (mode === 'buy' ? store.getItemsPlayerCanBuy() : store.getItemsPlayerCanSell());
 
     return choiceRoom(
         () => {
@@ -64,15 +64,15 @@ export function shopInventoryRoom(
                             return [
                                 (mode === 'buy' && canBuy) || (mode === 'sell' && canSell)
                                     ? {
-                                          code: 'transaction',
-                                          text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
-                                      }
+                                        code: 'transaction',
+                                        text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                    }
                                     : null,
                                 mode === 'sell' && canSell && selectedItem.item.count > 1
                                     ? {
-                                          code: 'sell-all',
-                                          text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
-                                      }
+                                        code: 'sell-all',
+                                        text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                    }
                                     : null,
                                 {
                                     code: 'back',
@@ -92,9 +92,7 @@ export function shopInventoryRoom(
 
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
-                                            [`You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`, onAdd].filter(
-                                                (x) => x !== null
-                                            ),
+                                            [`You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`, ...(onAdd ?? [])],
                                             undefined,
                                             Mood.menu
                                         );
@@ -110,8 +108,8 @@ export function shopInventoryRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
                                             [
                                                 `You sell the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
-                                                onRemove,
-                                            ].filter((x) => x !== null),
+                                                ...(onRemove ?? []),
+                                            ],
                                             undefined,
                                             Mood.menu
                                         );
@@ -129,7 +127,7 @@ export function shopInventoryRoom(
                                         itemCheck ? transactionRoom : itemListRoom,
                                         [
                                             `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${selectedItem.price * count} coral shards.`,
-                                            onRemove,
+                                            ...(onRemove ?? []),
                                         ].filter((x) => x !== null),
                                         undefined,
                                         Mood.menu
@@ -162,8 +160,8 @@ export function inventoryRoom(
             return getItems().length
                 ? `You rummage through your pouch and find the following items:`
                 : filter
-                  ? 'Nothing in your pouch is useful at this time.'
-                  : 'Your pouch is empty.';
+                    ? 'Nothing in your pouch is useful at this time.'
+                    : 'Your pouch is empty.';
         },
         (rm) => {
             return {
@@ -246,15 +244,15 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             [
                 selectedItem.equippable
                     ? {
-                          code: 'equip',
-                          text: selectedItem.equipped ? 'Unequip' : 'Equip',
-                      }
+                        code: 'equip',
+                        text: selectedItem.equipped ? 'Unequip' : 'Equip',
+                    }
                     : null,
                 selectedItem.consumable
                     ? {
-                          code: 'consume',
-                          text: 'Consume',
-                      }
+                        code: 'consume',
+                        text: 'Consume',
+                    }
                     : null,
                 {
                     code: 'back',
@@ -276,13 +274,13 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
                             text ?? `You consume your ${selectedItem.name}.`,
                             healed
                                 ? `You gain ${Math.round(healed)} health points.  You are ${healthToDescription(
-                                      Player.health.current / Player.health.max
-                                  )}.`
+                                    Player.health.current / Player.health.max
+                                )}.`
                                 : null,
                             energized
                                 ? `You gain ${Math.round(energized)} stamina points.  You are ${staminaToDescription(
-                                      Player.stamina.current / Player.stamina.max
-                                  )}.`
+                                    Player.stamina.current / Player.stamina.max
+                                )}.`
                                 : null,
                             effects?.length ? `You are ${oxfordComma(...effects.map((e) => modifierToPastTenseVerb(e.effect)))}.` : null,
                         ].filter((x) => x !== null),
