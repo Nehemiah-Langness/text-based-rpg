@@ -1,0 +1,118 @@
+import type { Enemy } from './enemy';
+
+export function createBloodfin(level: number): Enemy {
+    return {
+        level,
+        defense: 1,
+        speed: 10,
+        effects: [],
+        genericName: 'a Stonejaw Brood shark',
+        specificName: 'The Stonejaw shark',
+        health: 40,
+        stamina: 80,
+        strength: 0,
+        moves: [
+            {
+                name: 'Fossil Bite',
+                actionDescription: 'performs a crushing bite with immense force, backed by ancient, rock-like jaws,',
+                attack: 10,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 40,
+                xp: -100000,
+            },
+            {
+                name: 'Crushing Ambush',
+                actionDescription: 'bursts from below, slamming into you with massive force',
+                attack: 6,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 24,
+                modifiers: [
+                    {
+                        effect: 'stun',
+                        duration: 1,
+                    },
+                ],
+                xp: -100000,
+            },
+            {
+                name: 'Silt Cloud Veil',
+                actionDescription: 'churns the seabed, surrounding you in thick, blinding silt',
+                attack: 1,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 6,
+                modifiers: [
+                    {
+                        effect: 'distract',
+                        duration: 2,
+                    },
+                ],
+                xp: -100000,
+            },
+            {
+                name: 'Stonejaw Slam',
+                actionDescription: 'performs a heavy and powerful body slam',
+                attack: 8,
+                coolDown: 1,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 24,
+                xp: -100000,
+            },
+            {
+                name: 'Jagged Rush',
+                actionDescription: 'charges at you, scraping their teeth on the seabed',
+                attack: 5,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 20,
+                modifiers: [
+                    {
+                        effect: 'distract',
+                        duration: 1,
+                    },
+                ],
+                xp: -100000,
+            },
+            {
+                name: 'Ancient Guard Break',
+                actionDescription: 'performs a calculated strike to break your stance',
+                attack: 4,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 16,
+                modifiers: [
+                    {
+                        effect: 'stun',
+                        duration: 1,
+                    },
+                ],
+                xp: -100000,
+            },
+            {
+                name: 'Deep Current Lunge',
+                actionDescription: 'rides a powerful current, accelerating into a devastating lunge',
+                attack: 8,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 20,
+                xp: -100000,
+            },
+        ],
+    };
+}

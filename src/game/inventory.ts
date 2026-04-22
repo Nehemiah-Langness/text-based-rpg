@@ -133,7 +133,7 @@ export const Inventory = new InventorySystem({
     }),
     velmorasInkVial: createTrinket({
         category: 'trinket',
-        name: "Velmora's Ink Vial",
+        name: "Magical Ink Vial",
         description: 'Still faintly swirling with dark energy.',
         level: 2,
         variance: 16,
@@ -168,8 +168,8 @@ export const Inventory = new InventorySystem({
     }),
     inkSeersBrokenLens: createTrinket({
         category: 'trinket',
-        name: "Ink-Seer's Broken Lens",
-        description: 'Once used by Velmora to "see truth".',
+        name: "Seer's Broken Lens",
+        description: 'Once used by a seer and now a collector\'s item.',
         level: 4,
         variance: 25,
     }),

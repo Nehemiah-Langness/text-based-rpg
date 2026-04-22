@@ -16,7 +16,11 @@ export const RoomNames = {
         shipwreck: 'shipwreck',
         kelpForest: 'kelp-forest',
         massWreckage: 'mass-wreckage',
-        bloodfinTerritory: 'bloodfin-territory'
+        bloodfinTerritory: 'bloodfin-territory',
+        stonejawTerritory: 'stonejaw-territory',
+        tideTerritory: 'tide-territory',
+        forgottenShrine: 'forgotten-shrine',
+        sealedCavern: 'sealed-cavern',
     },
 };
 export const MapNames = {

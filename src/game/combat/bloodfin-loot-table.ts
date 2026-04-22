@@ -39,19 +39,11 @@ export const bloodFinLootTable = Inventory.createLootTable([
             item: key,
             number: 1,
         })),
-    Inventory.getCategory('food').map(({ key }) => ({
-        chance: 1,
-        item: key,
-        number: 1,
-    })),
-    Inventory.getCategory('food').map(({ key }) => ({
-        chance: 1,
-        item: key,
-        number: 1,
-    })),
-    Inventory.getCategory('food').map(({ key }) => ({
-        chance: 1,
-        item: key,
-        number: 1,
-    })),
+    ...new Array(3).fill(0).map(() =>
+        Inventory.getCategory('food').map(({ key }) => ({
+            chance: 1,
+            item: key,
+            number: 1,
+        }))
+    ),
 ]);

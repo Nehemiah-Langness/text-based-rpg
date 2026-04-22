@@ -2,7 +2,7 @@ import { MapService } from './engine/map-service';
 import type { Room } from './engine/room';
 
 export class FastTravel {
-    private static locations: { name: string; mapId: string; coordinates: { x: number; y: string } }[];
+    private static locations: { name: string; mapId: string; coordinates: { x: number; y: string } }[] = [];
 
     static save() {
         return this.locations;
@@ -10,6 +10,10 @@ export class FastTravel {
 
     static load(data: ReturnType<(typeof FastTravel)['save']>) {
         this.locations = data;
+    }
+
+    static isAvailable() {
+        return this.locations.length >= 2;
     }
 
     static getUnlockedLocations() {

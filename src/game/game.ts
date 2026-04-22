@@ -7,6 +7,7 @@ import { Map } from './engine/map';
 import { Room } from './engine/room';
 import type { Npc } from './engine/npc';
 import { MapService } from './engine/map-service';
+import { FastTravel } from './fast-travel';
 
 export function saveGame(currentRoom: Room) {
     localStorage.setItem(
@@ -21,6 +22,7 @@ export function saveGame(currentRoom: Room) {
             },
             quests: Quests.save(),
             npcs: NpcList.map((x) => x.save()),
+            fastTravel: FastTravel.save(),
         })
     );
 }
@@ -30,7 +32,7 @@ export function loadGame() {
         const savedState = localStorage.getItem('saved-game');
         if (!savedState) return false;
 
-        const { inventory, maps, player, location, quests, npcs } = JSON.parse(savedState) as {
+        const { inventory, maps, player, location, quests, npcs, fastTravel } = JSON.parse(savedState) as {
             player?: ReturnType<typeof Player.save>;
             inventory?: ReturnType<typeof Inventory.save>;
             maps?: ReturnType<Map['saveMap']>[];
@@ -40,6 +42,7 @@ export function loadGame() {
             };
             quests?: ReturnType<(typeof Quests)['save']>;
             npcs?: ReturnType<Npc['save']>[];
+            fastTravel?: ReturnType<typeof FastTravel.save>;
         };
 
         if (player) {
@@ -50,6 +53,9 @@ export function loadGame() {
         }
         if (inventory) {
             Inventory.load(inventory);
+        }
+        if (fastTravel) {
+            FastTravel.load(fastTravel);
         }
 
         maps?.forEach(({ data, id }) => {
@@ -76,5 +82,3 @@ export function loadGame() {
         return false;
     }
 }
-
-

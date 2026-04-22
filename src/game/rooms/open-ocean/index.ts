@@ -7,4 +7,5 @@ import './sacred-gardens';
 import './shipwreck';
 import './wastelands';
 import './bloodfin-territory';
+import './forgotten-shrine';
 

@@ -1,17 +1,19 @@
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
+import { FastTravel } from '../../fast-travel';
 import type { InputOption } from '../../input-option';
 import { Names } from '../../npcs/npc-names';
 import { Thalor } from '../../npcs/thalor';
 import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { Scene1 } from '../story/scene-1-follow-thalor';
+import { fastTravelRoom } from '../utility-rooms/fast-travel-room';
 import { resultRoom } from '../utility-rooms/result-room';
 import { MermaidCityMap } from './map';
 
 export const MermaidPlaza = new Room(
     {},
-    () => VisitedDescription,
+    (rm) => VisitedDescription(rm),
     (rm) => {
         const options: InputOption[] = [];
 
@@ -22,11 +24,33 @@ export const MermaidPlaza = new Room(
             });
         }
 
+        if (rm.map && rm.coordinates) {
+            if (!FastTravel.isUnlocked(rm.map.id, rm.coordinates)) {
+                options.push({
+                    code: 'fast-travel-unlock',
+                    text: 'Examine the statue',
+                });
+            } else if (FastTravel.isAvailable()) {
+                options.push({
+                    code: 'fast-travel',
+                    text: 'Touch the statue',
+                });
+            }
+        }
+
         return {
             options,
             select: (code) => {
                 if (code === 'go-to-training') {
                     return resultRoom(Scene1, Quests.progress('mainQuest', 'go-to-training'));
+                } else if (code === 'fast-travel-unlock') {
+                    if (rm.map && rm.coordinates) FastTravel.unlockLocation('The Mermaid City Plaza', rm.map.id, rm.coordinates);
+                    return resultRoom(rm, [
+                        `You reach out and touch the mermaid. The soft glow from the tail scales intensifies as you feel a pull from the statue out in several directions.`,
+                        `You have unlocked fast travel to and from the Mermaid City Plaza.`,
+                    ]);
+                } else if (code === 'fast-travel') {
+                    return fastTravelRoom(rm);
                 }
 
                 return rm;
@@ -38,9 +62,9 @@ export const MermaidPlaza = new Room(
             Quests.getStage('mainQuest') === 'go-to-training'
                 ? null
                 : {
-                    code: 'travel-north',
-                    text: 'Go north to the guild hall',
-                },
+                      code: 'travel-north',
+                      text: 'Go north to the guild hall',
+                  },
             {
                 code: 'travel-east',
                 text: 'Go east to your apartment',
@@ -76,9 +100,9 @@ Veins of pearl and silver trace through the architecture like currents frozen in
 Below, the stone is etched with concentric patterns, like ripples spreading outward from where you stand - as if the city itself recognizes this moment.`,
 ];
 
-const VisitedDescription = `You drift at the center of the mermaid plaza.
+const VisitedDescription = (rm: Room) => `You drift at the center of the mermaid plaza as Mermaids pass along the outer edges.
 
-Mermaids pass along the outer edges of the plaza.
+A statue of regal mermaid sits in the center of the plaza, emitting ${rm.map && rm.coordinates && !FastTravel.isUnlocked(rm.map.id, rm.coordinates) ? 'a soft glow' : 'an intense glow'} from the lines etched around the scales of her tail.
 
 At the northern archway, the path leads back toward the Guard Hall.
 
