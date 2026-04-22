@@ -2,7 +2,7 @@ import { Inventory } from '../inventory';
 import { Prices } from '../prices';
 import { withValueInRange } from '../utility-functions/with-value-in-range';
 
-export const bloodFinLootTable = Inventory.createLootTable([
+export const stonejawLootTable = Inventory.createLootTable([
     ...new Array(3).fill(0).map(() =>
         Inventory.getCategory('trinket')
             .filter(

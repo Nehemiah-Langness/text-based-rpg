@@ -1,6 +1,6 @@
 import type { Enemy } from './enemy';
 
-export function createBloodfin(level: number): Enemy {
+export function createStonejaw(level: number): Enemy {
     return {
         level,
         defense: 1,
