@@ -229,8 +229,12 @@ export const Quests = new QuestsLog({
             stage: `Follow the compass.`,
         },
         {
-            id: 'get-jewel-1' as const,
-            stage: `Get the jewel.`,
+            id: 'jewel-1-quest' as const,
+            stage: `Get the Sealed Relic Orb.`,
+        },
+        {
+            id: 'jewel-1-turn-in' as const,
+            stage: `Return to Velrix.`,
         },
         {
             id: 'find-jewel-2' as const,

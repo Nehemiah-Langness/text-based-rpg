@@ -1,0 +1,141 @@
+import type { Enemy } from './enemy';
+
+export function createTidecaller(level: number): Enemy {
+    return {
+        level,
+        defense: 1,
+        speed: 15,
+        effects: [],
+        genericName: 'a Tidecaller Collective shark',
+        specificName: 'The Tidecaller shark',
+        health: 60,
+        stamina: 60,
+        strength: 0,
+        moves: [
+            {
+                name: 'Current Strike',
+                actionDescription: 'strikes smooth and fast, carried by a guiding current',
+                attack: 8,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 30,
+                xp: -100000,
+            },
+            {
+                name: 'Flow Disruption',
+                actionDescription: 'bends the surrounding current, throwing off your balance and focus',
+                attack: 4,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 2,
+                        effect: 'distract',
+                    },
+                ],
+                stamina: 15,
+                xp: -100000,
+            },
+            {
+                name: 'Tidal Pulse',
+                actionDescription: 'creates a disruptive, rhythmic shockwave that ripples outward',
+                attack: 3,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 10,
+                xp: -100000,
+            },
+            {
+                name: 'Cresting Lunge',
+                actionDescription: 'rides a surge of water, lunging forward with overwhelming force',
+                attack: 10,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                stamina: 40,
+                xp: -100000,
+            },
+            {
+                name: 'Whispering Currents',
+                actionDescription: 'creates subtle currents that swirl around you clouding your awareness and sense of direction',
+                attack: 1,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 4,
+                xp: -100000,
+            },
+            {
+                name: 'Undertow Grasp',
+                actionDescription: 'causes an unseen force to drag you down to the ocean bed',
+                attack: 5,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 20,
+                xp: -100000,
+            },
+            {
+                name: 'Spiral Current',
+                actionDescription: 'creates a tightening spiral of water around you',
+                attack: 6,
+                coolDown: 2,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'distract',
+                    },
+                ],
+                stamina: 25,
+                xp: -100000,
+            },
+            {
+                name: 'Calm Before the Surge',
+                actionDescription: 'breaks a stillness with a sudden, sharp, disorienting burst of force',
+                attack: 8,
+                coolDown: 3,
+                coolDownCompleteText: '',
+                inCoolDown: 0,
+                level,
+                modifiers: [
+                    {
+                        duration: 1,
+                        effect: 'stun',
+                    },
+                ],
+                stamina: 35,
+                xp: -100000,
+            },
+        ],
+    };
+}

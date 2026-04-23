@@ -21,6 +21,7 @@ export const RoomNames = {
         tideTerritory: 'tide-territory',
         forgottenShrine: 'forgotten-shrine',
         sealedCavern: 'sealed-cavern',
+        darkWaters: 'dark-waters',
     },
 };
 export const MapNames = {

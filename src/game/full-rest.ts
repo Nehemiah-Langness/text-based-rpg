@@ -6,10 +6,12 @@ import { Mood } from './rooms/moods/mood';
 import { oxfordComma } from './utility-functions/oxford-comma';
 import { StonejawTerritory } from './rooms/open-ocean/stonejaw-territory';
 import { BloodfinTerritory } from './rooms/open-ocean/bloodfin-territory';
+import { TideCollectiveTerritory } from './rooms/open-ocean/tide-collective-territory';
 
 export function fullRest(room: Room) {
     StonejawTerritory.state.requiresCombat = true;
     BloodfinTerritory.state.requiresCombat = true;
+    TideCollectiveTerritory.state.requiresCombat = true;
 
     const healed = Player.heal(Player.health.max);
     const energized = Player.energize(Player.stamina.max);

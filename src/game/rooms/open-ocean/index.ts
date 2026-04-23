@@ -9,4 +9,6 @@ import './wastelands';
 import './bloodfin-territory';
 import './forgotten-shrine';
 import './stonejaw-territory';
+import './tide-collective-territory';
+import './sealed-cavern';
 
