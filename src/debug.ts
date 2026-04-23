@@ -4,6 +4,7 @@ import { Shops } from './game/rooms/mermaid-city/shops';
 import { Player } from './game/player';
 import { Quests } from './game/quests';
 import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
+import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
@@ -14,6 +15,6 @@ export default () => {
     Inventory.add('coralShard', 3000, Player);
     Shops.visited = true;
     GuardHall.visited = true;
-    Quests.progress('mainQuest', 'fix-crown-attempt', { shouldStartQuest: true })
-    return Shops;
+    Quests.progress('mainQuest', 'fix-crown', { shouldStartQuest: true })
+    return DarkWaters;
 };

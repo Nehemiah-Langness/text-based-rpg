@@ -1,7 +1,6 @@
 import { Npc, type GenericNpc, type SpecialRemark } from '../engine/npc';
 import type { Room, RoomLike } from '../engine/room';
 import { Quests } from '../quests';
-import { DarkWaters } from '../rooms/open-ocean/dark-waters';
 import { dialogueRoom } from '../rooms/utility-rooms/dialogue-room';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Names } from './npc-names';
@@ -14,7 +13,7 @@ export const Velrix = new Npc(
         if (Quests.getStage('mainQuest') === 'find-jewel-1') return startFetchQuest(npc, room);
         return null;
     }
-).move(DarkWaters);
+);
 
 const fetchHook = (npc: GenericNpc, room: Room) => (backTo: RoomLike) =>
     dialogueRoom(
@@ -34,7 +33,7 @@ const fetchHook = (npc: GenericNpc, room: Room) => (backTo: RoomLike) =>
                 }, [
                     `${npc.getName(room)[Names.FirstName]} tilts his head, studying you.
     
-"'Need' is a string current. Most who say that are pulled under it.`,
+"'Need' is a strong current. Most who say that are pulled under it.`,
                     `"Still... I am not unreasonable."
 
 "There is something I cannot retrieve myself... hidden within a sealed cavern not far from here."`,

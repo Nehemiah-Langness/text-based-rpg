@@ -18,6 +18,8 @@ export const Compass = {
             ).includes(mainQuest)
         ) {
             return MapList.find((map) => map.id === MapNames.openOcean)?.find(RoomNames.openOcean.massWreckage) ?? null;
+        } else if ((['find-jewel-1'] as (typeof mainQuest)[]).includes(mainQuest)) {
+            return MapList.find((map) => map.id === MapNames.openOcean)?.find(RoomNames.openOcean.darkWaters) ?? null;
         } else if (Compass.destination) {
             return MapList.map((map) => map.find(Compass.destination ?? ''))[0] ?? null;
         }
