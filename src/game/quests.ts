@@ -169,7 +169,7 @@ export const Quests = new QuestsLog({
     mainQuest: QuestsLog.createQuest('The Trident of the Deep', [
         {
             id: 'go-to-training' as const,
-            stage: `Meet Commander Thalor at the Guild Hall.`,
+            stage: `Meet Commander Thalor at the Guard Hall.`,
         },
         {
             id: 'train-tail-kick' as const,

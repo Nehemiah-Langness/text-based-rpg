@@ -1,3 +1,5 @@
+import { cleanTrailingPunctuation } from '../utility-functions/clean-trailing-punctuation';
+
 export type SkillModifier =
     | 'stun'
     | 'distract'
@@ -66,7 +68,7 @@ export class SkillSet<
         if (value === null || currentSkill.level < value) {
             currentSkill.level = value === null ? currentSkill.level + 1 : value;
             if (currentSkill.level === 1) {
-                return `You have learned how to ${currentSkill.name}.`;
+                return `You have learned how to ${cleanTrailingPunctuation(currentSkill.actionDescription)}.`;
             }
             return `Your skill when you ${currentSkill.actionDescription} has increased.`;
         }
@@ -113,7 +115,7 @@ export class SkillSet<
         let leveledUp = false;
         skill.xp += 1;
         const nextLevel = this.nextLevelXpRequirement(skill.level);
-        if (skill.xp >= nextLevel) {
+        if (skill.xp >= nextLevel && skill.level < 10) {
             skill.level += 1;
             skill.xp -= nextLevel;
             leveledUp = true;

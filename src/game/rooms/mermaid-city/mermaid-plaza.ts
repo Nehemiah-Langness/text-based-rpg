@@ -20,7 +20,7 @@ export const MermaidPlaza = new Room(
         if (Quests.getStage('mainQuest') === 'go-to-training') {
             options.push({
                 code: 'go-to-training',
-                text: `Follow ${Thalor.getName(rm)[Names.FirstName]} north to the guild hall`,
+                text: `Follow ${Thalor.getName(rm)[Names.FirstName]} north to the guard hall`,
             });
         }
 
@@ -63,7 +63,7 @@ export const MermaidPlaza = new Room(
                 ? null
                 : {
                       code: 'travel-north',
-                      text: 'Go north to the guild hall',
+                      text: 'Go north to the guard hall',
                   },
             {
                 code: 'travel-east',

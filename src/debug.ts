@@ -5,11 +5,12 @@ import { Player } from './game/player';
 import { Quests } from './game/quests';
 import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
 import { DeepCoralReef } from './game/rooms/open-ocean/deep-coral-reef';
+import { resultRoom } from './game/rooms/utility-rooms/result-room';
 
 export default () => {
-    Skills.levelSkill('tailKick', 3);
-    Skills.levelSkill('bubbleBlast', 2);
-    Skills.levelSkill('starfishThrow', 2);
+    Skills.levelSkill('tailKick', 10);
+    Skills.levelSkill('bubbleBlast', 10);
+    Skills.levelSkill('starfishThrow', 10);
     Inventory.add('coralArmsArmor', 1, Player);
     Inventory.equip('coralArmsArmor', Player);
     Inventory.add('coralBreastplateArmor', 1, Player);
@@ -24,9 +25,10 @@ export default () => {
     Inventory.equip('healthArmsEnchantment', Player);
     Inventory.add('healthHelmetEnchantment', 1, Player);
     Inventory.equip('healthHelmetEnchantment', Player);
+    Inventory.add('bloomTonic', 2, Player);
     Shops.visited = true;
     GuardHall.visited = true;
     DeepCoralReef.visited = true;
     Quests.progress('mainQuest', 'fix-crown', { shouldStartQuest: true });
-    return DeepCoralReef;
+    return resultRoom(DeepCoralReef, Quests.start('sirensSong'));
 };

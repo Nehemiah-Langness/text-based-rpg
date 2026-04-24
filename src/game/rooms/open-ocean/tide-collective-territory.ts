@@ -6,7 +6,9 @@ import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
 import type { InputOption } from '../../input-option';
+import { Quests } from '../../quests';
 import { RoomNames } from '../names';
+import { resultRoom } from '../utility-rooms/result-room';
 import { OpenOceanMap } from './map';
 
 export const TideCollectiveTerritory = new Room(
@@ -22,6 +24,13 @@ export const TideCollectiveTerritory = new Room(
             },
         ];
 
+        if (!tideTerritory.state.requiresCombat && Quests.getStage('sirensSong') === 'find-resonant-pearl') {
+            options.push({
+                code: 'seek-pearl',
+                text: 'Look for the Resonant Pearl',
+            });
+        }
+
         return {
             options,
             select: (code) => {
@@ -34,7 +43,11 @@ export const TideCollectiveTerritory = new Room(
                             onComplete: (rm) => {
                                 tideTerritory.state.requiresCombat = false;
                                 const loot = tidecallerLootTable.roll(enemies);
-                                return lootRoom(rm, `After scavenging the area, you find the following items:`, loot);
+                                return lootRoom(
+                                    resultRoom(rm, `You have defeated the patrol, and are able to move around freely for the time being.`),
+                                    `After scavenging the area, you find the following items:`,
+                                    loot
+                                );
                             },
                         }
                     );
@@ -42,6 +55,31 @@ export const TideCollectiveTerritory = new Room(
 
                 if (code === 'fight') {
                     return combat();
+                } else if (code === 'seek-pearl') {
+                    tideTerritory.state.requiresCombat = true;
+                    const success = rollDice(4) === 2;
+                    return resultRoom(
+                        () => {
+                            if (success) {
+                                return resultRoom(tideTerritory, [
+                                    `Inside, you find a softly, glowing pearl emitting a faint harmonic vibration.  This matches the description you were given by the Siren.
+                                
+You grab the Resonant Pearl and make a quick escape.`,
+                                    `Your movements attracted another patrol who swims towards your location.`,
+                                    ...(Quests.progress('sirensSong', 'find-resonant-pearl') ?? []),
+                                ]);
+                            } else {
+                                return resultRoom(tideTerritory, [
+                                    `Inside, you find many old relics.  Some relics emit an energy from them, but you dare not get to close without knowing their purpose.
+                                
+Nothing matches the description of the Resonant Pearl.`,
+                                    `Your movements attracted another patrol who swims towards your location.`,
+                                ]);
+                            }
+                        },
+                        [`You search the immediate area and spot a small structure nearby.`],
+                        'Search structure'
+                    );
                 }
 
                 return tideTerritory;

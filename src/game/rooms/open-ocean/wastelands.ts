@@ -3,6 +3,7 @@ import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
 import type { InputOption } from '../../input-option';
 import { Quests } from '../../quests';
+import { Skills } from '../../skills';
 import { RoomNames } from '../names';
 import { dialogueRoom } from '../utility-rooms/dialogue-room';
 import { resultRoom } from '../utility-rooms/result-room';
@@ -14,9 +15,19 @@ export const Wastelands = new Room(
     (rm) => {
         const options: InputOption[] = [];
 
+        if (Quests.getStage('sirensSong') === 'return-pearl') {
+            options.push({
+                code: 'return-pearl',
+                text: 'Return the Resonant Pearl to the siren',
+            });
+        }
+
         return {
             options,
-            select: () => {
+            select: (code) => {
+                if (code === 'return-pearl') {
+                    return sirenSongTurnIn(rm);
+                }
                 return rm;
             },
         };
@@ -141,4 +152,28 @@ She looks off into the empty distance.`,
             'Ignore it': (next) => next,
         }
     );
+}
+
+function sirenSongTurnIn(backTo: RoomLike) {
+    return dialogueRoom(backTo, [`You return to the siren who has been awaiting your return eagerly.`], {
+        '"I found your pearl."': (next) =>
+            resultRoom(
+                () => Quests.finish(next, 'sirensSong'),
+                [
+                    `The siren's eyes widen slightly and her voice softens.
+            
+"You actually returned..."`,
+                    `She takes the pearl gently, holding it close. The water around you begins to hum.`,
+                    `The siren closes her eyes and begins to sing again - this time stronger. 
+                    
+The sound resonates through the water, clear and powerful.
+
+The emptiness around the basin seems to bend to it.`,
+                    `"You have earned more than thanks," the siren says as she moves closer, her voice lowering to whisper.
+
+"Listen... and learn."`,
+                    Skills.levelSkill('sirensCall', 1),
+                ].filter((x) => x != null)
+            ),
+    });
 }

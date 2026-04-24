@@ -8,27 +8,18 @@ import { Skills } from '../skills';
 import { Names } from './npc-names';
 import { Velmora } from './velmora';
 
-export const Thalor = new Npc(
-    'thalor',
-    ['Commander Thalor', 'Thalor', 'Commander'],
-    [
-        () => {
-            return '';
-        },
-    ],
-    (npc, rm) => {
-        if (Quests.getStage('mainQuest') === 'learn-first-clue-location') return firstClue(npc, rm);
-        if (Quests.checkStage('mainQuest', 'fight-for-crown') && Skills.skills.bubbleBlast.level === 0) return learnBubbleBlast(npc, rm);
-        if (Quests.getStage('mainQuest') === 'learn-how-to-fix-crown') return turnInCrownFragments(npc, rm);
-        if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 1)) {
-            return learnKineticWave(npc, rm);
-        }
-        if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 2)) {
-            return learnOceanTwister(npc, rm);
-        }
-        return null;
+export const Thalor = new Npc('thalor', ['Commander Thalor', 'Thalor', 'Commander'], undefined, (npc, rm) => {
+    if (Quests.getStage('mainQuest') === 'learn-first-clue-location') return firstClue(npc, rm);
+    if (Quests.checkStage('mainQuest', 'fight-for-crown') && Skills.skills.bubbleBlast.level === 0) return learnBubbleBlast(npc, rm);
+    if (Quests.getStage('mainQuest') === 'learn-how-to-fix-crown') return turnInCrownFragments(npc, rm);
+    if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 1)) {
+        return learnKineticWave(npc, rm);
     }
-)
+    if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 2)) {
+        return learnOceanTwister(npc, rm);
+    }
+    return null;
+})
     .meet()
     .move(GuardHall);
 
@@ -43,9 +34,7 @@ const firstClue: SpecialRemark = (npc, room) => () => {
 He stops, facing you directly.
 
 "The last Chosen made a discovery before her death."`,
-        `"A hermit. An outcast who lived beyond the reef - ${Velmora.getName(room)[Names.FirstName]}, known as ${
-            Velmora.getName(room)[Names.NickName]
-        }."
+        `"A hermit. An outcast who lived beyond the reef - ${Velmora.getName(room)[Names.FirstName]}, known as ${Velmora.getName(room)[Names.NickName]}."
 
 The name lingers in the water between you.
 
@@ -60,9 +49,7 @@ The words feel heavy. Intentional.
 
 ${npc.getName(room)[Names.FirstName]} turns, gesturing outward, toward the distant wilds beyond the city.
 
-"${
-            Velmora.getName(room)[Names.FirstName]
-        }'s dwelling was destroyed long ago. Tectonic shifts... deep collapses. The reef swallowed most of it."`,
+"${Velmora.getName(room)[Names.FirstName]}'s dwelling was destroyed long ago. Tectonic shifts... deep collapses. The reef swallowed most of it."`,
         `He looks back at you.
 
 "But not everything is lost so easily."
@@ -107,7 +94,7 @@ He shifts his stance, planting himself firmly as the current around him seems to
 A focused burst surges outward, a visible wave of force cutting through the arena. In its wake, a spiraling trail of bubbles lingers, drifting and popping as the energy dissipates.
 
 The strike hits the far wall with a dull, echoing impact.`,
-        `Thalor lowers his arms.
+        `${npc.getName(room)[Names.FirstName]} lowers his arms.
 
 "Bubble Blast."
 
@@ -138,7 +125,7 @@ The water here feels denser than usual - intentionally so.`,
 
 He stops in front of you, raising one hand slowly. The water around it begins to ripple - not violently, but with gathering pressure.
 
-"This," Thalor continues, "is control."`,
+"This," ${npc.getName(room)[Names.FirstName]} continues, "is control."`,
         `With a sharp motion, he thrusts his arm forward. The surrounding water compresses, then erupts outward in a wide, surging wave that rushes across the room before dissipating against the far wall.
 
 "Kinetic Wave," he says. "You're not just attacking - you're moving the ocean itself."
@@ -146,7 +133,7 @@ He stops in front of you, raising one hand slowly. The water around it begins to
 He gestures for you to try.`,
         `As you focus, you feel it - the same pressure building, not in your muscles, but in the water around you. When you release it, a broad wave surges forward, larger and less focused than his, but unmistakably powerful.
 
-Thalor gives a small nod.`,
+${npc.getName(room)[Names.FirstName]} gives a small nod.`,
         `"Good. It'll improve. Just remember - this move costs more than your others. Use it when you need to control the fight, not just win it.`,
         (backTo) =>
             resultRoom(
@@ -161,7 +148,7 @@ const learnOceanTwister: SpecialRemark = (npc, room) => () => {
         `The training room shifts at ${npc.getName(room)[Names.FullName]}'s command. 
         
 The currents that once moved in steady lines now begin to spiral, slow at first, then tightening into controlled rotations around the chamber.`,
-        `"You've learned to push the ocean," Thalor says, watching you carefully. "Now you'll learn to command its chaos."
+        `"You've learned to push the ocean," ${npc.getName(room)[Names.FirstName]} says, watching you carefully. "Now you'll learn to command its chaos."
 
 He raises both hands, and the water around him begins to twist. What starts as a gentle swirl rapidly sharpens into a tightening vortex. The spiral deepens, pulling sand and loose particles upward into a spinning column.
 
@@ -178,7 +165,7 @@ Then, slowly, they begin to turn. A small spiral forms, unstable and uneven, but
 With effort, you push it forward - the vortex surges ahead, wild and imperfect, but undeniably powerful.`,
         `The room settles as the currents calm.
 
-Thalor nods once.
+${npc.getName(room)[Names.FirstName]} nods once.
 
 "Dangerous. Costly. But devastating when it lands. Use it wisely... or it will use you."`,
         (backTo) =>

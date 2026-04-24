@@ -149,7 +149,9 @@ export function characterMenu(backTo: Room) {
                                     : '',
                                 skill.stamina ? `Costs ${skill.stamina} stamina point${skill.stamina === 1 ? '' : 's'}.` : '',
                                 skill.coolDown ? `${skill.coolDown}-turn cool down.` : '',
-                                `${skill.xp}/${Player.skillSet.nextLevelXpRequirement(skill.level)} xp until level ${skill.level + 1}.`,
+                                skill.level < 10
+                                    ? `${skill.xp}/${Player.skillSet.nextLevelXpRequirement(skill.level)} xp until level ${skill.level + 1}.`
+                                    : '',
                             ]
                                 .filter((x) => x)
                                 .join('\n\n')
