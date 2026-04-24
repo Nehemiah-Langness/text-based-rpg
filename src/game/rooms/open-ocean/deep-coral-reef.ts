@@ -46,6 +46,10 @@ export const DeepCoralReef = new Room(
     () => {
         return [
             {
+                code: 'travel-north',
+                text: 'Go north into Tidecaller territory',
+            },
+            {
                 code: 'travel-west',
                 text: 'Ascend west into the coral reef',
             },
@@ -79,5 +83,7 @@ But it no longer feels welcoming.`,
 ];
 
 const VisitedDescription = `Tall, dense coral surrounds you in the coral reef.  
+
+To the north, the water shifts to danger - dark shapes in the distance, slow-moving and deliberate. Tidecaller Collective shark territory.
 
 High to your west the bright colors of the coral reef shine through the water.`;

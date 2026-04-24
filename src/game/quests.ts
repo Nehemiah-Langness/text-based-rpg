@@ -77,18 +77,13 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
         return questStarted;
     }
 
-    revertTo<T extends keyof TQuests>(
-        quest: T,
-        stage: number | TQuests[T]['stages'][number]['id']
-    ): string[] | null {
+    revertTo<T extends keyof TQuests>(quest: T, stage: number | TQuests[T]['stages'][number]['id']): string[] | null {
         const questLog = this.getQuest(quest);
 
         if (questLog.completed) return null;
 
         const progress =
-            typeof stage === 'number'
-                ? stage
-                : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]);
+            typeof stage === 'number' ? stage : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]);
 
         if (questLog.progress > progress) {
             questLog.progress = progress;
@@ -109,8 +104,8 @@ class QuestsLog<TQuests extends { [key in keyof TQuests]: QuestType<TQuests[key]
             typeof stage === 'undefined'
                 ? 0
                 : typeof stage === 'number'
-                    ? stage
-                    : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
+                  ? stage
+                  : questLog.stages.indexOf(questLog.stages.find((s) => s.id === stage) ?? questLog.stages[0]) + 1;
 
         if (!questLog.active && !questLog.completed) {
             questLog.active = true;
@@ -305,6 +300,16 @@ export const Quests = new QuestsLog({
         {
             id: 'return-sea-cucumber' as const,
             stage: 'Return the sea cucumber to Nerissa.',
+        },
+    ]),
+    sirensSong: QuestsLog.createQuest("Siren's Song", [
+        {
+            id: 'find-resonant-pearl' as const,
+            stage: 'Find the Resonant Pearl in the Tidecaller Collective territory.',
+        },
+        {
+            id: 'return-pearl' as const,
+            stage: 'Return the Resonant Pearl to the Siren.',
         },
     ]),
 });

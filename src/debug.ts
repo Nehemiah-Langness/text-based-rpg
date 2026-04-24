@@ -4,17 +4,29 @@ import { Shops } from './game/rooms/mermaid-city/shops';
 import { Player } from './game/player';
 import { Quests } from './game/quests';
 import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
-import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
+import { DeepCoralReef } from './game/rooms/open-ocean/deep-coral-reef';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
     Skills.levelSkill('bubbleBlast', 2);
     Skills.levelSkill('starfishThrow', 2);
-    Inventory.add('coralCharm', 10, Player);
-    Inventory.add('barnacleCoveredCoin', 2, Player);
-    Inventory.add('coralShard', 3000, Player);
+    Inventory.add('coralArmsArmor', 1, Player);
+    Inventory.equip('coralArmsArmor', Player);
+    Inventory.add('coralBreastplateArmor', 1, Player);
+    Inventory.equip('coralBreastplateArmor', Player);
+    Inventory.add('coralHelmetArmor', 1, Player);
+    Inventory.equip('coralHelmetArmor', Player);
+    Inventory.add('ringOfLongevity', 1, Player);
+    Inventory.equip('ringOfLongevity', Player);
+    Inventory.add('healthBreastplateEnchantment', 1, Player);
+    Inventory.equip('healthBreastplateEnchantment', Player);
+    Inventory.add('healthArmsEnchantment', 1, Player);
+    Inventory.equip('healthArmsEnchantment', Player);
+    Inventory.add('healthHelmetEnchantment', 1, Player);
+    Inventory.equip('healthHelmetEnchantment', Player);
     Shops.visited = true;
     GuardHall.visited = true;
-    Quests.progress('mainQuest', 'fix-crown', { shouldStartQuest: true })
-    return DarkWaters;
+    DeepCoralReef.visited = true;
+    Quests.progress('mainQuest', 'fix-crown', { shouldStartQuest: true });
+    return DeepCoralReef;
 };

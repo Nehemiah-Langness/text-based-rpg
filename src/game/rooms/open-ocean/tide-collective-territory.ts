@@ -29,7 +29,7 @@ export const TideCollectiveTerritory = new Room(
                     const enemies = rollDice(2, 3);
                     return startCombatEncounter(
                         backTo ?? tideTerritory,
-                        new Array(enemies).fill(0).map(() => createTidecaller(9)),
+                        new Array(enemies).fill(0).map(() => createTidecaller(6)),
                         {
                             onComplete: (rm) => {
                                 tideTerritory.state.requiresCombat = false;
@@ -51,8 +51,8 @@ export const TideCollectiveTerritory = new Room(
     () => {
         return [
             {
-                code: 'travel-west',
-                text: 'Go south to the forgotten shrine',
+                code: 'travel-south',
+                text: 'Go south to the deep coral reef',
             },
         ];
     }
@@ -79,4 +79,4 @@ Tall, swaying formations of coral and stone rise like natural pillars, arranged 
 
 const VisitedDescription = `You are on the outskirts of Tidecaller territory. Tidecaller patrols circle the area.
 
-To the west, the currents weaken and scatter, fading into an underwater barren wasteland, where life and motion give way to empty, exposed seafloor.`;
+To the south, dark colors peirce the ocean as the deeper parts of the coral reef come into view.`;

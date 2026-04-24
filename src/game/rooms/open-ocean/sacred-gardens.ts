@@ -51,7 +51,7 @@ export const SacredGarden = new Room(
             },
             {
                 code: 'travel-south',
-                text: 'Go south through the wastelands to the coral reef',
+                text: 'Go south into the wastelands towards the coral reef',
             },
             {
                 code: 'travel-west',

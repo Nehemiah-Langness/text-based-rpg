@@ -659,6 +659,7 @@ export const Inventory = new InventorySystem({
         vendor: {
             max: 1,
         },
+
     }),
 });
 

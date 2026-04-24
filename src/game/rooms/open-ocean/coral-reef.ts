@@ -51,7 +51,7 @@ export const CoralReef = new Room(
         return [
             {
                 code: 'travel-north',
-                text: 'Go north towards the sacred garden',
+                text: 'Go north into the barren wasteland',
             },
             {
                 code: 'travel-east',
