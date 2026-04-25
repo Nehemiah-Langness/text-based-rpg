@@ -6,11 +6,14 @@ import { Quests } from './game/quests';
 import { GuardHall } from './game/rooms/mermaid-city/guard-hall';
 import { DeepCoralReef } from './game/rooms/open-ocean/deep-coral-reef';
 import { resultRoom } from './game/rooms/utility-rooms/result-room';
+import { SealedCavern } from './game/rooms/open-ocean/sealed-cavern';
+import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
+import { Velrix } from './game/npcs/velrix';
 
 export default () => {
-    Skills.levelSkill('tailKick', 10);
-    Skills.levelSkill('bubbleBlast', 10);
-    Skills.levelSkill('starfishThrow', 10);
+    Skills.levelSkill('tailKick', 4);
+    Skills.levelSkill('bubbleBlast', 3);
+    Skills.levelSkill('starfishThrow', 2);
     Inventory.add('coralArmsArmor', 1, Player);
     Inventory.equip('coralArmsArmor', Player);
     Inventory.add('coralBreastplateArmor', 1, Player);
@@ -29,6 +32,11 @@ export default () => {
     Shops.visited = true;
     GuardHall.visited = true;
     DeepCoralReef.visited = true;
-    Quests.progress('mainQuest', 'fix-crown', { shouldStartQuest: true });
-    return resultRoom(DeepCoralReef, Quests.start('sirensSong'));
+    DarkWaters.visited = true;
+    DarkWaters.state.velrixDiscovered = true;
+    Velrix.move(DarkWaters)
+    SealedCavern.visited = true;
+    SealedCavern.state.cavernSealed = false
+    Quests.progress('mainQuest', 'jewel-1-quest', { shouldStartQuest: true });
+    return resultRoom(DarkWaters, []);
 };

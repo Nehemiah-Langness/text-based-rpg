@@ -8,7 +8,7 @@ import { Mood } from '../rooms/moods/mood';
 export class PlayerEntity<
     T extends {
         [key in keyof T]: Skill;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } = any,
 > extends Entity<T> {
     valor: number;
@@ -68,9 +68,11 @@ export class PlayerEntity<
     }
 
     getDefense() {
-        return Inventory.list((x) => !!x.equippable?.defense && x.count > 0 && x.equipped).reduce(
-            (c, n) => c + (n.item.equippable?.defense ?? 0),
-            0
+        return Math.floor(
+            Inventory.list((x) => !!x.equippable?.defense && x.count > 0 && x.equipped).reduce(
+                (c, n) => c + (n.item.equippable?.defense ?? 0),
+                0
+            ) * (this.modifiers.find((m) => m.effect === 'defense') ? 1.5 : 1)
         );
     }
 

@@ -11,13 +11,15 @@ export type SkillModifier =
     | 'stamina-regen-high'
     | 'health-regen-high'
     | 'speed'
-    | 'strength';
+    | 'strength'
+    | 'defense';
 export type Skill = {
     name: string;
     actionDescription: string;
     attack: number;
     level: number;
     modifiers?: { effect: SkillModifier; duration: number }[];
+    perks?: { effect: SkillModifier; duration: number }[];
     inCoolDown: number;
     coolDown: number;
     coolDownCompleteText: string;

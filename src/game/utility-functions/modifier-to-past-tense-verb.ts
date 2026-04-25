@@ -32,6 +32,9 @@ export function modifierToPastTenseVerb(modifier: SkillModifier) {
         case 'health-regen-high': {
             return 'imbued with a large amount of regenerating health';
         }
+        case 'defense':  {
+            return 'in a defensive stance'
+        }
         case 'distract':
         default:
             return modifier + 'ed';

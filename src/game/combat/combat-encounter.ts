@@ -192,6 +192,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                 );
 
                 Player.addModifier(...resolvedAttack.attackerModifiers);
+                Player.addModifier(...(skill.perks ?? []));
 
                 currentEnemy.health.current = Math.max(0, currentEnemy.health.current - resolvedAttack.damage);
                 variants.damageDealt += resolvedAttack.damage;
@@ -204,9 +205,15 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                         resolvedAttack.critical === 'fail'
                             ? `You failed to ${skill.actionDescription}.`
                             : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
-                        resolvedAttack.attackerModifiers.length
+                        resolvedAttack.attackerModifiers.length || skill.perks?.length
                             ? `You have been ${oxfordComma(
                                   ...resolvedAttack.attackerModifiers.map(
+                                      (modifier) =>
+                                          `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
+                                              modifier.duration === 1 ? '' : 's'
+                                          })`
+                                  ),
+                                  ...(skill.perks ?? []).map(
                                       (modifier) =>
                                           `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
                                               modifier.duration === 1 ? '' : 's'
@@ -240,7 +247,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                 return resultRoom(
                     nextPhase,
                     `You ${oxfordComma(
-                        ...[`are ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `have gained ${staminaGained} stamina.` : null]
+                        ...[`are ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `have gained ${staminaGained} stamina` : null]
                     )}.`,
                     undefined,
                     Mood.battle
@@ -356,7 +363,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
         .getSkills()
         .filter((x) => !x.skill.stamina || x.skill.stamina < currentEnemy.stamina.current);
     const options = enemySkillList
-        .flatMap((x) => new Array(x.skill.attack * x.skill.level).fill(x) as (typeof x)[])
+        .flatMap((x) => new Array(Math.max(1, x.skill.attack) * x.skill.level).fill(x) as (typeof x)[])
         .map((e) => `perform-${e.name}`)
         .concat('dodge');
     const chosenOption = options[rollDice(options.length) - 1];
@@ -381,6 +388,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
         );
 
         currentEnemy.addModifier(...resolvedAttack.attackerModifiers);
+        currentEnemy.addModifier(...(skill.perks ?? []));
 
         Player.health.current = Math.max(0, Player.health.current - resolvedAttack.damage);
         variants.damageReceived += resolvedAttack.damage;
@@ -392,9 +400,15 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
                 resolvedAttack.critical === 'fail'
                     ? `${currentEnemy.specificName} failed to perform a ${skill.name}.`
                     : `${currentEnemy.specificName} ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and you dodged it.` : `.  You block ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
-                resolvedAttack.attackerModifiers.length
+                resolvedAttack.attackerModifiers.length || skill.perks?.length
                     ? `${currentEnemy.specificName} has been ${oxfordComma(
                           ...resolvedAttack.attackerModifiers.map(
+                              (modifier) =>
+                                  `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
+                                      modifier.duration === 1 ? '' : 's'
+                                  })`
+                          ),
+                          ...(skill.perks ?? []).map(
                               (modifier) =>
                                   `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
                                       modifier.duration === 1 ? '' : 's'

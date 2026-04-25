@@ -36,6 +36,6 @@ export class EnemyEntity<
     }
 
     getDefense() {
-        return this.defense * this.level;
+        return Math.floor(this.defense * this.level * (this.modifiers.find((m) => m.effect === 'defense') ? 1.5 : 1));
     }
 }

@@ -11,6 +11,7 @@ export const Velrix = new Npc(
     undefined,
     (npc, room) => {
         if (Quests.getStage('mainQuest') === 'find-jewel-1') return startFetchQuest(npc, room);
+        if (Quests.getStage('mainQuest') === 'jewel-1-turn-in') return turnInQuest(npc, room);
         return null;
     }
 );
@@ -73,4 +74,20 @@ ${npc.getName(room)[Names.FirstName]} gestures subtly to your pouch.`,
                 );
             },
         }),
+];
+
+const turnInQuest: SpecialRemark = (npc, room) => () => [
+    (backTo) =>
+        resultRoom(backTo, [
+            `${npc.getName(room)[Names.FirstName]} looks up as you enter his cavern.
+    
+"Ah, you have found it.  I can feel it's energy radiating from you.`,
+            `${npc.getName(room)[Names.FirstName]} examines the item carefully, almost reverently.
+
+He then gently move aside several objects and retrieve the glowing Abyssal Crown gem.`,
+            `"A fair exchange," ${npc.getName(room)[Names.FirstName]} states as he hands over the gem.
+
+"Take it. But understand - you are not the only one searching for power beneath these waters."`,
+            ...(Quests.progress('mainQuest', 'jewel-1-turn-in') ?? []),
+        ]),
 ];

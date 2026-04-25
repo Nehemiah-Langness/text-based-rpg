@@ -133,7 +133,7 @@ export const Inventory = new InventorySystem({
     }),
     velmorasInkVial: createTrinket({
         category: 'trinket',
-        name: "Magical Ink Vial",
+        name: 'Magical Ink Vial',
         description: 'Still faintly swirling with dark energy.',
         level: 2,
         variance: 16,
@@ -169,7 +169,7 @@ export const Inventory = new InventorySystem({
     inkSeersBrokenLens: createTrinket({
         category: 'trinket',
         name: "Seer's Broken Lens",
-        description: 'Once used by a seer and now a collector\'s item.',
+        description: "Once used by a seer and now a collector's item.",
         level: 4,
         variance: 25,
     }),
@@ -493,16 +493,16 @@ export const Inventory = new InventorySystem({
         },
         onAdd: () => {
             if (Quests.getStage('mainQuest') === 'get-requirement-to-fix-crown') {
-                return Quests.progress('mainQuest', 'get-requirement-to-fix-crown')
+                return Quests.progress('mainQuest', 'get-requirement-to-fix-crown');
             }
             return null;
         },
         onRemove: () => {
             if (Quests.getStage('mainQuest') === 'fix-crown') {
-                return Quests.revertTo('mainQuest', 'get-requirement-to-fix-crown')
+                return Quests.revertTo('mainQuest', 'get-requirement-to-fix-crown');
             }
             return null;
-        }
+        },
     }),
     ringOfLongevity: InventorySystem.createInventoryItem({
         category: 'enchanted-armor' as const,
@@ -510,7 +510,7 @@ export const Inventory = new InventorySystem({
         description: 'A small ring emitting a steady hum of energy.',
         equippable: {
             subCategory: 'hand' as const,
-            health: 10
+            health: 10,
         },
         vendor: {
             max: 1,
@@ -522,7 +522,7 @@ export const Inventory = new InventorySystem({
         description: 'A small ring emitting a steady hum of energy.',
         equippable: {
             subCategory: 'hand' as const,
-            speed: 30
+            speed: 30,
         },
         vendor: {
             max: 1,
@@ -534,7 +534,7 @@ export const Inventory = new InventorySystem({
         description: 'A small ring emitting a steady hum of energy.',
         equippable: {
             subCategory: 'hand' as const,
-            strength: 1
+            strength: 1,
         },
         vendor: {
             max: 1,
@@ -546,121 +546,181 @@ export const Inventory = new InventorySystem({
         description: 'A small ring emitting a steady hum of energy.',
         equippable: {
             subCategory: 'hand' as const,
-            stamina: 30
+            stamina: 30,
         },
         vendor: {
             max: 1,
         },
     }),
-    sharkskinBreastplateEnchantment: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    sharkskinBreastplateEnchantment: createArmor({
+        level: 1,
+        type: 'chest',
         name: 'Sharkskin Breastplate',
-        description: '',
-        equippable: {
-            subCategory: 'chest' as const,
-            defense: 2,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Tough, layered shark hide that hardens under pressure.',
     }),
-    sharkskinHelmetEnchantment: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    sharkskinHelmetEnchantment: createArmor({
+        level: 1,
+        type: 'head',
         name: 'Sharkskin Helmet',
-        description: '',
-        equippable: {
-            subCategory: 'head' as const,
-            defense: 1,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Tough, layered shark hide that hardens under pressure.',
     }),
-    sharkskinArmsEnchantment: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    sharkskinArmsEnchantment: createArmor({
+        level: 1,
+        type: 'arm',
         name: 'Sharkskin Gauntlets',
-        description: '',
-        equippable: {
-            subCategory: 'arm' as const,
-            defense: 1,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Tough, layered shark hide that hardens under pressure.',
     }),
-    shellBreastplateArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    kelpWeaveBreastplateArmor: createArmor({
+        level: 2,
+        type: 'chest',
+        name: 'Kelpweave Breastplate',
+        description:
+            'Tightly braided strands of reinforced kelp, layered for flexibility. It moves effortlessly with ocean currents, making it ideal for agile fighters.',
+    }),
+    kelpWeaveHelmetArmor: createArmor({
+        level: 2,
+        type: 'head',
+        name: 'Kelpweave Helmet',
+        description:
+            'Tightly braided strands of reinforced kelp, layered for flexibility. It moves effortlessly with ocean currents, making it ideal for agile fighters.',
+    }),
+    kelpWeaveArmsArmor: createArmor({
+        level: 2,
+        type: 'arm',
+        name: 'Kelpweave Gauntlets',
+        description:
+            'Tightly braided strands of reinforced kelp, layered for flexibility. It moves effortlessly with ocean currents, making it ideal for agile fighters.',
+    }),
+    shellBreastplateArmor: createArmor({
+        level: 2.5,
+        type: 'chest',
         name: 'Turtle Shell Breastplate',
-        description: '',
-        equippable: {
-            subCategory: 'chest' as const,
-            defense: 6,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
     }),
-    shellHelmetArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    shellHelmetArmor: createArmor({
+        level: 2.5,
+        type: 'head',
         name: 'Turtle Shell Helmet',
-        description: '',
-        equippable: {
-            subCategory: 'head' as const,
-            defense: 3,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
     }),
-    shellArmsArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    shellArmsArmor: createArmor({
+        level: 2.5,
+        type: 'arm',
         name: 'Turtle Shell Gauntlets',
-        description: '',
-        equippable: {
-            subCategory: 'arm' as const,
-            defense: 3,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
     }),
-    coralBreastplateArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    cragscaleBreastplateArmor: createArmor({
+        level: 3,
+        type: 'chest',
+        name: 'Cragscale Breastplate',
+        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+    }),
+    cragscaleHelmetArmor: createArmor({
+        level: 3,
+        type: 'head',
+        name: 'Cragscale Helmet',
+        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+    }),
+    cragscaleArmsArmor: createArmor({
+        level: 3,
+        type: 'arm',
+        name: 'Cragscale Gauntlets',
+        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+    }),
+    coralBreastplateArmor: createArmor({
+        level: 4,
+        type: 'chest',
         name: 'Woven Coral Breastplate',
-        description: '',
-        equippable: {
-            subCategory: 'chest' as const,
-            defense: 10,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Lightweight armor crafted from flexible coral strands.',
     }),
-    coralHelmetArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    coralHelmetArmor: createArmor({
+        level: 4,
+        type: 'head',
         name: 'Woven Coral Helmet',
-        description: '',
-        equippable: {
-            subCategory: 'head' as const,
-            defense: 7,
-        },
-        vendor: {
-            max: 1,
-        },
+        description: 'Lightweight armor crafted from flexible coral strands.',
     }),
-    coralArmsArmor: InventorySystem.createInventoryItem({
-        category: 'armor' as const,
+    coralArmsArmor: createArmor({
+        level: 4,
+        type: 'arm',
         name: 'Woven Coral Gauntlets',
-        description: '',
-        equippable: {
-            subCategory: 'arm' as const,
-            defense: 6,
-        },
-        vendor: {
-            max: 1,
-        },
-
+        description: 'Lightweight armor crafted from flexible coral strands.',
+    }),
+    leviathanBreastplateArmor: createArmor({
+        level: 5,
+        type: 'chest',
+        name: 'Leviathan Bone Breastplate',
+        description: 'Crafted from the remains of ancient sea titans. Feels heavy with history and power.',
+    }),
+    leviathanHelmetArmor: createArmor({
+        level: 5,
+        type: 'head',
+        name: 'Leviathan Bone Helmet',
+        description: 'Crafted from the remains of ancient sea titans. Feels heavy with history and power.',
+    }),
+    leviathanArmsArmor: createArmor({
+        level: 5,
+        type: 'arm',
+        name: 'Leviathan Bone Gauntlets',
+        description: 'Crafted from the remains of ancient sea titans. Feels heavy with history and power.',
+    }),
+    abyssalBreastplateArmor: createArmor({
+        level:6,
+        type: 'chest',
+        name: 'Abyssal Guard Breastplate',
+        description: 'Forged in the darkest depths, the finest armor in the ocean.',
+    }),
+    abyssalHelmetArmor: createArmor({
+        level: 6,
+        type: 'head',
+        name: 'Abyssal Guard Helmet',
+        description: 'Forged in the darkest depths, the finest armor in the ocean.',
+    }),
+    abyssalArmsArmor: createArmor({
+        level: 6,
+        type: 'arm',
+        name: 'Abyssal Guard Gauntlets',
+        description: 'Forged in the darkest depths, the finest armor in the ocean.',
     }),
 });
+
+function createArmor({
+    level,
+    type,
+    ...passThrough
+}: Partial<Parameters<typeof InventorySystem.createInventoryItem<'armor'>>[0]> &
+    Pick<Parameters<typeof InventorySystem.createInventoryItem<'armor'>>[0], 'name'> & { level: number; type: 'arm' | 'head' | 'chest' }) {
+    return InventorySystem.createInventoryItem({
+        ...passThrough,
+        category: 'armor' as const,
+        equippable: {
+            subCategory: type,
+            defense: calculateDefense(level, type),
+        },
+        vendor: {
+            ...passThrough.vendor,
+            max: 1,
+        },
+    });
+}
+
+function calculateDefense(level: number, type: 'arm' | 'head' | 'chest') {
+    const targetDamage = 8 * level;
+    const damageEffectiveness = [
+        'arm',
+        'arm',
+        'arm',
+        'head',
+        'head',
+        'head',
+        'head',
+        'chest',
+        'chest',
+        'chest',
+        'chest',
+        'chest',
+        'chest',
+    ] as (typeof type)[];
+    return Math.max(1, Math.floor((targetDamage * damageEffectiveness.filter((x) => x === type).length) / damageEffectiveness.length));
+}
 
 export type InventoryKey = BaseInventoryKey<typeof Inventory>;
