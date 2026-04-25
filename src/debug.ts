@@ -29,14 +29,15 @@ export default () => {
     Inventory.add('healthHelmetEnchantment', 1, Player);
     Inventory.equip('healthHelmetEnchantment', Player);
     Inventory.add('bloomTonic', 2, Player);
+    Inventory.add('ringOfProtection', 1, Player);
     Shops.visited = true;
     GuardHall.visited = true;
     DeepCoralReef.visited = true;
     DarkWaters.visited = true;
     DarkWaters.state.velrixDiscovered = true;
-    Velrix.move(DarkWaters)
+    Velrix.move(DarkWaters);
     SealedCavern.visited = true;
-    SealedCavern.state.cavernSealed = false
-    Quests.progress('mainQuest', 'jewel-1-quest', { shouldStartQuest: true });
-    return resultRoom(DarkWaters, []);
+    SealedCavern.state.cavernSealed = false;
+    Quests.progress('mainQuest', 'get-requirement-to-fix-crown', { shouldStartQuest: true });
+    return resultRoom(Shops, []);
 };

@@ -7,6 +7,7 @@ import { Shops } from '../rooms/mermaid-city/shops';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { dialogueRoom } from '../rooms/utility-rooms/dialogue-room';
 import { Names } from './npc-names';
+import { Player } from '../player';
 
 const firstEntrance = [
     `The steady clang of metal echoes softly through Reefguard Armory, the sound carrying with a weight that feels grounded and real.
@@ -34,6 +35,8 @@ export const Garron = new Npc(
     (npc, room) => {
         if (Quests.getStage('mainQuest') === 'fix-crown-attempt') {
             return turnInCrown(npc, room);
+        } else if (Quests.getStage('mainQuest') === 'fix-crown') {
+            return turnInRing(npc, room);
         }
 
         return null;
@@ -82,16 +85,16 @@ const turnInCrown: SpecialRemark = (npc, root) => () => {
                                 [Inventory.items.ringOfProtection.count > 0 ? '"I actually already have one!"' : '"Where do I find one?"']:
                                     (rm) =>
                                         Inventory.items.ringOfProtection.count > 0
-                                            ? resultRoom(() => new DialogueTree(turnInRing(npc, root)()).getRoom(rm), Quests.progress(
-                                                'mainQuest',
-                                                'fix-crown-attempt'
-                                            ))
+                                            ? resultRoom(
+                                                  () => new DialogueTree(turnInRing(npc, root)()).getRoom(rm),
+                                                  Quests.progress('mainQuest', 'fix-crown-attempt')
+                                              )
                                             : resultRoom(
-                                                () => resultRoom(rm, Quests.progress('mainQuest', 'fix-crown-attempt')),
-                                                `"There's only one place in the city I'd trust for that."
+                                                  () => resultRoom(rm, Quests.progress('mainQuest', 'fix-crown-attempt')),
+                                                  `"There's only one place in the city I'd trust for that."
                                 
 "Go see Arinel Wavebind. Her shop - Arinel's Enchanting. If anyone has a ring strong enough to handle this... it's her."`
-                                            ),
+                                              ),
                             }
                         ),
                 }
@@ -119,6 +122,6 @@ The steady rhythm of hammer against metal fills the armory as burst of colors in
 
 ${npc.getName(root)[Names.FirstName]} hands you the Abyssal Crown and the Ring of Protection.`,
         `You feel a strong vibration coming from your pouch as you hold the crown. You pull out your compass, which is spinning increasingly faster before it abruptly stops and settles, likely pointing to the next piece of your puzzle.`,
-        (rm) => resultRoom(rm, Quests.progress('mainQuest', 'fix-crown')),
+        (rm) => resultRoom(rm, [...(Quests.progress('mainQuest', 'fix-crown') ?? []), Player.addValor(1)]),
     ];
 };

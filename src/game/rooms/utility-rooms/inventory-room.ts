@@ -11,6 +11,8 @@ import { choiceRoom } from './choice-room';
 import type { Store } from '../../engine/store';
 import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
 import { compare } from '../../../helpers/compare';
+import type { Category } from '../../engine/category';
+import type { InputOption } from '../../input-option';
 
 export function shopInventoryRoom(
     mainShopScreen: RoomLike,
@@ -64,15 +66,15 @@ export function shopInventoryRoom(
                             return [
                                 (mode === 'buy' && canBuy) || (mode === 'sell' && canSell)
                                     ? {
-                                        code: 'transaction',
-                                        text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
-                                    }
+                                          code: 'transaction',
+                                          text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                      }
                                     : null,
                                 mode === 'sell' && canSell && selectedItem.item.count > 1
                                     ? {
-                                        code: 'sell-all',
-                                        text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
-                                    }
+                                          code: 'sell-all',
+                                          text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                      }
                                     : null,
                                 {
                                     code: 'back',
@@ -92,7 +94,10 @@ export function shopInventoryRoom(
 
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
-                                            [`You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`, ...(onAdd ?? [])],
+                                            [
+                                                `You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                                ...(onAdd ?? []),
+                                            ],
                                             undefined,
                                             Mood.menu
                                         );
@@ -153,31 +158,120 @@ export function inventoryRoom(
     filter?: (item: InventoryKey) => boolean
 ) {
     const getItems = () => Inventory.list((x) => x.count > 0).filter((item) => filter?.(item.key) ?? true);
+    const filtering = {
+        category: [] as Category<typeof Inventory.items>[],
+    };
 
     return new Room(
         null,
         () => {
-            return getItems().length
-                ? `You rummage through your pouch and find the following items:`
-                : filter
-                    ? 'Nothing in your pouch is useful at this time.'
-                    : 'Your pouch is empty.';
+            if (filtering.category.length) {
+                return getItems().filter((x) => filtering.category.includes(x.item.category)).length
+                    ? `You rummage through your pouch and find the following items:`
+                    : filter
+                      ? 'Nothing in your pouch is useful at this time.'
+                      : "You don't have any items of that type.";
+            } else {
+                return getItems().length
+                    ? `You rummage through your pouch and find the following items:`
+                    : filter
+                      ? 'Nothing in your pouch is useful at this time.'
+                      : 'Your pouch is empty.';
+            }
         },
         (rm) => {
-            return {
-                options: [
-                    ...getItems().map(({ key, item }) => {
-                        return {
-                            text: `${action} ${item.name}${item.equipped ? ' (Equipped)' : ''} ${item.count > 1 ? `(x${item.count})` : ''}`,
-                            code: key,
-                        };
-                    }),
+            const options: InputOption[] = [];
+
+            const items = getItems();
+
+            if (filtering.category.length) {
+                options.push(
+                    ...getItems()
+                        .filter((x) => filtering.category.includes(x.item.category))
+                        .map(({ key, item }) => {
+                            return {
+                                text: `${action} ${item.name}${item.equipped ? ' (Equipped)' : ''} ${item.count > 1 ? `(x${item.count})` : ''}`,
+                                code: key,
+                            };
+                        })
+                );
+            } else {
+                const allOptions = [
                     {
-                        code: 'back',
-                        text: continueText,
+                        code: 'currency',
+                        text: `Currency`,
+                        count: items.filter(({ item }) => item.category === 'currency').reduce((c, n) => c + n.item.count, 0),
                     },
-                ],
-                select: (code) => onSelect(code as InventoryKey | 'back', rm),
+                    {
+                        code: 'trinket',
+                        text: `Trinkets`,
+                        count: items.filter(({ item }) => item.category === 'trinket').reduce((c, n) => c + n.item.count, 0),
+                    },
+                    {
+                        code: 'armor',
+                        text: `Armor`,
+                        count: items
+                            .filter(
+                                ({ item }) =>
+                                    item.category === 'armor' || item.category === 'enchanted-armor' || item.category === 'ointment'
+                            )
+                            .reduce((c, n) => c + n.item.count, 0),
+                    },
+                    {
+                        code: 'enchantment',
+                        text: `Enchantments`,
+                        count: items.filter(({ item }) => item.category === 'enchantment').reduce((c, n) => c + n.item.count, 0),
+                    },
+                    {
+                        code: 'food',
+                        text: `Food`,
+                        count: items
+                            .filter(({ item }) => item.category === 'food' || item.category === 'food-fine' || item.category === 'potion')
+                            .reduce((c, n) => c + n.item.count, 0),
+                    },
+                ];
+
+                options.push(
+                    ...allOptions
+                        .filter((x) => x.count > 0)
+                        .map((x) => ({
+                            code: x.code,
+                            text: `${x.text} (${x.count})`,
+                        }))
+                );
+            }
+
+            options.push({
+                code: 'back',
+                text: filtering.category.length ? 'Back' : continueText,
+            });
+
+            return {
+                options,
+                select: (code) => {
+                    if (filtering.category.length) {
+                        if (code === 'back') {
+                            filtering.category = [];
+                            return rm;
+                        }
+                        return onSelect(code as InventoryKey | 'back', rm);
+                    } else {
+                        if (code === 'back') {
+                            return onSelect('back', rm);
+                        } else if (code === 'currency') {
+                            filtering.category = ['currency'];
+                        } else if (code === 'trinket') {
+                            filtering.category = ['trinket'];
+                        } else if (code === 'armor') {
+                            filtering.category = ['armor', 'enchanted-armor', 'ointment'];
+                        } else if (code === 'enchantment') {
+                            filtering.category = ['enchantment'];
+                        } else if (code === 'food') {
+                            filtering.category = ['food', 'food-fine', 'potion'];
+                        }
+                        return rm;
+                    }
+                },
             };
         }
     ).withColor(Mood.menu);
@@ -188,7 +282,7 @@ function getItemDescription(item: InventoryItemMeta) {
         `${item.name}\n${item.description}`,
         item.category === 'armor' ? `Armor for your ${item.equippable?.subCategory ?? 'body'}.` : null,
         item.equippable?.requirement
-            ? `Requires ${item.equippable.requirement.type === 'has' ? 'you have atleast one' : 'equipped'} ${item.equippable.requirement.subCategory ? `${item.equippable.requirement.subCategory}` : ''} ${item.equippable.requirement.category}.`
+            ? `Requires ${item.equippable.requirement.type === 'has' ? 'you have at least one' : 'equipped'} ${item.equippable.requirement.subCategory ? `${item.equippable.requirement.subCategory}` : ''} ${item.equippable.requirement.category}.`
             : null,
         item.equippable?.defense ? `Adds ${item.equippable.defense} defense when equipped.` : null,
         item.equippable?.health ? `Adds ${item.equippable.health} max health when equipped.` : null,
@@ -244,15 +338,15 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
             [
                 selectedItem.equippable
                     ? {
-                        code: 'equip',
-                        text: selectedItem.equipped ? 'Unequip' : 'Equip',
-                    }
+                          code: 'equip',
+                          text: selectedItem.equipped ? 'Unequip' : 'Equip',
+                      }
                     : null,
                 selectedItem.consumable
                     ? {
-                        code: 'consume',
-                        text: 'Consume',
-                    }
+                          code: 'consume',
+                          text: 'Consume',
+                      }
                     : null,
                 {
                     code: 'back',
@@ -274,13 +368,13 @@ export function openInventoryRoom(backTo: RoomLike, itemLimit: number | null = n
                             text ?? `You consume your ${selectedItem.name}.`,
                             healed
                                 ? `You gain ${Math.round(healed)} health points.  You are ${healthToDescription(
-                                    Player.health.current / Player.health.max
-                                )}.`
+                                      Player.health.current / Player.health.max
+                                  )}.`
                                 : null,
                             energized
                                 ? `You gain ${Math.round(energized)} stamina points.  You are ${staminaToDescription(
-                                    Player.stamina.current / Player.stamina.max
-                                )}.`
+                                      Player.stamina.current / Player.stamina.max
+                                  )}.`
                                 : null,
                             effects?.length ? `You are ${oxfordComma(...effects.map((e) => modifierToPastTenseVerb(e.effect)))}.` : null,
                         ].filter((x) => x !== null),
