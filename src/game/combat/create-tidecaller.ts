@@ -4,13 +4,12 @@ export function createTidecaller(level: number): Enemy {
     return {
         level,
         defense: 1,
-        speed: 15,
+        speed: 15 + level,
         effects: [],
         genericName: 'a Tidecaller Collective shark',
         specificName: 'The Tidecaller shark',
-        health: 60,
-        stamina: 60,
-        strength: 0,
+        health: 60 + level * 10,
+        stamina: 60 + level * 10,
         moves: [
             {
                 name: 'Current Strike',

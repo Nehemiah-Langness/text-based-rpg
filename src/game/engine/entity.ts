@@ -66,6 +66,9 @@ export class Entity<
     }
 
     getDodge() {
+        const isStunned = !!this.modifiers.find((e) => e.effect === 'stun');
+        if (isStunned) return 0;
+        
         const isAlert = !!this.modifiers.find((e) => e.effect === 'alert');
         const bonusSpeed = this.modifiers.find((e) => e.effect === 'speed') ? 10 : 0;
         return Math.min(45, this.speed) + (isAlert ? 30 : 0) + bonusSpeed;

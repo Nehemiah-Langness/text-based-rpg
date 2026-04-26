@@ -18,7 +18,6 @@ export function trainingCombatRoom(): RoomLike {
                 effects: [],
                 health: Player.skillSet.getSkills(true).reduce((c, n) => c + n.skill.level * 10, 10),
                 stamina: 100,
-                strength: 0,
                 moves: [
                     {
                         level: 1,

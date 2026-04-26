@@ -46,7 +46,7 @@ export function startCombatEncounter(
                     specificName: e.specificName,
                     stamina: e.stamina,
                     speed: e.speed,
-                    strength: e.strength,
+                    strength: e.speed ?? 0,
                 })
         ),
         {

@@ -4,13 +4,12 @@ export function createStonejaw(level: number): Enemy {
     return {
         level,
         defense: 2,
-        speed: 10,
+        speed: 10 + level,
         effects: [],
         genericName: 'a Stonejaw Brood shark',
         specificName: 'The Stonejaw shark',
-        health: 40,
-        stamina: 80,
-        strength: 0,
+        health: 40 + level * 10,
+        stamina: 80 + level * 10,
         moves: [
             {
                 name: 'Fossil Bite',

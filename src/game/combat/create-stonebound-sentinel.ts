@@ -8,9 +8,8 @@ export function createStoneboundSentinel(level: number): Enemy {
         effects: [],
         genericName: 'a Stonebound sentinel',
         specificName: 'The sentinel',
-        health: 50,
-        stamina: 50,
-        strength: 0,
+        health: 10 + level * 15,
+        stamina: 40 + level * 10,
         moves: [
             {
                 name: 'Granite Slam',

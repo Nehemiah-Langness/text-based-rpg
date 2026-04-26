@@ -12,7 +12,7 @@ import { Player } from '../../player';
 
 function createShark(difficulty = 1): Enemy {
     return {
-        level: 1,
+        level: difficulty,
         defense: Math.floor(difficulty * 2),
         speed: Math.floor(difficulty * 3),
         effects:
@@ -28,7 +28,6 @@ function createShark(difficulty = 1): Enemy {
         specificName: 'The shark',
         health: Math.floor(difficulty * 10),
         stamina: 50,
-        strength: difficulty - 1,
         moves: [
             {
                 name: 'Chomp',

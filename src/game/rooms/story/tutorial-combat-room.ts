@@ -17,7 +17,6 @@ export function tutorialCombatRoom(): RoomLike {
                 effects: [],
                 health: 10,
                 stamina: 100,
-                strength: 0,
                 moves: [
                     {
                         level: 1,

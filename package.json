@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "deploy": "npm run build && gh-pages -d dist -b build",
+    "deploy": "npm run build && gh-pages -d dist -b build && npm run currentTime",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "currentTime": "echo %TIME%"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",

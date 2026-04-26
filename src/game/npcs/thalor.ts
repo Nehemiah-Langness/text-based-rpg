@@ -12,10 +12,18 @@ export const Thalor = new Npc('thalor', ['Commander Thalor', 'Thalor', 'Commande
     if (Quests.getStage('mainQuest') === 'learn-first-clue-location') return firstClue(npc, rm);
     if (Quests.checkStage('mainQuest', 'fight-for-crown') && Skills.skills.bubbleBlast.level === 0) return learnBubbleBlast(npc, rm);
     if (Quests.getStage('mainQuest') === 'learn-how-to-fix-crown') return turnInCrownFragments(npc, rm);
-    if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 1)) {
+    if (
+        Quests.checkStage('mainQuest', 'fix-crown') &&
+        Skills.getSkills(true).every(({ skill }) => skill.level > 1) &&
+        Skills.skills.kineticWave.level === 0
+    ) {
         return learnKineticWave(npc, rm);
     }
-    if (Quests.checkStage('mainQuest', 'fix-crown') && Skills.getSkills(true).every(({ skill }) => skill.level > 2)) {
+    if (
+        Quests.checkStage('mainQuest', 'fix-crown') &&
+        Skills.getSkills(true).every(({ skill }) => skill.level > 2) &&
+        Skills.skills.oceanTwister.level === 0
+    ) {
         return learnOceanTwister(npc, rm);
     }
     return null;

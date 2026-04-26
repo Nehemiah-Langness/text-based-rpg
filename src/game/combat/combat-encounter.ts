@@ -13,6 +13,7 @@ import { staminaToDescription } from '../utility-functions/stamina-to-descriptio
 import { oxfordComma } from '../utility-functions/oxford-comma';
 import { openInventoryRoom } from '../rooms/utility-rooms/inventory-room';
 import type { Skill } from '../engine/skill-set';
+import { cleanTrailingPunctuation } from '../utility-functions/clean-trailing-punctuation';
 
 type CombatState = {
     nonLethal?: boolean;
@@ -203,7 +204,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                     nextPhase,
                     [
                         resolvedAttack.critical === 'fail'
-                            ? `You failed to ${skill.actionDescription}.`
+                            ? `You failed to ${cleanTrailingPunctuation(skill.actionDescription)}.`
                             : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                         resolvedAttack.attackerModifiers.length || skill.perks?.length
                             ? `You have been ${oxfordComma(
