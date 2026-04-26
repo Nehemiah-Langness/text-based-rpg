@@ -4,7 +4,8 @@ export type SkillName = keyof typeof Skills.skills;
 export const Skills = new SkillSet({
     starfishThrow: SkillSet.createSkill({
         name: 'Throw Wiggles',
-        actionDescription: 'throw Wiggles, your best starfish friend in the whole world,',
+        actionDescription: 'throws a starfish',
+        actionDescriptionSecondPerson: 'throw Wiggles, your best starfish friend in the whole world,',
         attack: 8,
         level: 0,
         coolDown: 2,
@@ -19,7 +20,8 @@ export const Skills = new SkillSet({
     }),
     starfishThrowDiminished: SkillSet.createSkill({
         name: 'Throw Wiggles',
-        actionDescription: 'throw Wiggles, your best starfish friend in the whole world,',
+        actionDescription: 'throws a starfish',
+        actionDescriptionSecondPerson: 'throw Wiggles, your best starfish friend in the whole world,',
         attack: 6,
         level: 0,
         coolDown: 2,
@@ -34,14 +36,16 @@ export const Skills = new SkillSet({
     }),
     tailKick: SkillSet.createSkill({
         name: 'Tail Kick',
-        actionDescription: 'do a tail kick',
+        actionDescription: 'does a tail kick',
+        actionDescriptionSecondPerson: 'do a tail kick',
         attack: 4,
         level: 0,
         stamina: 8,
     }),
     bubbleBlast: SkillSet.createSkill({
         name: 'Bubble Blast',
-        actionDescription: 'make a blast of bubbles',
+        actionDescription: 'makes a blast of bubbles',
+        actionDescriptionSecondPerson: 'make a blast of bubbles',
         attack: 6,
         level: 0,
         coolDown: 1,
@@ -49,7 +53,8 @@ export const Skills = new SkillSet({
     }),
     kineticWave: SkillSet.createSkill({
         name: 'Kinetic Wave',
-        actionDescription: 'create a kinetic wave',
+        actionDescription: 'creates a kinetic wave',
+        actionDescriptionSecondPerson: 'create a kinetic wave',
         attack: 12,
         level: 0,
         coolDown: 2,
@@ -57,7 +62,8 @@ export const Skills = new SkillSet({
     }),
     oceanTwister: SkillSet.createSkill({
         name: 'Ocean Twister',
-        actionDescription: 'summon an ocean twister',
+        actionDescription: 'summons an ocean twister',
+        actionDescriptionSecondPerson: 'summon an ocean twister',
         attack: 16,
         level: 0,
         coolDown: 3,
@@ -65,7 +71,8 @@ export const Skills = new SkillSet({
     }),
     sirensCall: SkillSet.createSkill({
         name: "Siren's Call",
-        actionDescription: "sing the Siren's Call",
+        actionDescription: "sings the Siren's Call",
+        actionDescriptionSecondPerson: "sing the Siren's Call",
         attack: 0,
         level: 0,
         modifiers: [

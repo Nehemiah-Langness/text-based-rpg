@@ -39,9 +39,9 @@ export function trainingCombatRoom(): RoomLike {
                         .filter(
                             ([name, x]) =>
                                 x.level > 0 &&
-                                !(['starfishThrow', 'starfishThrowDiminished'] as (keyof typeof Player.skillSet.skills)[]).includes(
-                                    name as keyof typeof Player.skillSet.skills
-                                )
+                                !(
+                                    ['starfishThrow', 'starfishThrowDiminished', 'sirensCall'] as (keyof typeof Player.skillSet.skills)[]
+                                ).includes(name as keyof typeof Player.skillSet.skills)
                         )
                         .map(([, x]) => ({ ...x, xp: -100000 })),
                 ],

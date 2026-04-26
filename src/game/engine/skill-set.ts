@@ -16,6 +16,7 @@ export type SkillModifier =
 export type Skill = {
     name: string;
     actionDescription: string;
+    actionDescriptionSecondPerson?: string;
     attack: number;
     level: number;
     modifiers?: { effect: SkillModifier; duration: number }[];
@@ -107,7 +108,7 @@ export class SkillSet<
     }
 
     nextLevelXpRequirement(level: number) {
-        return Math.max(1, level) * 25;
+        return 10 + Math.max(1, level) * 15;
     }
 
     useSkill<T extends keyof TSkills>(skillName: T) {

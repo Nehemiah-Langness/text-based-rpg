@@ -200,12 +200,14 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
 
                 if (!resolvedAttack.dodged) currentEnemy.addModifier(...(skill.modifiers ?? []));
 
+                const skillAction = skill.actionDescriptionSecondPerson ?? skill.actionDescription;
+
                 return resultRoom(
                     nextPhase,
                     [
                         resolvedAttack.critical === 'fail'
-                            ? `You failed to ${cleanTrailingPunctuation(skill.actionDescription)}.`
-                            : `You ${skill.actionDescription}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
+                            ? `You failed to ${cleanTrailingPunctuation(skillAction)}.`
+                            : `You ${skillAction}${skill.attack ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${currentEnemy.specificName} dodges it.` : `.  ${currentEnemy.specificName} blocks ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}`}` : '.'}`,
                         resolvedAttack.attackerModifiers.length || skill.perks?.length
                             ? `You have been ${oxfordComma(
                                   ...resolvedAttack.attackerModifiers.map(
@@ -232,7 +234,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                                   )
                               )}.`
                             : null,
-                        leveledUp ? `You have increased your damage when you ${skill.actionDescription}.` : null,
+                        leveledUp ? `You have increased your damage when you ${cleanTrailingPunctuation(skillAction)}.` : null,
                     ].filter((x) => x !== null),
                     undefined,
                     Mood.battle
