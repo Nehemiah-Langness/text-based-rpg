@@ -51,7 +51,8 @@ export function trainingCombatRoom(): RoomLike {
         ],
         {
             nonLethal: true,
-            onComplete: (rm) => resultRoom(rm, `You have finished training with ${Thalor.getName()[Names.FirstName]}.`, undefined, Mood.battle),
+            onComplete: (rm) =>
+                resultRoom(rm, `You have finished training with ${Thalor.getName()[Names.FirstName]}.`, undefined, Mood.battle),
             onFailure: (rm) => resultRoom(rm, `You are forced to yield to ${Thalor.getName()[Names.FirstName]}.`, undefined, Mood.dead),
         }
     );
