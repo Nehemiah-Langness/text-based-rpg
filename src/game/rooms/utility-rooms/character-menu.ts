@@ -41,21 +41,25 @@ export function characterMenu(backTo: Room) {
             } else if (code === 'inventory') {
                 return openInventoryRoom(rm);
             } else if (code === 'health') {
+                const playerLevel = Player.getLevel();
+
                 return resultRoom(
                     rm,
                     [
                         `You ${oxfordComma(
-                            `are ${healthToDescription(Player.health.current / Player.health.max)} and ${staminaToDescription(
+                            `are ${healthToDescription(Player.health.current / Player.health.max)} (${Player.health.current} hp) and ${staminaToDescription(
                                 Player.stamina.current / Player.stamina.max
-                            )}`,
-                            `have ${oxfordComma(
-                                `${Player.getDefense()} defense`,
-                                `${Player.strength} strength`,
-                                `${Player.speed} speed`,
-                                `${Player.valor} valor`,
-                                `${Player.truthfulness - 50} honesty`
-                            )}`
-                        )}.\n\nYou have a max health of ${Player.health.max} and a maximum stamina of ${Player.stamina.max}.`,
+                            )} (${Player.stamina.current} sp)`
+                        )}.\n\n${[
+                            `You have:`,
+                            `${Player.getDefense()} defense`,
+                            `${Player.strength} strength`,
+                            `${Player.speed} speed`,
+                            `${Player.valor} valor`,
+                            `${Player.truthfulness - 50} honesty`,
+                            `${Player.health.max} max health`,
+                            `${Player.stamina.max} max stamina`,
+                        ].join('\n')}\n\nYour attack level is ${playerLevel.attack} and your defense level is ${playerLevel.defense}.`,
                     ].filter((x) => x !== null && typeof x !== 'undefined'),
                     undefined,
                     Mood.menu

@@ -8,6 +8,7 @@ import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { dialogueRoom } from '../rooms/utility-rooms/dialogue-room';
 import { Names } from './npc-names';
 import { Player } from '../player';
+import { calculateDefense } from '../utility-functions/calculate-defense';
 
 const firstEntrance = [
     `The steady clang of metal echoes softly through Reefguard Armory, the sound carrying with a weight that feels grounded and real.
@@ -45,18 +46,34 @@ export const Garron = new Npc(
     .move(Shops)
     .hasStore(
         () =>
-            new Store(Inventory, (item) => item.category === 'armor', {
-                leaveStoreText: 'Leave',
-                openShopText: 'Enter Reefguard Armory',
-                priceModifier: 1.5,
-                firstEntrance: firstEntrance,
-                shopText: () => [
-                    `${shopDescription}"Let's see what you're working with... and what you're lacking."`,
-                    `${shopDescription}"If Thalor sent you, I'll make sure you're properly equipped."`,
-                    `${shopDescription}"Every piece here is made to last. Or at least outlast you."`,
-                    `${shopDescription}"Coral, shell, hide - pick what suits your style."`,
-                ],
-            }),
+            new Store(
+                Inventory,
+                (item) => {
+                    const playerLevel = Player.getLevel().attack;
+                    const maxLevels: Record<string, number> = {
+                        head: calculateDefense(playerLevel, 'head'),
+                        arm: calculateDefense(playerLevel, 'arm'),
+                        chest: calculateDefense(playerLevel, 'chest'),
+                    };
+                    return (
+                        item.category === 'armor' &&
+                        !!item.equippable?.defense &&
+                        item.equippable.defense <= maxLevels[item.equippable.subCategory ?? 'head']
+                    );
+                },
+                {
+                    leaveStoreText: 'Leave',
+                    openShopText: 'Enter Reefguard Armory',
+                    priceModifier: 1.5,
+                    firstEntrance: firstEntrance,
+                    shopText: () => [
+                        `${shopDescription}"Let's see what you're working with... and what you're lacking."`,
+                        `${shopDescription}"If Thalor sent you, I'll make sure you're properly equipped."`,
+                        `${shopDescription}"Every piece here is made to last. Or at least outlast you."`,
+                        `${shopDescription}"Coral, shell, hide - pick what suits your style."`,
+                    ],
+                }
+            ),
         true
     );
 

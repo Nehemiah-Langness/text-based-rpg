@@ -1,3 +1,4 @@
+import { calculateDefense } from './utility-functions/calculate-defense';
 import type { InventoryKey as BaseInventoryKey } from './engine/category';
 import { InventorySystem } from './engine/inventory-system';
 import { Prices } from './prices';
@@ -613,19 +614,22 @@ export const Inventory = new InventorySystem({
         level: 3,
         type: 'chest',
         name: 'Cragscale Breastplate',
-        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+        description:
+            'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
     }),
     cragscaleHelmetArmor: createArmor({
         level: 3,
         type: 'head',
         name: 'Cragscale Helmet',
-        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+        description:
+            'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
     }),
     cragscaleArmsArmor: createArmor({
         level: 3,
         type: 'arm',
         name: 'Cragscale Gauntlets',
-        description: 'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
+        description:
+            'Forged from hardened scales and mineral deposits found along deep-sea rock formations. Rough, jagged, and built to endure crushing pressure.',
     }),
     coralBreastplateArmor: createArmor({
         level: 4,
@@ -664,7 +668,7 @@ export const Inventory = new InventorySystem({
         description: 'Crafted from the remains of ancient sea titans. Feels heavy with history and power.',
     }),
     abyssalBreastplateArmor: createArmor({
-        level:6,
+        level: 6,
         type: 'chest',
         name: 'Abyssal Guard Breastplate',
         description: 'Forged in the darkest depths, the finest armor in the ocean.',
@@ -701,26 +705,6 @@ function createArmor({
             max: 1,
         },
     });
-}
-
-function calculateDefense(level: number, type: 'arm' | 'head' | 'chest') {
-    const targetDamage = 8 * level;
-    const damageEffectiveness = [
-        'arm',
-        'arm',
-        'arm',
-        'head',
-        'head',
-        'head',
-        'head',
-        'chest',
-        'chest',
-        'chest',
-        'chest',
-        'chest',
-        'chest',
-    ] as (typeof type)[];
-    return Math.max(1, Math.floor((targetDamage * damageEffectiveness.filter((x) => x === type).length) / damageEffectiveness.length));
 }
 
 export type InventoryKey = BaseInventoryKey<typeof Inventory>;
