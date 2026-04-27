@@ -4,6 +4,8 @@ import { Entity } from './entity';
 import { resultRoom } from '../rooms/utility-rooms/result-room';
 import { Inventory } from '../inventory';
 import { Mood } from '../rooms/moods/mood';
+import { resolveAttackRoll } from '../combat/resolve-attack';
+import { AverageDamagePerLevel } from '../leveling';
 
 export class PlayerEntity<
     T extends {
@@ -89,5 +91,31 @@ export class PlayerEntity<
             undefined,
             Mood.dead
         );
+    }
+
+    getLevel() {
+        const attackStrength = this.skillSet
+            .getSkills()
+            .map(({ skill }) => {
+                const maxAttack = resolveAttackRoll({
+                    level: skill.level,
+                    strength: skill.attack + this.strength,
+                    penalty: 0,
+                });
+
+                return maxAttack.maxAttack;
+            })
+            .reduce(
+                (c, n) => ({
+                    skills: c.skills + 1,
+                    total: c.total + n,
+                }),
+                { skills: 0, total: 0 }
+            );
+
+        return {
+            attack: attackStrength.skills === 0 ? 1 : Math.ceil(attackStrength.total / attackStrength.skills / AverageDamagePerLevel),
+            defense: Math.ceil(this.getDefense() / AverageDamagePerLevel),
+        };
     }
 }
