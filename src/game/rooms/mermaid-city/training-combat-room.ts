@@ -43,7 +43,7 @@ export function trainingCombatRoom(): RoomLike {
                                     ['starfishThrow', 'starfishThrowDiminished', 'sirensCall'] as (keyof typeof Player.skillSet.skills)[]
                                 ).includes(name as keyof typeof Player.skillSet.skills)
                         )
-                        .map(([, x]) => ({ ...x, xp: -100000 })),
+                        .map(([, x]) => ({ ...x, coolDownCompleteText: '', xp: -100000 })),
                 ],
                 specificName: Thalor.getName()[Names.FirstName],
                 genericName: Thalor.getName()[Names.FullName],

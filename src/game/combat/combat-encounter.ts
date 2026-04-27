@@ -159,7 +159,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                       },
                       {
                           code: 'flee',
-                          text: 'Flee combat',
+                          text: variants.nonLethal ? 'Yield combat' : 'Flee combat',
                       },
                       {
                           code: 'inventory',
@@ -193,12 +193,12 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                 );
 
                 Player.addModifier(...resolvedAttack.attackerModifiers);
-                Player.addModifier(...(skill.perks ?? []));
+                if (resolvedAttack.critical !== 'fail') Player.addModifier(...(skill.perks ?? []));
 
                 currentEnemy.health.current = Math.max(0, currentEnemy.health.current - resolvedAttack.damage);
                 variants.damageDealt += resolvedAttack.damage;
 
-                if (!resolvedAttack.dodged) currentEnemy.addModifier(...(skill.modifiers ?? []));
+                if (!resolvedAttack.dodged && resolvedAttack.critical !== 'fail') currentEnemy.addModifier(...(skill.modifiers ?? []));
 
                 const skillAction = skill.actionDescriptionSecondPerson ?? skill.actionDescription;
 
@@ -216,7 +216,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                                               modifier.duration === 1 ? '' : 's'
                                           })`
                                   ),
-                                  ...(skill.perks ?? []).map(
+                                  ...(resolvedAttack.critical !== 'fail' ? (skill.perks ?? []) : []).map(
                                       (modifier) =>
                                           `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
                                               modifier.duration === 1 ? '' : 's'
@@ -224,7 +224,10 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                                   )
                               )}.`
                             : null,
-                        !resolvedAttack.dodged && skill.modifiers?.length && currentEnemy.health.current > 0
+                        !resolvedAttack.dodged &&
+                        resolvedAttack.critical !== 'fail' &&
+                        skill.modifiers?.length &&
+                        currentEnemy.health.current > 0
                             ? `${currentEnemy.specificName} has been ${oxfordComma(
                                   ...skill.modifiers.map(
                                       (modifier) =>
@@ -240,6 +243,9 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
                     Mood.battle
                 );
             } else if (code === 'flee') {
+                if (variants.nonLethal) {
+                    return resultRoom(backTo, `You yield combat with ${currentEnemy.specificName}.`, undefined, Mood.battle);
+                }
                 return enemyTurn(backTo, enemies, {
                     ...variants,
                     flee: true,
@@ -391,11 +397,11 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
         );
 
         currentEnemy.addModifier(...resolvedAttack.attackerModifiers);
-        currentEnemy.addModifier(...(skill.perks ?? []));
+        if (resolvedAttack.critical !== 'fail') currentEnemy.addModifier(...(skill.perks ?? []));
 
         Player.health.current = Math.max(0, Player.health.current - resolvedAttack.damage);
         variants.damageReceived += resolvedAttack.damage;
-        if (!resolvedAttack.dodged) Player.addModifier(...(skill.modifiers ?? []));
+        if (!resolvedAttack.dodged && resolvedAttack.critical !== 'fail') Player.addModifier(...(skill.modifiers ?? []));
 
         return resultRoom(
             nextPhase,
@@ -411,7 +417,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
                                       modifier.duration === 1 ? '' : 's'
                                   })`
                           ),
-                          ...(skill.perks ?? []).map(
+                          ...(resolvedAttack.critical !== 'fail' ? (skill.perks ?? []) : []).map(
                               (modifier) =>
                                   `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${
                                       modifier.duration === 1 ? '' : 's'
@@ -419,7 +425,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
                           )
                       )}.`
                     : null,
-                !resolvedAttack.dodged && skill.modifiers?.length && Player.health.current > 0
+                !resolvedAttack.dodged && resolvedAttack.critical !== 'fail' && skill.modifiers?.length && Player.health.current > 0
                     ? `You have been ${oxfordComma(
                           ...skill.modifiers.map(
                               (modifier) =>
