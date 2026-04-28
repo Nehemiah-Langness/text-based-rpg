@@ -9,6 +9,7 @@ import { resultRoom } from './game/rooms/utility-rooms/result-room';
 import { SealedCavern } from './game/rooms/open-ocean/sealed-cavern';
 import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
 import { Velrix } from './game/npcs/velrix';
+import { TideCollectiveTerritory } from './game/rooms/open-ocean/tide-collective-territory';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
@@ -42,5 +43,5 @@ export default () => {
     Quests.progress('mainQuest', 'get-requirement-to-fix-crown', { shouldStartQuest: true });
 
     console.log(Player.getLevel());
-    return resultRoom(Shops, []);
+    return resultRoom(TideCollectiveTerritory, []);
 };

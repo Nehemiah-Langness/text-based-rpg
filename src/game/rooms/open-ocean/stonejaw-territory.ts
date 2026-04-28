@@ -6,6 +6,7 @@ import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
 import type { InputOption } from '../../input-option';
+import { Player } from '../../player';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
 
@@ -15,10 +16,12 @@ export const StonejawTerritory = new Room(
     },
     () => [VisitedDescription],
     (stonejawTerritory) => {
+        const level = Player.getLevel();
+
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: 'Attack a Stonejaw patrol',
+                text: `Attack a Stonejaw patrol ${level.attack < 6 ? '💀' : ''}${level.defense < 6 ? '💀' : ''}`,
             },
         ];
 

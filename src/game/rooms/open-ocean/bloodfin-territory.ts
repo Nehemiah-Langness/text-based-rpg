@@ -8,6 +8,7 @@ import { Room } from '../../engine/room';
 import type { InputOption } from '../../input-option';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
+import { Player } from '../../player';
 
 export const BloodfinTerritory = new Room(
     {
@@ -15,10 +16,12 @@ export const BloodfinTerritory = new Room(
     },
     () => [VisitedDescription],
     (rm) => {
+        const level = Player.getLevel();
+
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: 'Attack a Bloodfin patrol',
+                text: `Attack a Bloodfin patrol ${level.attack < 4 ? '💀' : ''}${level.defense < 4 ? '💀' : ''}`,
             },
         ];
 

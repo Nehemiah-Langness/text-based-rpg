@@ -6,6 +6,7 @@ import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
 import type { InputOption } from '../../input-option';
+import { Player } from '../../player';
 import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { resultRoom } from '../utility-rooms/result-room';
@@ -17,10 +18,11 @@ export const TideCollectiveTerritory = new Room(
     },
     () => [VisitedDescription],
     (tideTerritory) => {
+        const level = Player.getLevel();
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: 'Attack a Tidecaller Collective patrol',
+                text: `Attack a Tidecaller Collective patrol ${level.attack < 5 ? '💀' : ''}${level.defense < 5 ? '💀' : ''}`,
             },
         ];
 
@@ -38,11 +40,11 @@ export const TideCollectiveTerritory = new Room(
                     const enemies = rollDice(2, 3);
                     return startCombatEncounter(
                         backTo ?? tideTerritory,
-                        new Array(enemies).fill(0).map(() => createTidecaller(6)),
+                        new Array(enemies).fill(0).map(() => createTidecaller(5)),
                         {
                             onComplete: (rm) => {
                                 tideTerritory.state.requiresCombat = false;
-                                const loot = createSharkLootTable(6).roll(enemies);
+                                const loot = createSharkLootTable(5).roll(enemies);
                                 return lootRoom(
                                     resultRoom(rm, `You have defeated the patrol, and are able to move around freely for the time being.`),
                                     `After scavenging the area, you find the following items:`,

@@ -30,6 +30,7 @@ export const MassWreckage = new Room(
     ],
     (mainWreckage) => {
         const options: InputOption[] = [];
+        const level = Player.getLevel();
 
         const mainQuest = Quests.getStage('mainQuest');
 
@@ -41,7 +42,7 @@ export const MassWreckage = new Room(
         } else if (mainQuest === 'fight-for-crown') {
             options.push({
                 code: 'fight',
-                text: 'Fight the Bloodfins',
+                text: `Fight the Bloodfins ${level.attack < 3 ? '💀' : ''}${level.defense < 3 ? '💀' : ''}`,
             });
         }
 
