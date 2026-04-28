@@ -1,7 +1,7 @@
+import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createStonejaw } from '../../combat/create-stonejaw';
 import { lootRoom } from '../../combat/loot-room';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
-import { stonejawLootTable } from '../../combat/stonejaw-loot-table';
 import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room } from '../../engine/room';
@@ -32,8 +32,8 @@ export const StonejawTerritory = new Room(
                         new Array(enemies).fill(0).map(() => createStonejaw(6)),
                         {
                             onComplete: (rm) => {
-                                stonejawTerritory.state.requiresCombat = false
-                                const loot = stonejawLootTable.roll(enemies);
+                                stonejawTerritory.state.requiresCombat = false;
+                                const loot = createSharkLootTable(6).roll(enemies);
                                 return lootRoom(rm, `After scavenging the area, you find the following items:`, loot);
                             },
                         }
@@ -52,7 +52,7 @@ export const StonejawTerritory = new Room(
         return [
             {
                 code: 'travel-north',
-                text: 'Go south to the forgotten shrine',
+                text: 'Go north to the forgotten shrine',
             },
             stonejawTerritory.state.requiresCombat
                 ? null

@@ -1,4 +1,4 @@
-import { bloodFinLootTable } from '../../combat/bloodfin-loot-table';
+import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createBloodfin } from '../../combat/create-bloodfin';
 import { lootRoom } from '../../combat/loot-room';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
@@ -32,7 +32,7 @@ export const BloodfinTerritory = new Room(
                         new Array(enemies).fill(0).map(() => createBloodfin(4)),
                         {
                             onComplete: (rm) => {
-                                const loot = bloodFinLootTable.roll(enemies);
+                                const loot = createSharkLootTable(4).roll(enemies);
                                 return lootRoom(rm, `After scavenging the area, you find the following items:`, loot);
                             },
                         }

@@ -1,7 +1,7 @@
+import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createTidecaller } from '../../combat/create-tidecaller';
 import { lootRoom } from '../../combat/loot-room';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
-import { tidecallerLootTable } from '../../combat/tidecaller-loot-table';
 import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
@@ -42,7 +42,7 @@ export const TideCollectiveTerritory = new Room(
                         {
                             onComplete: (rm) => {
                                 tideTerritory.state.requiresCombat = false;
-                                const loot = tidecallerLootTable.roll(enemies);
+                                const loot = createSharkLootTable(6).roll(enemies);
                                 return lootRoom(
                                     resultRoom(rm, `You have defeated the patrol, and are able to move around freely for the time being.`),
                                     `After scavenging the area, you find the following items:`,

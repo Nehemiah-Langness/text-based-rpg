@@ -10,7 +10,7 @@ import { Mood } from '../moods/mood';
 import { startCombatEncounter } from '../../combat/start-combat-encounter';
 import { Player } from '../../player';
 import { createBloodfin } from '../../combat/create-bloodfin';
-import { bloodFinLootTable } from '../../combat/bloodfin-loot-table';
+import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { lootRoom } from '../../combat/loot-room';
 
 export const MassWreckage = new Room(
@@ -49,51 +49,54 @@ export const MassWreckage = new Room(
             options,
             select: (code) => {
                 const bloodfinCombat = (backTo: RoomLike) =>
-                    startCombatEncounter(backTo, [createBloodfin(3), createBloodfin(3), createBloodfin(3)], {
-                        onComplete: (rm) => {
-                            const loot = bloodFinLootTable.roll();
-                            return resultRoom(
-                                () =>
-                                    resultRoom(() => lootRoom(rm, `You rummage through the area and pick up:`, loot),
-                                        Quests.progress(
-                                            'mainQuest',
-                                            'fight-for-crown'
-                                        )),
-                                [
-                                    `The last Bloodfin jerks once - then goes still.
+                    startCombatEncounter(
+                        backTo,
+                        new Array(3).fill(0).map(() => createBloodfin(3)),
+                        {
+                            onComplete: (rm) => {
+                                const loot = createSharkLootTable(3).roll(3);
+                                return resultRoom(
+                                    () =>
+                                        resultRoom(
+                                            () => lootRoom(rm, `You rummage through the area and pick up:`, loot),
+                                            Quests.progress('mainQuest', 'fight-for-crown')
+                                        ),
+                                    [
+                                        `The last Bloodfin jerks once - then goes still.
 
 The water settles slowly, disturbed currents fading as the echoes of the fight drift into silence. Dark shapes sink toward the seafloor, their presence already beginning to disappear into the vastness around you.`,
-                                    `For a moment, there is nothing.
+                                        `For a moment, there is nothing.
 
 Just you.
 
 And the Crown.`,
-                                    `The pieces still hum faintly in your hands.
+                                        `The pieces still hum faintly in your hands.
 
 Carefully, you secure them in your pouch. Even there, you can feel it - an undeniable weight, not of mass, but of consequence.`,
-                                    `You glance once more at the battlefield - the broken wreckage, the scattered remains, the silent aftermath of a fight long past... and the one you've just survived.
+                                        `You glance once more at the battlefield - the broken wreckage, the scattered remains, the silent aftermath of a fight long past... and the one you've just survived.
 
 Then you turn.
 
 The ocean stretches out before you, wide and waiting.
 
 And somewhere beyond it... the path forward.`,
-                                ],
-                                undefined,
-                                Mood.battle
-                            );
-                        },
-                        onFailure: (rm) => {
-                            return Player.die(
-                                resultRoom(
-                                    () => rm,
-                                    'The Bloodfins seem to have left your body alone.  For now.  You can see them carrying the Abyssal crown as they circle nearby debris.\n\nNow is probably an opportune time to return home, heal, and regain your strength.',
+                                    ],
                                     undefined,
-                                    Mood.dead
-                                )
-                            );
-                        },
-                    });
+                                    Mood.battle
+                                );
+                            },
+                            onFailure: (rm) => {
+                                return Player.die(
+                                    resultRoom(
+                                        () => rm,
+                                        'The Bloodfins seem to have left your body alone.  For now.  You can see them carrying the Abyssal crown as they circle nearby debris.\n\nNow is probably an opportune time to return home, heal, and regain your strength.',
+                                        undefined,
+                                        Mood.dead
+                                    )
+                                );
+                            },
+                        }
+                    );
 
                 if (code === 'search') {
                     return startSearchRoom(mainWreckage, {

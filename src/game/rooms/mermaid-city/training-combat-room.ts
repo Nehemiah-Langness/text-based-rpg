@@ -12,12 +12,12 @@ export function trainingCombatRoom(): RoomLike {
         GuardHall,
         [
             {
-                level: Player.skillSet.getSkills(true).reduce((c, n) => Math.max(c, n.skill.level), 1),
-                defense: 1,
+                level: Player.getLevel().attack,
+                defense: 3,
                 speed: 30,
                 effects: [],
-                health: Player.skillSet.getSkills(true).reduce((c, n) => c + n.skill.level * 10, 10),
-                stamina: 100,
+                health: 10 + Player.getLevel().attack * 10,
+                stamina: 70 + Player.getLevel().attack * 10,
                 moves: [
                     {
                         level: 1,
