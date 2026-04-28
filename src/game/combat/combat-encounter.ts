@@ -186,13 +186,13 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
 
     const playerStatus = `You are ${oxfordComma(
         healthToDescription(Player.health.current / Player.health.max) + ` (${Player.health.current} hp)`,
-        staminaToDescription(Player.stamina.current / Player.stamina.max) + ` (${currentEnemy.health.current} stamina)`,
+        staminaToDescription(Player.stamina.current / Player.stamina.max) + ` (${Player.stamina.current} stamina)`,
         ...Player.modifiers.map((x) => modifierToPastTenseVerb(x.effect))
     )}`;
 
     const enemyStatus = `${currentEnemy.specificName} is ${oxfordComma(
         healthToDescription(currentEnemy.health.current / currentEnemy.health.max) + ` (${currentEnemy.health.current} hp)`,
-        staminaToDescription(currentEnemy.stamina.current / currentEnemy.stamina.max) + ` (${currentEnemy.health.current} stamina)`,
+        staminaToDescription(currentEnemy.stamina.current / currentEnemy.stamina.max) + ` (${currentEnemy.stamina.current} stamina)`,
         ...currentEnemy.modifiers.map((x) => modifierToPastTenseVerb(x.effect))
     )}`;
 
