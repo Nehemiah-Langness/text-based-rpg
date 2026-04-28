@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createStonejaw } from '../../combat/create-stonejaw';
 import { lootRoom } from '../../combat/loot-room';
@@ -9,6 +10,7 @@ import type { InputOption } from '../../input-option';
 import { Player } from '../../player';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
 export const StonejawTerritory = new Room(
     {
@@ -21,7 +23,12 @@ export const StonejawTerritory = new Room(
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: `Attack a Stonejaw patrol ${level.attack < 6 ? '💀' : ''}${level.defense < 6 ? '💀' : ''}`,
+                text: (
+                    <>
+                        Fight a Stonejaw patrol {level.attack < 6 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        {level.defense < 6 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                    </>
+                ),
             },
         ];
 

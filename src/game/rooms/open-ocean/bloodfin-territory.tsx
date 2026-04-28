@@ -9,6 +9,8 @@ import type { InputOption } from '../../input-option';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
 import { Player } from '../../player';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
 export const BloodfinTerritory = new Room(
     {
@@ -21,7 +23,12 @@ export const BloodfinTerritory = new Room(
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: `Attack a Bloodfin patrol ${level.attack < 4 ? '💀' : ''}${level.defense < 4 ? '💀' : ''}`,
+                text: (
+                    <>
+                        Attack a Bloodfin patrol {level.attack < 4 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        {level.defense < 4 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                    </>
+                ),
             },
         ];
 

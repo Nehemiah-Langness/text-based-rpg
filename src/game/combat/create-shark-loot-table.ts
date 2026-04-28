@@ -5,7 +5,11 @@ import { withValueInRange } from '../utility-functions/with-value-in-range';
 export function createSharkLootTable(level: number) {
     const maxLevel = 10;
     const overflow = Math.max(0, level - maxLevel);
-    const getCount = (tier: number) => Math.floor((maxLevel - Math.max(0, tier * 2 - level)) / 2)
+    const getCount = (tier: number) => {
+        const amount = maxLevel - Math.max(0, tier * 2 - level);
+        const factor = Math.pow(amount / maxLevel, 4);
+        return Math.floor(2 * factor);
+    };
 
     return Inventory.createLootTable([
         ...new Array(getCount(0)).fill(null).map(() =>
@@ -78,13 +82,19 @@ export function createSharkLootTable(level: number) {
                     number: 1 + overflow,
                 }))
         ),
+        ...new Array(getCount(1)).fill(null).map(() =>
+            Inventory.getCategory('food').map(({ key }) => ({
+                chance: 1,
+                item: key,
+                number: 1,
+            }))
+        ),
         ...new Array(getCount(5)).fill(null).map(() =>
-            Inventory.getCategory('food-fine')
-                .map(({ key }) => ({
-                    chance: 1,
-                    item: key,
-                    number: 1,
-                }))
+            Inventory.getCategory('food-fine').map(({ key }) => ({
+                chance: 1,
+                item: key,
+                number: 1,
+            }))
         ),
     ]);
 }

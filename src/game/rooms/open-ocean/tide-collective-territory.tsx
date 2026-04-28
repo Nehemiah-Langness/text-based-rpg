@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createTidecaller } from '../../combat/create-tidecaller';
 import { lootRoom } from '../../combat/loot-room';
@@ -11,6 +12,7 @@ import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { resultRoom } from '../utility-rooms/result-room';
 import { OpenOceanMap } from './map';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
 export const TideCollectiveTerritory = new Room(
     {
@@ -22,7 +24,12 @@ export const TideCollectiveTerritory = new Room(
         const options: InputOption[] = [
             {
                 code: 'fight',
-                text: `Attack a Tidecaller Collective patrol ${level.attack < 5 ? '💀' : ''}${level.defense < 5 ? '💀' : ''}`,
+                text: (
+                    <>
+                        Attack a Tidecaller Collective patrol {level.attack < 5 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        {level.defense < 5 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                    </>
+                ),
             },
         ];
 

@@ -1,4 +1,4 @@
 export interface InputOption {
-    text: string;
+    text: string | React.ReactNode;
     code: string;
 }

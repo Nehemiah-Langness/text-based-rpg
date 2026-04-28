@@ -12,6 +12,8 @@ import { Player } from '../../player';
 import { createBloodfin } from '../../combat/create-bloodfin';
 import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { lootRoom } from '../../combat/loot-room';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
 export const MassWreckage = new Room(
     {
@@ -42,7 +44,12 @@ export const MassWreckage = new Room(
         } else if (mainQuest === 'fight-for-crown') {
             options.push({
                 code: 'fight',
-                text: `Fight the Bloodfins ${level.attack < 3 ? '💀' : ''}${level.defense < 3 ? '💀' : ''}`,
+                text: (
+                    <>
+                        Fight the Bloodfins {level.attack < 3 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        {level.defense < 3 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                    </>
+                ),
             });
         }
 
