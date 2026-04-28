@@ -9,10 +9,13 @@ import { resultRoom } from './game/rooms/utility-rooms/result-room';
 import { SealedCavern } from './game/rooms/open-ocean/sealed-cavern';
 import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
 import { Velrix } from './game/npcs/velrix';
+import { BloodfinTerritory } from './game/rooms/open-ocean/bloodfin-territory';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
     Skills.levelSkill('bubbleBlast', 4);
+    Skills.levelSkill('sirensCall', 4);
+    Skills.levelSkill('starfishThrow', 4);
     // Inventory.add('leviathanArmsArmor', 1, Player);
     // Inventory.equip('leviathanArmsArmor', Player);
     // Inventory.add('coralBreastplateArmor', 1, Player);
@@ -42,5 +45,5 @@ export default () => {
     Quests.progress('mainQuest', 'get-requirement-to-fix-crown', { shouldStartQuest: true });
 
     console.log(Player.getLevel());
-    return resultRoom(Shops, []);
+    return resultRoom(BloodfinTerritory, []);
 };

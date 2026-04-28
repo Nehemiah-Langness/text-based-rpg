@@ -6,9 +6,9 @@ export function resolveAttackRoll({ level, strength, penalty }: { strength: numb
     const effectiveStrength = Math.max(0, strength - penalty * 2);
     const levelScaling = effectiveStrength * (effectiveLevel - 1);
 
-    const maxAttack = Math.max(1, effectiveStrength + levelScaling);
-    const minAttack = 1 + levelScaling;
-    const attackRolled = rollDice(effectiveStrength) + levelScaling;
+    const maxAttack = strength === 0 ? 0 : Math.max(1, effectiveStrength + levelScaling);
+    const minAttack = strength === 0 ? 0 : 1 + levelScaling;
+    const attackRolled = strength === 0 ? 0 : rollDice(effectiveStrength) + levelScaling;
 
     return {
         effectiveLevel,
