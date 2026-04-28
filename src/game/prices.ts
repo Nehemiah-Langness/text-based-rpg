@@ -3,7 +3,7 @@ import { PriceTable } from './engine/price-table';
 export const Prices = new PriceTable({
     health: 2,
     maxHealth: 3,
-    stamina: 1,
+    stamina: 0.45,
     maxStamina: 3,
     speed: 9,
     strength: 154,

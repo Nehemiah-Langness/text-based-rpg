@@ -188,7 +188,7 @@ export const Inventory = new InventorySystem({
         name: 'Kelp Wrap',
         description: 'Light and quick.',
         consumable: {
-            stamina: 10,
+            stamina: 20,
         },
         vendor: {},
     }),
@@ -197,7 +197,7 @@ export const Inventory = new InventorySystem({
         name: 'Sea Berries',
         description: 'Who knew you could find berries in the ocean.',
         consumable: {
-            stamina: 10,
+            stamina: 20,
             health: 5,
         },
         vendor: {},
@@ -207,7 +207,7 @@ export const Inventory = new InventorySystem({
         name: 'Salted Minnow Strips',
         description: 'The perfect food for an on-the-go go-getter.',
         consumable: {
-            stamina: 15,
+            stamina: 30,
         },
         vendor: {},
     }),
@@ -217,7 +217,7 @@ export const Inventory = new InventorySystem({
         description: 'Spicy.  Just the way you like it.',
         consumable: {
             health: 20,
-            stamina: 10,
+            stamina: 20,
         },
         vendor: {},
     }),
@@ -226,7 +226,7 @@ export const Inventory = new InventorySystem({
         name: 'Kelp Noodle Bowl',
         description: 'Put the kelp in the bowl and call it a noodle.',
         consumable: {
-            stamina: 20,
+            stamina: 40,
             effects: [
                 {
                     effect: 'stamina-regen-low',
@@ -242,7 +242,7 @@ export const Inventory = new InventorySystem({
         description: 'For the balanced diet.',
         consumable: {
             health: 25,
-            stamina: 25,
+            stamina: 50,
         },
         vendor: {},
     }),
@@ -266,7 +266,7 @@ export const Inventory = new InventorySystem({
         name: 'Grilled Shark Fillet',
         description: 'Big food from a bigger fish.',
         consumable: {
-            stamina: 40,
+            stamina: 80,
             health: 75,
         },
         vendor: {},
@@ -291,7 +291,7 @@ export const Inventory = new InventorySystem({
         name: 'Pearl Glazed Kelp Wrap',
         description: 'The finest wrap for the finest mermaid.',
         consumable: {
-            stamina: 75,
+            stamina: 150,
             effects: [
                 {
                     duration: 5,
@@ -322,7 +322,7 @@ export const Inventory = new InventorySystem({
         description: "Stew darker than Velmora's ink.  And hopefully does not contain Velmora's ink.",
         consumable: {
             health: 80,
-            stamina: 80,
+            stamina: 160,
         },
         vendor: {},
     }),
@@ -331,7 +331,7 @@ export const Inventory = new InventorySystem({
         name: 'Deep Current Elixir',
         description: 'An elixir that grants you the speed of the deepest currents.',
         consumable: {
-            stamina: 50,
+            stamina: 100,
             effects: [
                 {
                     duration: 5,
@@ -433,7 +433,7 @@ export const Inventory = new InventorySystem({
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
             subCategory: 'chest' as const,
-            stamina: 50,
+            stamina: 100,
             requirement: {
                 category: 'armor',
                 subCategory: 'chest',
@@ -451,7 +451,7 @@ export const Inventory = new InventorySystem({
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
             subCategory: 'head' as const,
-            stamina: 25,
+            stamina: 50,
             requirement: {
                 category: 'armor',
                 subCategory: 'head',
@@ -469,7 +469,7 @@ export const Inventory = new InventorySystem({
         description: 'A small green gem emitting a faint glow.  It can be attached to arm or hand armor to keep you energized in battle.',
         equippable: {
             subCategory: 'arm' as const,
-            stamina: 25,
+            stamina: 50,
             requirement: {
                 category: 'armor',
                 subCategory: 'arm',

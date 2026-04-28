@@ -53,11 +53,11 @@ function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
             .map((x) => {
                 switch (x.effect) {
                     case 'stamina-regen-low':
-                        return rollDice(6);
+                        return 5 + rollDice(10);
                     case 'stamina-regen-med':
-                        return rollDice(6, 2);
+                        return 10 + rollDice(10, 2);
                     case 'stamina-regen-high':
-                        return rollDice(6, 3);
+                        return 15 + rollDice(10, 3);
                     default:
                         return 0;
                 }
@@ -70,11 +70,11 @@ function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
             .map((x) => {
                 switch (x.effect) {
                     case 'health-regen-low':
-                        return rollDice(6);
+                        return 4 + rollDice(6);
                     case 'health-regen-med':
-                        return rollDice(6, 2);
+                        return 8 + rollDice(6, 2);
                     case 'health-regen-high':
-                        return rollDice(6, 3);
+                        return 12 + rollDice(6, 3);
                     default:
                         return 0;
                 }

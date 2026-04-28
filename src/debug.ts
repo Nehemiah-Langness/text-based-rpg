@@ -9,7 +9,6 @@ import { resultRoom } from './game/rooms/utility-rooms/result-room';
 import { SealedCavern } from './game/rooms/open-ocean/sealed-cavern';
 import { DarkWaters } from './game/rooms/open-ocean/dark-waters';
 import { Velrix } from './game/npcs/velrix';
-import { BloodfinTerritory } from './game/rooms/open-ocean/bloodfin-territory';
 
 export default () => {
     Skills.levelSkill('tailKick', 3);
@@ -43,5 +42,5 @@ export default () => {
     Quests.progress('mainQuest', 'get-requirement-to-fix-crown', { shouldStartQuest: true });
 
     console.log(Player.getLevel());
-    return resultRoom(BloodfinTerritory, []);
+    return resultRoom(Shops, []);
 };
