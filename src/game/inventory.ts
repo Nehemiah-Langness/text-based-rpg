@@ -9,21 +9,24 @@ function createTrinket({
     variance,
     ...passThrough
 }: Parameters<typeof InventorySystem.createInventoryItem<'trinket'>>[0] & { level: number; variance: number }) {
+    const price = Prices.getCombination([
+        {
+            amount: level,
+            category: 'trinketBase',
+        },
+        {
+            amount: variance,
+            category: 'trinketVariance',
+        },
+    ]);
+
     return InventorySystem.createInventoryItem<'trinket'>({
         ...passThrough,
+        sort: price,
         vendor: {
             wontSell: true,
             ...passThrough.vendor,
-            value: Prices.getCombination([
-                {
-                    amount: level,
-                    category: 'trinketBase',
-                },
-                {
-                    amount: variance,
-                    category: 'trinketVariance',
-                },
-            ]),
+            value: price,
         },
     });
 }
@@ -374,7 +377,7 @@ export const Inventory = new InventorySystem({
     }),
     healthBreastplateEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Health (Chest Armor)',
+        name: 'Minor Health Breastplate Enchantment',
         description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
         equippable: {
             subCategory: 'chest' as const,
@@ -392,8 +395,8 @@ export const Inventory = new InventorySystem({
     }),
     healthHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Health (Head Armor)',
-        description: 'A small red gem emitting a faint glow.  It can be attached to chest armor to make you more resilient in battle.',
+        name: 'Minor Health Helmet Enchantment',
+        description: 'A small red gem emitting a faint glow.  It can be attached to head armor to make you more resilient in battle.',
         equippable: {
             subCategory: 'head' as const,
             health: 30,
@@ -410,7 +413,7 @@ export const Inventory = new InventorySystem({
     }),
     healthArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Health (Arm Armor)',
+        name: 'Minor Health Gauntlet Enchantment',
         description:
             'A small red gem emitting a faint glow.  It can be attached to arm or hand armor to make you more resilient in battle.',
         equippable: {
@@ -429,7 +432,7 @@ export const Inventory = new InventorySystem({
     }),
     staminaBreastplateEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Stamina (Chest Armor)',
+        name: 'Minor Stamina Breastplate Enchantment',
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
             subCategory: 'chest' as const,
@@ -447,7 +450,7 @@ export const Inventory = new InventorySystem({
     }),
     staminaHelmetEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Stamina (Head Armor)',
+        name: 'Minor Stamina Helmet Enchantment',
         description: 'A small green gem emitting a faint glow.  It can be attached to chest armor to keep you energized in battle.',
         equippable: {
             subCategory: 'head' as const,
@@ -465,7 +468,7 @@ export const Inventory = new InventorySystem({
     }),
     staminaArmsEnchantment: InventorySystem.createInventoryItem<'enchantment'>({
         category: 'enchantment',
-        name: 'Increased Stamina (Arm Armor)',
+        name: 'Minor Stamina Gauntlet Enchantment',
         description: 'A small green gem emitting a faint glow.  It can be attached to arm or hand armor to keep you energized in battle.',
         equippable: {
             subCategory: 'arm' as const,
@@ -593,22 +596,31 @@ export const Inventory = new InventorySystem({
             'Tightly braided strands of reinforced kelp, layered for flexibility. It moves effortlessly with ocean currents, making it ideal for agile fighters.',
     }),
     shellBreastplateArmor: createArmor({
-        level: 2.5,
+        level: 2,
         type: 'chest',
         name: 'Turtle Shell Breastplate',
         description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
+        equippable: {
+            speed: 3,
+        },
     }),
     shellHelmetArmor: createArmor({
-        level: 2.5,
+        level: 2,
         type: 'head',
         name: 'Turtle Shell Helmet',
         description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
+        equippable: {
+            speed: 2,
+        },
     }),
     shellArmsArmor: createArmor({
-        level: 2.5,
+        level: 2,
         type: 'arm',
         name: 'Turtle Shell Gauntlets',
         description: 'Heavy, reinforced plating formed from ancient turtle shells. Built for endurance, not speed.',
+        equippable: {
+            speed: 2,
+        },
     }),
     cragscaleBreastplateArmor: createArmor({
         level: 3,
@@ -695,8 +707,11 @@ function createArmor({
     Pick<Parameters<typeof InventorySystem.createInventoryItem<'armor'>>[0], 'name'> & { level: number; type: 'arm' | 'head' | 'chest' }) {
     return InventorySystem.createInventoryItem({
         ...passThrough,
+        name: passThrough.name + ` Tier ${roman(level)}`,
         category: 'armor' as const,
+        sort: level * 10 + (type === 'arm' ? 1 : type === 'head' ? 3 : type === 'chest' ? 5 : 7),
         equippable: {
+            ...passThrough.equippable,
             subCategory: type,
             defense: calculateDefense(level, type),
         },
@@ -705,6 +720,33 @@ function createArmor({
             max: 1,
         },
     });
+}
+
+function roman(value: number) {
+    switch (Math.floor(value)) {
+        case 0:
+            return 'Nulla';
+        case 1:
+            return 'I';
+        case 2:
+            return 'II';
+        case 3:
+            return 'III';
+        case 4:
+            return 'IV';
+        case 5:
+            return 'V';
+        case 6:
+            return 'VI';
+        case 7:
+            return 'VII';
+        case 8:
+            return 'VIII';
+        case 9:
+            return 'IX';
+        case 10:
+            return 'X';
+    }
 }
 
 export type InventoryKey = BaseInventoryKey<typeof Inventory>;

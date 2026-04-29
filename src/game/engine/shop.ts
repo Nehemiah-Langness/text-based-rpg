@@ -56,7 +56,7 @@ export function shop(root: Room, leaveTo: RoomLike, store: Store, npc: GenericNp
                     const trinkets = store.getItemsPlayerCanSell().filter((x) => x.item.category === 'trinket');
                     const totalGoldForTransaction = trinkets.reduce((c, n) => c + n.price * n.item.count, 0);
 
-                    const message = `You sell:\n${trinkets.map(({ item }) => `${item.count} ${item.name}${item.count === 1 ? '' : (item.pluralSuffix ?? 's')}`).join('\n')}\n\nfor ${totalGoldForTransaction} coral shards.`;
+                    const message = `You sell:\n${trinkets.map(({ item }) => `${item.count} ${item.name}${item.count === 1 ? '' : (item.pluralSuffix ?? 's')}`).join('\n')}\n\nfor ${totalGoldForTransaction.toLocaleString()} coral shards.`;
 
                     const onRemove = trinkets
                         .map(({ itemKey, item }) => Inventory.add(itemKey as InventoryKey, -item.count, Player))

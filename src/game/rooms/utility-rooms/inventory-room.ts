@@ -9,7 +9,7 @@ import { oxfordComma } from '../../utility-functions/oxford-comma';
 import { modifierToPastTenseVerb } from '../../utility-functions/modifier-to-past-tense-verb';
 import { choiceRoom } from './choice-room';
 import type { Store } from '../../engine/store';
-import type { InventoryItemMeta } from '../../inventory/types/inventory-item';
+import type { InventoryItem, InventoryItemMeta } from '../../inventory/types/inventory-item';
 import { compare } from '../../../helpers/compare';
 import type { Category } from '../../engine/category';
 import type { InputOption } from '../../input-option';
@@ -31,10 +31,10 @@ export function shopInventoryRoom(
         () => {
             return [
                 ...items()
-                    .sort(compare((x) => x.price))
+                    .sort(compare<ReturnType<typeof items>[number]>((x) => x.item.sort ?? 0).thenBy((x) => x.price))
                     .map(({ item, price, itemKey }) => {
                         return {
-                            text: `View ${item.name} ${mode === 'sell' ? `x${item.count} ` : ''}(${price} coral shards each) `,
+                            text: `View ${item.name} ${mode === 'sell' ? `x${item.count} ` : ''}(${price.toLocaleString()}c) `,
                             code: itemKey,
                         };
                     }),
@@ -56,7 +56,7 @@ export function shopInventoryRoom(
                             if (!selectedItem) return `This item is longer available to ${mode}.`;
                             return (
                                 getItemDescription(selectedItem.item) +
-                                `\n\n${mode === 'buy' ? 'Costs ' : 'Sells for '}${selectedItem.price} coral shards.${mode === 'sell' ? `\n\nYou have ${selectedItem.item.count}.` : ''}`
+                                `\n\n${mode === 'buy' ? 'Costs ' : 'Sells for '}${selectedItem.price.toLocaleString()} coral shards.${mode === 'sell' ? `\n\nYou have ${selectedItem.item.count}.` : ''}`
                             );
                         },
                         () => {
@@ -67,13 +67,13 @@ export function shopInventoryRoom(
                                 (mode === 'buy' && canBuy) || (mode === 'sell' && canSell)
                                     ? {
                                           code: 'transaction',
-                                          text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                          text: mode === 'buy' ? 'Buy' : `Sell${selectedItem.item.equipped ? ` (Equipped)` : ''}`,
                                       }
                                     : null,
                                 mode === 'sell' && canSell && selectedItem.item.count > 1
                                     ? {
                                           code: 'sell-all',
-                                          text: `Sell All${selectedItem.item.equipped ? ` (EQUIPPED)` : ''}`,
+                                          text: `Sell All${selectedItem.item.equipped ? ` (Equipped)` : ''}`,
                                       }
                                     : null,
                                 {
@@ -95,7 +95,7 @@ export function shopInventoryRoom(
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
                                             [
-                                                `You buy the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                                `You buy the ${selectedItem.item.name} for ${selectedItem.price.toLocaleString()} coral shards.`,
                                                 ...(onAdd ?? []),
                                             ],
                                             undefined,
@@ -112,7 +112,7 @@ export function shopInventoryRoom(
                                         return resultRoom(
                                             itemCheck ? transactionRoom : itemListRoom,
                                             [
-                                                `You sell the ${selectedItem.item.name} for ${selectedItem.price} coral shards.`,
+                                                `You sell the ${selectedItem.item.name} for ${selectedItem.price.toLocaleString()} coral shards.`,
                                                 ...(onRemove ?? []),
                                             ],
                                             undefined,
@@ -131,7 +131,7 @@ export function shopInventoryRoom(
                                     return resultRoom(
                                         itemCheck ? transactionRoom : itemListRoom,
                                         [
-                                            `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${selectedItem.price * count} coral shards.`,
+                                            `You sell ${count} ${selectedItem.item.name}${count === 1 ? '' : (selectedItem.item.pluralSuffix ?? 's')} for ${(selectedItem.price * count).toLocaleString()} coral shards.`,
                                             ...(onRemove ?? []),
                                         ].filter((x) => x !== null),
                                         undefined,
@@ -188,6 +188,11 @@ export function inventoryRoom(
                 options.push(
                     ...getItems()
                         .filter((x) => filtering.category.includes(x.item.category))
+                        .sort(
+                            compare<{ item: InventoryItem<Category<typeof Inventory.items>> }>(({ item }) => item.equipped, 'desc')
+                                .thenBy(({ item }) => item.sort ?? 0)
+                                .thenBy((x) => x.item.name)
+                        )
                         .map(({ key, item }) => {
                             return {
                                 text: `${action} ${item.name}${item.equipped ? ' (Equipped)' : ''} ${item.count > 1 ? `(x${item.count})` : ''}`,

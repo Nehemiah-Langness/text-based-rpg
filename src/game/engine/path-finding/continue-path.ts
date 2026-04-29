@@ -14,7 +14,6 @@ export function continuePath(
     const bestPathLength = successfulPaths.reduce((c, n) => (c === null ? n.length : Math.min(n.length, c)), null as number | null);
 
     if (current.every((path) => path[path.length - 1].room === to)) {
-        console.log('Tries:', depth);
         return current;
     }
 

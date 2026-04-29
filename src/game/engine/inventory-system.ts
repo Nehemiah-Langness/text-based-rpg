@@ -89,28 +89,27 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
     equip(key: keyof TInventory, entity: PlayerEntity) {
         const item = this.get(key);
         if (this.areEquippableConstraintsMet(item)) {
-            this.unEquipCategory(item.category, item.equippable?.subCategory, entity);
+            this.unEquipCategory(item.category, item.equippable?.subCategory, entity, true);
             if (!item.equipped) {
                 item.equipped = true;
 
-                if (item.equippable?.health) {
-                    entity.health.max += item.equippable.health;
-                    entity.health.current += item.equippable.health;
-                }
                 if (item.equippable?.speed) {
                     entity.speed += item.equippable.speed;
                 }
                 if (item.equippable?.strength) {
                     entity.strength += item.equippable.strength;
                 }
+                if (item.equippable?.health) {
+                    entity.health.max += item.equippable.health;
+                    entity.health.current += item.equippable.health;
+                }
                 if (item.equippable?.stamina) {
                     entity.stamina.max += item.equippable.stamina;
                     entity.stamina.current += item.equippable.stamina;
                 }
             }
+            this.validateEquipment(entity);
         }
-
-        this.validateEquipment(entity);
 
         return item;
     }
@@ -139,7 +138,7 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
         return {};
     }
 
-    unEquip(key: keyof TInventory, entity: PlayerEntity) {
+    unEquip(key: keyof TInventory, entity: PlayerEntity, noValidation = false) {
         const item = this.get(key);
         if (item.equipped) {
             item.equipped = false;
@@ -160,19 +159,24 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
             }
         }
 
-        this.validateEquipment(entity);
+        if (!noValidation) {
+            this.validateEquipment(entity);
+        }
 
         return item;
     }
 
-    unEquipCategory(category: Category<TInventory>, subCategory: undefined | string, entity: PlayerEntity) {
+    unEquipCategory(category: Category<TInventory>, subCategory: undefined | string, entity: PlayerEntity, noValidation = false) {
         this.list()
             .filter(
                 (x) => x.item.equippable && x.item.category === category && (!subCategory || x.item.equippable?.subCategory === subCategory)
             )
             .forEach((x) => {
-                this.unEquip(x.key, entity);
+                this.unEquip(x.key, entity, true);
             });
+        if (!noValidation) {
+            this.validateEquipment(entity);
+        }
     }
 
     static createInventoryItem<T>(
@@ -184,6 +188,7 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
         return {
             count: 0,
             equipped: false,
+            sort: meta.vendor ? (meta.vendor.value ?? this.calculatePrice(meta)) : undefined,
             ...meta,
             vendor: meta.vendor
                 ? {

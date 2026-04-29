@@ -8,6 +8,7 @@ export type InventoryItem<TCategory> = {
 export interface InventoryItemMeta<TCategory = string> {
     name: string;
     category: TCategory;
+    sort?: number;
     vendor?: {
         wontBuy?: boolean;
         wontSell?: boolean;

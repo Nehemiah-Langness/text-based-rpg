@@ -29,7 +29,6 @@ function generateMaze(length: number, onComplete: RoomLike, back: RoomLike) {
             options: currentDirections,
         };
     });
-    console.log(path);
 
     function getRoom(index: number): Room {
         const currentPathOptions = path[index];

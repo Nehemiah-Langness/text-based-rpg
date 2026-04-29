@@ -118,7 +118,6 @@ export class PlayerEntity<
         for (let turn = 0; turn < maxTurnsForFullUse; turn++) {
             const chosenSkill = skills.filter((x) => x.inCoolDown === 0).sort(compare((x) => x.attack, 'desc'))[0];
             if (chosenSkill) {
-                console.log(chosenSkill)
                 damageDone += chosenSkill.attack;
                 chosenSkill.inCoolDown = chosenSkill.coolDown + 1;
             }
