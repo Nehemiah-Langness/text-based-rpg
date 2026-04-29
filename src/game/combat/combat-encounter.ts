@@ -154,7 +154,16 @@ function attack(
 
     const failureText = `${capitalize(attacker.specificName)} failed to perform ${skill.name}.`;
     const attackHadDamage = skill.attack > 0;
-    const successText = `${capitalize(attacker.specificName)} ${skillAction}${attackHadDamage ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${defender.specificName} ${voice === 'second' ? 'dodges' : 'dodge'} it.` : resolvedAttack.defense > 0 ? `.  ${defender.specificName} ${voice === 'second' ? 'blocks' : 'block'} ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}` : '.'}` : '.'}`;
+    const damageText = ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}`;
+    const dodgeText = `${defender.specificName} ${voice === 'second' ? 'dodges' : 'dodge'} the attack`;
+    const blockText = `${defender.specificName} ${voice === 'second' ? 'blocks' : 'block'} ${resolvedAttack.damage === 0 ? `the attack` : `${resolvedAttack.defense} points of damage`}`;
+    const successText = `${capitalize(attacker.specificName)} ${skillAction}${
+        attackHadDamage
+            ? `${damageText}${resolvedAttack.dodged ? ` and ${dodgeText}` : resolvedAttack.defense > 0 ? `. ${blockText}` : ''}`
+            : resolvedAttack.dodged
+              ? dodgeText
+              : ''
+    }.`;
     return resultRoom(
         backTo,
         [
