@@ -213,6 +213,12 @@ export class InventorySystem<TInventory extends InventoryConstraint<TInventory>>
                       category: 'armor' as const,
                   }
                 : null,
+            item.category === 'armor'
+                ? {
+                      amount: Math.floor((item.sort ?? 0) / 10) - 1,
+                      category: 'armorTier' as const,
+                  }
+                : null,
             item.consumable?.health
                 ? {
                       amount: item.consumable.health,

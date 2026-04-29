@@ -17,4 +17,5 @@ export const Prices = new PriceTable({
     trinketBase: 57,
     trinketVariance: 3,
     armor: 62,
+    armorTier: 1321
 });

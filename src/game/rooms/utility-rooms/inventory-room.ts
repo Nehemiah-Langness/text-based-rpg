@@ -31,10 +31,14 @@ export function shopInventoryRoom(
         () => {
             return [
                 ...items()
-                    .sort(compare<ReturnType<typeof items>[number]>((x) => x.item.sort ?? 0).thenBy((x) => x.price))
+                    .sort(
+                        compare<ReturnType<typeof items>[number]>((x) => x.item.equipped)
+                            .thenBy((x) => x.item.sort ?? 0)
+                            .thenBy((x) => x.price)
+                    )
                     .map(({ item, price, itemKey }) => {
                         return {
-                            text: `View ${item.name} ${mode === 'sell' ? `x${item.count} ` : ''}(${price.toLocaleString()}c) `,
+                            text: `View ${mode === 'sell' ? `x${item.count} ` : ''}${item.name} (${price.toLocaleString()}c)${mode === 'sell' && item.equipped ? ` (Equipped)` : ''}`,
                             code: itemKey,
                         };
                     }),
