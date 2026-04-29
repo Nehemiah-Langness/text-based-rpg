@@ -159,7 +159,7 @@ function attack(
     const blockText = `${defender.specificName} ${voice === 'second' ? 'blocks' : 'block'} ${resolvedAttack.damage === 0 ? `the attack` : `${resolvedAttack.defense} points of damage`}`;
     const successText = `${capitalize(attacker.specificName)} ${skillAction}${
         attackHadDamage
-            ? `${damageText}${resolvedAttack.dodged ? ` and ${dodgeText}` : resolvedAttack.defense > 0 ? `. ${blockText}` : ''}`
+            ? `${damageText}${resolvedAttack.dodged ? ` and ${dodgeText}` : resolvedAttack.defense > 0 ? `. ${capitalize(blockText)}` : ''}`
             : resolvedAttack.dodged
               ? dodgeText
               : ''
