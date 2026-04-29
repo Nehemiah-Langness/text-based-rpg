@@ -8,9 +8,7 @@ import { Room } from '../../engine/room';
 import type { InputOption } from '../../input-option';
 import { RoomNames } from '../names';
 import { OpenOceanMap } from './map';
-import { Player } from '../../player';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSkull } from '@fortawesome/free-solid-svg-icons';
+import { DifficultyIndicator } from '../../difficulty-indicator';
 
 export const BloodfinTerritory = new Room(
     {
@@ -18,15 +16,12 @@ export const BloodfinTerritory = new Room(
     },
     () => [VisitedDescription],
     (rm) => {
-        const level = Player.getLevel();
-
         const options: InputOption[] = [
             {
                 code: 'fight',
                 text: (
                     <>
-                        Attack a Bloodfin patrol {level.attack < 4 ? <FontAwesomeIcon icon={faSkull} /> : null}
-                        {level.defense < 4 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        Attack a Bloodfin patrol <DifficultyIndicator level={4} />
                     </>
                 ),
             },

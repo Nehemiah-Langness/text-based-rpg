@@ -12,10 +12,10 @@ import { Velrix } from './game/npcs/velrix';
 import { BloodfinTerritory } from './game/rooms/open-ocean/bloodfin-territory';
 
 export default () => {
-    Skills.levelSkill('tailKick', 3);
+    Skills.levelSkill('tailKick', 7);
     Skills.levelSkill('bubbleBlast', 4);
     Skills.levelSkill('sirensCall', 4);
-    Skills.levelSkill('starfishThrow', 4);
+    Skills.levelSkill('starfishThrow', 3);
     // Inventory.add('leviathanArmsArmor', 1, Player);
     // Inventory.equip('leviathanArmsArmor', Player);
     // Inventory.add('coralBreastplateArmor', 1, Player);

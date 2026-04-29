@@ -6,6 +6,7 @@ import { Inventory } from '../inventory';
 import { Mood } from '../rooms/moods/mood';
 import { resolveAttackRoll } from '../combat/resolve-attack';
 import { AverageDamagePerLevel } from '../leveling';
+import { compare } from '../../helpers/compare';
 
 export class PlayerEntity<
     T extends {
@@ -97,27 +98,40 @@ export class PlayerEntity<
     }
 
     getLevel() {
-        const attackStrength = this.skillSet
+        const skills = this.skillSet
             .getSkills()
-            .map(({ skill }) => {
-                const maxAttack = resolveAttackRoll({
+            .map(({ skill }) => ({
+                attack: resolveAttackRoll({
                     level: skill.level,
                     strength: skill.attack + this.strength,
                     penalty: 0,
-                });
+                }).maxAttack,
+                coolDown: skill.coolDown,
+                inCoolDown: 0,
+            }))
+            .sort(compare((x) => x.attack, 'desc'));
 
-                return maxAttack.maxAttack;
-            })
-            .reduce(
-                (c, n) => ({
-                    skills: c.skills + 1,
-                    total: c.total + n,
-                }),
-                { skills: 0, total: 0 }
-            );
+        const maxTurnsForFullUse = (skills[0]?.coolDown ?? 0) + 1;
 
+        let damageDone = 0;
+
+        for (let turn = 0; turn < maxTurnsForFullUse; turn++) {
+            const chosenSkill = skills.filter((x) => x.inCoolDown === 0).sort(compare((x) => x.attack, 'desc'))[0];
+            if (chosenSkill) {
+                console.log(chosenSkill)
+                damageDone += chosenSkill.attack;
+                chosenSkill.inCoolDown = chosenSkill.coolDown + 1;
+            }
+            skills.forEach((skill) => {
+                if (skill.inCoolDown > 0) {
+                    skill.inCoolDown -= 1;
+                }
+            });
+        }
+
+        const totalDamage = damageDone / maxTurnsForFullUse;
         return {
-            attack: attackStrength.skills === 0 ? 1 : Math.ceil(attackStrength.total / attackStrength.skills / AverageDamagePerLevel),
+            attack: totalDamage < AverageDamagePerLevel ? 1 : Math.round(totalDamage / AverageDamagePerLevel),
             defense: Math.ceil(this.getDefense() / AverageDamagePerLevel),
         };
     }

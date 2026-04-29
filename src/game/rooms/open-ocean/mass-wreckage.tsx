@@ -12,8 +12,7 @@ import { Player } from '../../player';
 import { createBloodfin } from '../../combat/create-bloodfin';
 import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { lootRoom } from '../../combat/loot-room';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSkull } from '@fortawesome/free-solid-svg-icons';
+import { DifficultyIndicator } from '../../difficulty-indicator';
 
 export const MassWreckage = new Room(
     {
@@ -32,8 +31,6 @@ export const MassWreckage = new Room(
     ],
     (mainWreckage) => {
         const options: InputOption[] = [];
-        const level = Player.getLevel();
-
         const mainQuest = Quests.getStage('mainQuest');
 
         if (['find-crown-piece-1', 'find-crown-piece-2', 'find-crown-piece-3'].includes(mainQuest ?? '')) {
@@ -46,8 +43,7 @@ export const MassWreckage = new Room(
                 code: 'fight',
                 text: (
                     <>
-                        Fight the Bloodfins {level.attack < 3 ? <FontAwesomeIcon icon={faSkull} /> : null}
-                        {level.defense < 3 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        Fight the Bloodfins <DifficultyIndicator level={3} />
                     </>
                 ),
             });

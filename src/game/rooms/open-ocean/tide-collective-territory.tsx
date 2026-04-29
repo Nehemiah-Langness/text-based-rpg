@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createSharkLootTable } from '../../combat/create-shark-loot-table';
 import { createTidecaller } from '../../combat/create-tidecaller';
 import { lootRoom } from '../../combat/loot-room';
@@ -7,12 +6,11 @@ import { rollDice } from '../../dice';
 import { DialogueTree } from '../../engine/dialogue-tree';
 import { Room, type RoomLike } from '../../engine/room';
 import type { InputOption } from '../../input-option';
-import { Player } from '../../player';
 import { Quests } from '../../quests';
 import { RoomNames } from '../names';
 import { resultRoom } from '../utility-rooms/result-room';
 import { OpenOceanMap } from './map';
-import { faSkull } from '@fortawesome/free-solid-svg-icons';
+import { DifficultyIndicator } from '../../difficulty-indicator';
 
 export const TideCollectiveTerritory = new Room(
     {
@@ -20,14 +18,13 @@ export const TideCollectiveTerritory = new Room(
     },
     () => [VisitedDescription],
     (tideTerritory) => {
-        const level = Player.getLevel();
         const options: InputOption[] = [
             {
                 code: 'fight',
                 text: (
                     <>
-                        Attack a Tidecaller Collective patrol {level.attack < 5 ? <FontAwesomeIcon icon={faSkull} /> : null}
-                        {level.defense < 5 ? <FontAwesomeIcon icon={faSkull} /> : null}
+                        Attack a Tidecaller Collective patrol
+                        <DifficultyIndicator level={5} />
                     </>
                 ),
             },
