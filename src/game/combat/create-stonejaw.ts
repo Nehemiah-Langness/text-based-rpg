@@ -3,11 +3,11 @@ import type { Enemy } from './enemy';
 export function createStonejaw(level: number): Enemy {
     return {
         level,
-        defense: 2,
+        defense: 6,
         speed: 10 + level,
         effects: [],
         genericName: 'a Stonejaw Brood shark',
-        specificName: 'The Stonejaw shark',
+        specificName: 'the Stonejaw shark',
         health: 40 + level * 10,
         stamina: 80 + level * 10,
         moves: [

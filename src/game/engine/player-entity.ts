@@ -17,8 +17,8 @@ export class PlayerEntity<
     valor: number;
     truthfulness: number;
 
-    readonly specificName = 'You';
-    readonly genericName = 'You';
+    readonly specificName = 'you';
+    readonly genericName = 'you';
 
     constructor({
         truthfulness,

@@ -106,6 +106,10 @@ function roundStart(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
     );
 }
 
+function capitalize(text: string) {
+    return text.substring(0, 1).toUpperCase() + text.substring(1);
+}
+
 function attack(
     backTo: RoomLike,
     {
@@ -148,15 +152,15 @@ function attack(
 
     const skillAction = voice === 'second' ? (skill.actionDescriptionSecondPerson ?? skill.actionDescription) : skill.actionDescription;
 
-    const failureText = `${attacker.specificName} failed to perform ${skill.name}.`;
+    const failureText = `${capitalize(attacker.specificName)} failed to perform ${skill.name}.`;
     const attackHadDamage = skill.attack > 0;
-    const successText = `${attacker.specificName} ${skillAction}${attackHadDamage ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${defender.specificName} ${voice === 'second' ? 'dodges' : 'dodge'} it.` : resolvedAttack.defense > 0 ? `.  ${defender.specificName} ${voice === 'second' ? 'blocks' : 'block'} ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}` : '.'}` : '.'}`;
+    const successText = `${capitalize(attacker.specificName)} ${skillAction}${attackHadDamage ? ` doing ${resolvedAttack.attack} damage${resolvedAttack.critical === 'success' ? ' (critical)' : ''}${resolvedAttack.dodged ? ` and ${defender.specificName} ${voice === 'second' ? 'dodges' : 'dodge'} it.` : resolvedAttack.defense > 0 ? `.  ${defender.specificName} ${voice === 'second' ? 'blocks' : 'block'} ${resolvedAttack.damage === 0 ? `all of it.` : `${resolvedAttack.defense} points of damage.`}` : '.'}` : '.'}`;
     return resultRoom(
         backTo,
         [
             resolvedAttack.critical === 'fail' ? failureText : successText,
             allAttackerEffects.length
-                ? `${attacker.specificName} ${voice === 'second' ? 'have' : 'has'} been ${oxfordComma(
+                ? `${capitalize(attacker.specificName)} ${voice === 'second' ? 'have' : 'has'} been ${oxfordComma(
                       ...allAttackerEffects.map(
                           (modifier) =>
                               `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${modifier.duration === 1 ? '' : 's'})`
@@ -164,7 +168,7 @@ function attack(
                   )}.`
                 : null,
             allDefenderEffects.length && defender.health.current > 0
-                ? `${defender.specificName} ${voice === 'second' ? 'has' : 'have'} been ${oxfordComma(
+                ? `${capitalize(defender.specificName)} ${voice === 'second' ? 'has' : 'have'} been ${oxfordComma(
                       ...allDefenderEffects.map(
                           (modifier) =>
                               `${modifierToPastTenseVerb(modifier.effect)} (${modifier.duration} turn${modifier.duration === 1 ? '' : 's'})`
@@ -172,7 +176,7 @@ function attack(
                   )}.`
                 : null,
             leveledUp
-                ? `${defender.specificName} ${voice === 'second' ? 'have' : 'has'} increased ${voice === 'second' ? 'your' : 'their'} damage when ${voice === 'second' ? 'you' : 'they'} ${cleanTrailingPunctuation(skillAction)}.`
+                ? `${capitalize(defender.specificName)} ${voice === 'second' ? 'have' : 'has'} increased ${voice === 'second' ? 'your' : 'their'} damage when ${voice === 'second' ? 'you' : 'they'} ${cleanTrailingPunctuation(skillAction)}.`
                 : null,
         ].filter((x) => x !== null),
         undefined,
@@ -190,7 +194,7 @@ function playerTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSt
         ...Player.modifiers.map((x) => modifierToPastTenseVerb(x.effect))
     )}`;
 
-    const enemyStatus = `${currentEnemy.specificName} is ${oxfordComma(
+    const enemyStatus = `${capitalize(currentEnemy.specificName)} is ${oxfordComma(
         healthToDescription(currentEnemy.health.current / currentEnemy.health.max) + ` (${currentEnemy.health.current} hp)`,
         staminaToDescription(currentEnemy.stamina.current / currentEnemy.stamina.max) + ` (${currentEnemy.stamina.current} stamina)`,
         ...currentEnemy.modifiers.map((x) => modifierToPastTenseVerb(x.effect))
@@ -305,7 +309,7 @@ function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSta
                     damageReceived: variants.damageReceived,
                     valorDamageThreshold: variants.valorDamageThreshold,
                 }),
-            `${currentEnemy.specificName} ${variants.nonLethal ? `yields` : `has been defeated`}.`,
+            `${capitalize(currentEnemy.specificName)} ${variants.nonLethal ? `yields` : `has been defeated`}.`,
             undefined,
             Mood.battle
         );
@@ -350,7 +354,7 @@ function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSta
     );
 
     const updates = effects
-        .map((x) => `${currentEnemy.specificName} is no longer ${modifierToPastTenseVerb(x)}.`)
+        .map((x) => `${capitalize(currentEnemy.specificName)} is no longer ${modifierToPastTenseVerb(x)}.`)
         .concat(skills)
         .filter((x) => x)
         .join('\n\n');
@@ -359,7 +363,7 @@ function enemyTurn(backTo: RoomLike, enemies: EnemyEntity[], variants: CombatSta
         nextPhase,
         [
             healthRegeneration || staminaRegeneration
-                ? `${currentEnemy.specificName} regenerates ${oxfordComma(
+                ? `${capitalize(currentEnemy.specificName)} regenerates ${oxfordComma(
                       ...[
                           healthRegeneration ? `${healthRegeneration} health point${healthRegeneration === 1 ? '' : 's'}` : null,
                           staminaRegeneration ? `${staminaRegeneration} stamina point${staminaRegeneration === 1 ? '' : 's'}.` : null,
@@ -389,7 +393,7 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
 
     const modifiers = currentEnemy.getModifiers();
     if (modifiers.stun) {
-        return resultRoom(nextPhase, `${currentEnemy.specificName} is stunned and unable to attack.`, undefined, Mood.battle);
+        return resultRoom(nextPhase, `${capitalize(currentEnemy.specificName)} is stunned and unable to attack.`, undefined, Mood.battle);
     }
 
     const enemySkillList = currentEnemy.skillSet
@@ -405,7 +409,12 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
         const skillName = chosenOption.replace('perform-', '');
         const { leveledUp, skill } = currentEnemy.useSkill(skillName);
         if (!skill) {
-            return resultRoom(nextPhase, `${currentEnemy.specificName} is too exhausted to do anything.`, undefined, Mood.battle);
+            return resultRoom(
+                nextPhase,
+                `${capitalize(currentEnemy.specificName)} is too exhausted to do anything.`,
+                undefined,
+                Mood.battle
+            );
         }
 
         return attack(
@@ -425,8 +434,8 @@ function enemyAttack(backTo: RoomLike, enemies: EnemyEntity[], { flee, ...varian
         return resultRoom(
             nextPhase,
             [
-                `${currentEnemy.specificName} readies for your attack.`,
-                `${currentEnemy.specificName} ${oxfordComma(...[`is ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `${currentEnemy.specificName} has gained ${staminaGained} stamina.` : null])}`,
+                `${capitalize(currentEnemy.specificName)} takes a defensive stance.`,
+                `${capitalize(currentEnemy.specificName)} ${oxfordComma(...[`is ${modifierToPastTenseVerb(effect)}`, staminaGained > 0 ? `${capitalize(currentEnemy.specificName)} has gained ${staminaGained} stamina.` : null])}`,
             ].filter((x) => x !== null),
             undefined,
             Mood.battle

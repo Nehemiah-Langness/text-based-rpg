@@ -25,7 +25,7 @@ function createShark(difficulty = 1): Enemy {
                 ]
                 : [],
         genericName: 'a shark',
-        specificName: 'The shark',
+        specificName: 'the shark',
         health: Math.floor(difficulty * 10),
         stamina: 50,
         moves: [

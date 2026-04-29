@@ -3,11 +3,11 @@ import type { Enemy } from './enemy';
 export function createBloodfin(level: number): Enemy {
     return {
         level,
-        defense: 1,
+        defense: 2,
         speed: 10 + level,
         effects: [],
         genericName: 'a Bloodfin Clan shark',
-        specificName: 'The Bloodfin shark',
+        specificName: 'the Bloodfin shark',
         health: 10 + level * 10,
         stamina: 40 + level * 10,
         moves: [

@@ -7,7 +7,7 @@ export function createStoneboundSentinel(level: number): Enemy {
         speed: 0,
         effects: [],
         genericName: 'a Stonebound sentinel',
-        specificName: 'The sentinel',
+        specificName: 'the sentinel',
         health: 10 + level * 15,
         stamina: 40 + level * 10,
         moves: [

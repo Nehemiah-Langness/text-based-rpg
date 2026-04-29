@@ -3,11 +3,11 @@ import type { Enemy } from './enemy';
 export function createTidecaller(level: number): Enemy {
     return {
         level,
-        defense: 1,
+        defense: 5,
         speed: 15 + level,
         effects: [],
         genericName: 'a Tidecaller Collective shark',
-        specificName: 'The Tidecaller shark',
+        specificName: 'the Tidecaller shark',
         health: 60 + level * 10,
         stamina: 60 + level * 10,
         moves: [
@@ -70,7 +70,7 @@ export function createTidecaller(level: number): Enemy {
             {
                 name: 'Whispering Currents',
                 actionDescription: 'creates subtle currents that swirl around you clouding your awareness and sense of direction',
-                attack: 1,
+                attack: 0,
                 coolDown: 2,
                 coolDownCompleteText: '',
                 inCoolDown: 0,
@@ -81,24 +81,18 @@ export function createTidecaller(level: number): Enemy {
                         effect: 'stun',
                     },
                 ],
-                stamina: 4,
+                stamina: 10,
                 xp: -100000,
             },
             {
                 name: 'Undertow Grasp',
                 actionDescription: 'causes an unseen force to drag you down to the ocean bed',
-                attack: 5,
+                attack: 7,
                 coolDown: 3,
                 coolDownCompleteText: '',
                 inCoolDown: 0,
                 level,
-                modifiers: [
-                    {
-                        duration: 1,
-                        effect: 'stun',
-                    },
-                ],
-                stamina: 20,
+                stamina: 25,
                 xp: -100000,
             },
             {
@@ -129,7 +123,7 @@ export function createTidecaller(level: number): Enemy {
                 modifiers: [
                     {
                         duration: 1,
-                        effect: 'stun',
+                        effect: 'distract',
                     },
                 ],
                 stamina: 35,
